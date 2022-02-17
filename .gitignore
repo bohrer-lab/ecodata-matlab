@@ -1,7 +1,20 @@
-# Model output
+# Movebank login credentials
+movebank_credentials.txt
+
+#m_map package
+m_map/
+
+# Output
 output/
-# Output from speed testing
-speed_test/output/
+
+# test data
+test_data/
+
+# scratch files
+scratch/
+
+# autosaved files
+.asv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
