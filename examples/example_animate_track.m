@@ -1,4 +1,5 @@
 % Example of animated track
+%
 % Data is imported using the API
 
 clearvars;

@@ -1,4 +1,5 @@
 % Examples of animated tracks annotated with environmental variables
+%
 % Data is imported from a saved file
 
 clearvars;

@@ -7,7 +7,7 @@ function fig = plot_annotated_track(data, var, output_figure)
     %     output_file (char): filename where the figure will be saved
     %
     % Returns:
-    %     fig: Plot of the animal track annotated with the environmental data
+    %     Figure: Plot of the animal track annotated with the environmental data
 
     %options
     track_color = 'y';

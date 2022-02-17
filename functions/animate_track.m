@@ -7,8 +7,8 @@ function fig = animate_track(data, output_animation)
     %     output_file (char): filename where the animation will be saved
     %
     % Returns:
-    %     fig: Animation of the animal track annotated with the environmental data
-    
+    %     Figure: Animation of the animal track annotated with the environmental data
+
     fig = figure(1);
 
     %display options

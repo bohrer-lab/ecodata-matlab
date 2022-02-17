@@ -1,0 +1,4 @@
+Examples
+========
+.. automodule:: examples
+   :members:
