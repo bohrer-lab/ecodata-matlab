@@ -29,10 +29,11 @@ author = 'Justine Missik'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinxcontrib.matlab',
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
-    'm2r2',
+    'sphinx.ext.githubpages',
+    'sphinxcontrib.matlab',
+    'm2r2'
 ]
 
 source_suffix = ['.rst', '.md']
