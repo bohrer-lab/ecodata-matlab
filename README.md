@@ -1,6 +1,6 @@
 # Overview
 
-Docs: *coming soon*
+[Documentation](https://jemissik.github.io/movebank_vis/index.html)
 
 ## Specifying Movebank login credentials:
 - Save ``movebank_credentials_template.txt`` as ``movebank_credentials.txt`` and update it with your username and password.
