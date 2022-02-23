@@ -10,9 +10,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('..'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('..'))
 from pathlib import Path
 
 
@@ -63,7 +63,7 @@ html_static_path = ['_static']
 
 # MATLAB setup
 matlab_src_dir = Path(__file__).parent.parent
-primary_domain = 'mat'
+# primary_domain = 'mat'
 
 # this_dir = os.path.dirname(os.path.abspath(__file__))
 # matlab_src_dir = os.path.abspath(os.path.join(this_dir, '..'))

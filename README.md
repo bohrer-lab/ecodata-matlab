@@ -17,7 +17,15 @@
 - ``animate_track.m``: Basic animation of track data
 - ``animate_track_annotated.m``: Animation of track data, annotated with an environmental variable
 
-## In progress/planned:
-- Visualize & animate gridded environmental data products
-- Add options to select data of interest
+## Next steps:
+- Read in environmental data products
+    - Geotiff files
+    - GIS polygon files (shapefiles)
+    - GIS vector files
+- Identify track points within polygons (overlay on topo map)
+- Identify road crossings (overlay on topo map)
+
+## Planned:
+- Animate gridded environmental data products
+- Add more data selection options for plotting
 - Stream particle visualization

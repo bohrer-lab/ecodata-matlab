@@ -1,4 +1,4 @@
 Examples
 ========
-.. automodule:: examples
+.. mat:automodule:: examples
    :members:

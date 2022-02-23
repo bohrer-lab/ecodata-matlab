@@ -7,6 +7,8 @@ Welcome to MATLAB for Movebank's documentation!
 ===============================================
 .. mdinclude:: ../README.md
 
+.. mdinclude:: ../pymovebank/README.md
+
 
 Contents
 ========
@@ -14,6 +16,7 @@ Contents
 .. toctree::
    movebank_functions
    examples
+   pymovebank
 
 
 Indices and tables
@@ -21,4 +24,5 @@ Indices and tables
 
 * :ref:`genindex`
 * :ref:`mat-modindex`
+* :ref:`modindex`
 * :ref:`search`

@@ -1,0 +1,13 @@
+name: movebankenv
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - xarray
+  - cfgrib
+  - geopandas
+  - shapely
+  - matplotlib
+  - pandas
+  - cartopy

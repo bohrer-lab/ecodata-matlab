@@ -1,4 +1,4 @@
 Functions
 =========
-.. automodule:: functions
+.. mat:automodule:: functions
    :members:
