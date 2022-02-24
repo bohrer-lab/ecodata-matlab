@@ -32,6 +32,8 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.githubpages',
+    'sphinx.ext.todo',
+    'matplotlib.sphinxext.plot_directive',
     'sphinxcontrib.matlab',
     'm2r2'
 ]
@@ -46,6 +48,7 @@ templates_path = ['_templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
+todo_include_todos = True
 
 # -- Options for HTML output -------------------------------------------------
 
