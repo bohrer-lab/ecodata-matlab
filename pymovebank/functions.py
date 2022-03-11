@@ -1,6 +1,6 @@
 
 """Python functions for data subsetting and file conversion.
-See also the example scripts of how to these are used."""
+See also the example scripts of how these are used."""
 
 import xarray as xr
 
@@ -28,14 +28,15 @@ def grib2nc(filein, fileout):
     ds.to_netcdf(fileout)
 
 def subset_data(filename, bbox = None, track_points = None, bounding_geom = None,
-               boundary_type = 'envelope', buffer = 0.1, clip = False, write_out = True,
+               boundary_type = 'envelope', buffer = 0.1, clip = False,
                outfile = None):
     """
     Subsets a dataset to an area of interest.
 
     There are three subsetting options:
         - **Specify a bounding box**: Provide coordinates for a bounding box. (Use the ``bbox`` argument.)
-        - **Provide animal track data**: Provide a csv file of Movebank animal track data, and a boundary will be drawn that encompasses all of the track points.(Use the ``track_points`` argument).
+        - **Provide animal track data**: Provide a csv file of Movebank animal
+            track data, and a boundary will be drawn that encompasses all of the track points.(Use the ``track_points`` argument).
         - **Provide another shapefile for subsetting**: A boundary will be drawn around the features in this shapefile. For example, you could a provide a shapefile with a bounding polygon for a region of interest. (Use the the ``bounding_geom`` argument)
 
 
@@ -67,10 +68,9 @@ def subset_data(filename, bbox = None, track_points = None, bounding_geom = None
     clip : bool, optional
         Whether or not to clip the subsetted data to the specified boundary (i.e., cut off
         intersected features at the boundary edge). By default False.
-    write_out : bool, optional
-        Whether or not to write a new shapefile with the subsetted data, by default True
     outfile : str, optional
-        Path to write the subsetted .shp file. Must be provided if ``write_out = True``
+        Path to write the subsetted .shp file, if specified. If no path is specified, the
+        subsetted data won't be written out to a file.
 
     Returns
     -------
@@ -132,11 +132,8 @@ def subset_data(filename, bbox = None, track_points = None, bounding_geom = None
         if clip:
             gdf = gdf.clip(boundary.to_crs(gdf.crs))
 
-    if write_out:
-        # Check that output path was specified
-        assert outfile is not None, (
-            "Output path must be specified unless write_out is set to False")
-
+    # Write new data to file if output path was specified
+    if outfile is not None:
         gdf.to_file(outfile)
 
     return gdf, boundary
