@@ -1,6 +1,9 @@
 # Movebank login credentials
 movebank_credentials.txt
 
+#large datasets
+pymovebank/src/pymovebank/datasets/large_datasets/
+
 #docs build
 docs/_build/
 #docs autosummary
@@ -63,3 +66,9 @@ __pycache__/
 
 ## File-based project format:
 *.iws
+
+# egg
+*.egg*
+
+#temp
+*.tmp
