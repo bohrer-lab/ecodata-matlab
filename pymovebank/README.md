@@ -1,7 +1,8 @@
-# Python quickstart
+# pymovebank quickstart
 
 ## Functions
-- ``grib2nc``: Converts .grib files from ECMWF to .nc format
+- :func:`~pymovebank.functions.grib2nc`: Converts .grib files from ECMWF to .nc format
+- :func:`~pymovebank.functions.subset_data`: Subset shapefiles to areas of interest
 
 ### In progress:
 - subset shapefiles to areas of interest

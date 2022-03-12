@@ -9,14 +9,14 @@ Welcome to MATLAB for Movebank's documentation!
 
 .. mdinclude:: ../pymovebank/README.md
 
-
 Contents
 ========
 
 .. toctree::
    movebank_functions
    examples
-   pymovebank
+   API reference <_autosummary/pymovebank>
+
 
 
 Indices and tables

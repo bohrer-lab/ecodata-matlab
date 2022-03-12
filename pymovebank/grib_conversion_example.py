@@ -1,6 +1,6 @@
 """ Example of converting a .grib file to .nc """
 
-from functions import grib2nc
+from pymovebank.functions import grib2nc
 from pathlib import Path
 
 indir = Path(__file__).parent / 'data' / 'ECMWF_wind_NorthAmerica_April2008_grib'
@@ -16,5 +16,5 @@ fileout = str(outdir/ 'ECMWF_wind_NorthAmerica_April2008_grib.nc')
 # make output directory if one doesn't exist
 (outdir).mkdir(exist_ok=True)
 
-# Convert the .grib file 
+# Convert the .grib file
 grib2nc(filein, fileout)

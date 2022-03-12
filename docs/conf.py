@@ -30,6 +30,7 @@ author = 'Justine Missik'
 # ones.
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',  # Create neat summary tables for modules/classes/methods etc
     'sphinx.ext.napoleon',
     'sphinx.ext.githubpages',
     'sphinx.ext.todo',
@@ -37,6 +38,8 @@ extensions = [
     'sphinxcontrib.matlab',
     'm2r2'
 ]
+
+autosummary_generate = True  # Turn on sphinx.ext.autosummary
 
 source_suffix = ['.rst', '.md']
 
@@ -57,6 +60,7 @@ todo_include_todos = True
 #
 # html_theme = 'sphinx_book_theme'
 html_theme = 'press'
+# html_theme = 'alabaster'
 # html_theme = 'pydata_sphinx_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,

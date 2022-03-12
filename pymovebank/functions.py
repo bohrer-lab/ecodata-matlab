@@ -34,15 +34,22 @@ def subset_data(filename, bbox = None, track_points = None, bounding_geom = None
     Subsets a dataset to an area of interest.
 
     There are three subsetting options:
-        - **Specify a bounding box**: Provide coordinates for a bounding box. (Use the ``bbox`` argument.)
+        - **Specify a bounding box**: Provide coordinates for a bounding box.
+          (Use the ``bbox`` argument.)
         - **Provide animal track data**: Provide a csv file of Movebank animal
-            track data, and a boundary will be drawn that encompasses all of the track points.(Use the ``track_points`` argument).
-        - **Provide another shapefile for subsetting**: A boundary will be drawn around the features in this shapefile. For example, you could a provide a shapefile with a bounding polygon for a region of interest. (Use the the ``bounding_geom`` argument)
+          track data, and a boundary will be drawn that encompasses all of the
+          track points.(Use the ``track_points`` argument).
+        - **Provide another shapefile for subsetting**: A boundary will be drawn
+          around the features in this shapefile. For example, you could a provide
+          a shapefile with a bounding polygon for a region of interest. (Use the
+          ``bounding_geom`` argument)
 
 
     If using ``track_points`` or ``bounding_geom``, you can also specify:
-        - Whether the bounding shape should be rectangular or a convex hull (Use the ``boundary_type`` argument.)
-        - A buffer size around the track points or shape of interest (Use the ``buffer`` argument.)
+        - Whether the bounding shape should be rectangular or a convex hull (Use
+          the ``boundary_type`` argument.)
+        - A buffer size around the track points or shape of interest (Use the
+          ``buffer`` argument.)
 
 
     The newly subsetted shapefile is returned as a GeoDataFrame, and is optionally
@@ -61,7 +68,8 @@ def subset_data(filename, bbox = None, track_points = None, bounding_geom = None
     bounding_geom : str, optional
         Path to shapefile with bounding geometry.
     boundary_type : str, optional
-        Specifies whether the bounding shape should be rectangular (``boundary_type='envelope'``)
+        Specifies whether the bounding shape should be rectangular (``boundary_type=
+        'envelope'``)
         or convex hull(``boundary_type = 'convex_hull'``), by default 'envelope'
     buffer : float, optional
         Buffer size, by default 0.1

@@ -3,6 +3,8 @@ movebank_credentials.txt
 
 #docs build
 docs/_build/
+#docs autosummary
+docs/_autosummary/
 
 #m_map package
 m_map/
