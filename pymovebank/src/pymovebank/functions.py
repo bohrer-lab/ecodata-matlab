@@ -7,7 +7,7 @@ import xarray as xr
 from shapely.geometry import Polygon
 import geopandas as gpd
 import pandas as pd
-
+import fiona
 
 def grib2nc(filein, fileout):
     """
@@ -145,3 +145,95 @@ def subset_data(filename, bbox = None, track_points = None, bounding_geom = None
         gdf.to_file(outfile)
 
     return gdf, boundary
+
+def get_extent(filepath):
+    """
+    Get the extent of a spatial dataset, without reading the dataset into memory.
+
+    Parameters
+    ----------
+    filepath : str
+        Path to dataset
+
+    Returns
+    -------
+    _type_ # TODO
+        Extent of dataset
+    """
+    with fiona.open(filepath) as f:
+        extent = f.bounds
+    return extent
+
+def get_crs(filepath):
+    """
+    Get the coordinate reference system (crs) of a spatial dataset, without reading
+    the dataset into memory.
+
+    Parameters
+    ----------
+    filepath : str
+        Path to dataset
+
+    Returns
+    -------
+    _type_ # TODO
+        crs of dataset
+    """
+    with fiona.open(filepath) as f:
+        crs = f.crs
+    return crs
+
+def get_file_info(filepath):
+    """
+    Get metadata from a spatial dataset, without reading the dataset into memory.
+
+    Parameters
+    ----------
+    filepath : str
+        Path to dataset
+
+    Returns
+    -------
+    _type_ # TODO
+        Dataset metadata
+    """
+    with fiona.open(filepath) as f:
+        info = f.meta
+    return info
+
+def get_geometry(filepath):
+    """
+    Get geometry of a spatial dataset, without reading the dataset into memory.
+
+    Parameters
+    ----------
+    filepath : str
+        Path to dataset
+
+    Returns
+    -------
+    _type_ # TODO
+        Dataset geometry
+    """
+    with fiona.open(filepath) as f:
+        geom = f.geometry
+    return geom
+
+def get_file_len(filepath):
+    """
+    Get the length (number of records) in a spatial dataset, without reading the
+    dataset into memory.
+
+    Parameters
+    ----------
+    filepath : str
+        Path to dataset
+
+    Returns
+    -------
+    _type_ # TODO
+        length (number of records) in dataset
+    """
+    with fiona.open(filepath) as f:
+        flen = len(f)
+    return flen
