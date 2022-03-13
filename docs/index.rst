@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to Movebank Visualization's documentation!
-===============================================
+==================================================
 .. mdinclude:: ../README.md
 
 .. mdinclude:: ../pymovebank/README.md

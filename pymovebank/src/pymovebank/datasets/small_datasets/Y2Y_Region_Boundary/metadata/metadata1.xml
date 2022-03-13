@@ -1,0 +1,116 @@
+<?xml version="1.0" ?>
+<metadata>
+	<eainfo>
+		<detailed>
+			<attr>
+				<attrlabl>area</attrlabl>
+				<attalias>Area sq km</attalias>
+				<attrdef>Area sq km</attrdef>
+			</attr>
+			<attr>
+				<attrlabl>OBJECTID</attrlabl>
+				<attalias>OBJECTID</attalias>
+				<attrdef>Internal feature number.</attrdef>
+			</attr>
+			<attr>
+				<attrlabl>Shape</attrlabl>
+				<attalias>Shape</attalias>
+				<attrdef>Feature geometry.</attrdef>
+			</attr>
+		</detailed>
+	</eainfo>
+	<dataqual>
+		<attracc>
+			<attraccr>For visual purposes only.  Not to be used to define hard boundaries.</attraccr>
+		</attracc>
+	</dataqual>
+	<idinfo>
+		<ptcontac>
+			<cntinfo>
+				<cntemail>aerin@y2y.net</cntemail>
+				<cntperp>
+					<cntper>Aerin Jacob</cntper>
+					<cntorg>Yellowstone to Yukon Conservation Initiative</cntorg>
+				</cntperp>
+			</cntinfo>
+		</ptcontac>
+		<useconst>Please properly cite use of data in all maps and reports</useconst>
+		<timeperd>
+			<timeinfo>
+				<sngdate>
+					<caldate>2013 - Current</caldate>
+				</sngdate>
+			</timeinfo>
+		</timeperd>
+		<descript>
+			<abstract>General boundary of the Y2Y region; revised in 2013 as part of a project to revise organizational priority areas.</abstract>
+			<purpose>To define the revised Y2Y boundary on maps for presentation purposes</purpose>
+		</descript>
+		<datacred>Gregory Kehm Associates, Vancouver BC</datacred>
+		<keywords>
+			<theme>
+				<themekey>boundaries,y2y</themekey>
+			</theme>
+		</keywords>
+		<spdom>
+			<bounding>
+				<southbc>5086664.7535</southbc>
+				<northbc>10517583.6224</northbc>
+				<eastbc>-10869808.5992</eastbc>
+				<westbc>-15884695.2812</westbc>
+			</bounding>
+		</spdom>
+		<citation>
+			<citeinfo>
+				<onlink>https://databasin.org/datasets/ccecf40569fe494e9a7d5d71c70cf127</onlink>
+				<title>Y2Y Region Boundary</title>
+				<origin>Gregory Kehm Associates</origin>
+				<othercit>\\GREGORY-PC\Data\Y2Y\Y2Yregion_PAs_2013.gdb</othercit>
+			</citeinfo>
+		</citation>
+	</idinfo>
+	<distinfo>
+		<distliab>No warranty is made by Data Basin for use of this dataset.  No warranty is made by Data Basin regarding the accuracy, reliability, or completeness of this dataset. In no event shall Data Basin have any liability whatsoever for payment of any consequential, incidental, indirect, special, or tort damages of any kind, including, but not limited to, any loss of profits arising out of the use or reliance on the geographic or attribute data contained within this dataset or arising out of the delivery, installation, operation, or support by Data Basin.</distliab>
+		<techpreq>Desktop GIS software.</techpreq>
+		<stdorder>
+			<digform>
+				<digtopt>
+					<onlinopt>
+						<accinstr>Download from https://databasin.org</accinstr>
+						<computer>
+							<networka>
+								<networkr>https://databasin.org/datasets/ccecf40569fe494e9a7d5d71c70cf127</networkr>
+							</networka>
+						</computer>
+					</onlinopt>
+				</digtopt>
+				<digtinfo>
+					<filedec>No compression applied</filedec>
+					<formvern>ArcGIS 10</formvern>
+					<formspec>Feature Layer</formspec>
+					<formname>Feature Layer</formname>
+				</digtinfo>
+			</digform>
+			<ordering>Download from https://databasin.org</ordering>
+			<fees>None</fees>
+		</stdorder>
+		<distrib>
+			<cntinfo>
+				<cntemail>databasin_admin@consbio.org</cntemail>
+				<cntperp>
+					<cntorg>Data Basin</cntorg>
+					<cntper>Data Basin Administrator</cntper>
+				</cntperp>
+				<cntvoice>541-757-0687</cntvoice>
+				<cntaddr>
+					<country>USA</country>
+					<city>Corvallis</city>
+					<postal>97333</postal>
+					<address>136 SW Washington Ave, Suite 202</address>
+					<addrtype>physical address</addrtype>
+					<state>OR</state>
+				</cntaddr>
+			</cntinfo>
+		</distrib>
+	</distinfo>
+</metadata>
