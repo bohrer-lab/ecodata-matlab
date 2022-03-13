@@ -1,4 +1,4 @@
-name: doc-env
+name: movebank-doc-env
 channels:
   - conda-forge
   - defaults
@@ -11,8 +11,11 @@ dependencies:
   - matplotlib
   - pandas
   - cartopy
+  - ipython
   - pip
   - pip:
+    - wget
     - m2r2
     - sphinx_press_theme
     - sphinxcontrib-matlabdomain
+    - nbsphinx

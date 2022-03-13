@@ -11,6 +11,8 @@ dependencies:
   - matplotlib
   - pandas
   - cartopy
+  - ipython
+  - ipykernel
   - pip
   - pip:
     - wget
