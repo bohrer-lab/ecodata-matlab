@@ -1,4 +1,3 @@
-
 """Python functions for data subsetting and file conversion.
 See also the example scripts of how these are used."""
 
@@ -8,6 +7,7 @@ from shapely.geometry import Polygon
 import geopandas as gpd
 import pandas as pd
 import fiona
+
 
 def grib2nc(filein, fileout):
     """
@@ -22,14 +22,22 @@ def grib2nc(filein, fileout):
     """
 
     # Read the .grib file using xarray and the cfgrib engine
-    ds = xr.load_dataset(filein, engine = "cfgrib")
+    ds = xr.load_dataset(filein, engine="cfgrib")
 
     # Write the dataset to a netcdf file
     ds.to_netcdf(fileout)
 
-def subset_data(filename, bbox = None, track_points = None, bounding_geom = None,
-               boundary_type = 'envelope', buffer = 0.1, clip = False,
-               outfile = None):
+
+def subset_data(
+    filename,
+    bbox=None,
+    track_points=None,
+    bounding_geom=None,
+    boundary_type="envelope",
+    buffer=0.1,
+    clip=False,
+    outfile=None,
+):
     """
     Subsets a dataset to an area of interest.
 
@@ -69,7 +77,7 @@ def subset_data(filename, bbox = None, track_points = None, bounding_geom = None
         Path to shapefile with bounding geometry.
     boundary_type : str, optional
         Specifies whether the bounding shape should be rectangular (``boundary_type=
-        'envelope'``)
+        'rectangular'``)
         or convex hull(``boundary_type = 'convex_hull'``), by default 'envelope'
     buffer : float, optional
         Buffer size, by default 0.1
@@ -94,13 +102,13 @@ def subset_data(filename, bbox = None, track_points = None, bounding_geom = None
     """
 
     # Check that one and only one of the subsetting options was specified
-    assert sum([item is not None for item in [bbox, track_points, bounding_geom]]) == 1, (
-        "subset_data: Must specify one and only one of the subsetting options bbox, \
-            track_points, or bounding_shp ")
+    assert (
+        sum([item is not None for item in [bbox, track_points, bounding_geom]]) == 1
+    ), "subset_data: Must specify one and only one of the subsetting options bbox, track_points, or bounding_shp "
 
     # Subset for bbox case
     if bbox is not None:
-        gdf = gpd.read_file(filename, bbox = bbox)
+        gdf = gpd.read_file(filename, bbox=bbox)
 
     # Subset for track_points and bounding_geom case
     else:
@@ -109,21 +117,21 @@ def subset_data(filename, bbox = None, track_points = None, bounding_geom = None
         track_crs = "EPSG:4326"
         if track_points is not None:
             df = pd.read_csv(track_points)
-            gdf_track = gpd.GeoDataFrame(df,
-                        geometry=gpd.points_from_xy(df['location-long'], df['location-lat']),
-                        crs = track_crs)
-            feature_geom = gdf_track.dissolve() # Dissolve points to a single geometry
+            gdf_track = gpd.GeoDataFrame(
+                df, geometry=gpd.points_from_xy(df["location-long"], df["location-lat"]), crs=track_crs
+            )
+            feature_geom = gdf_track.dissolve()  # Dissolve points to a single geometry
 
         # Get feature geometry for bounding_geom case
         elif bounding_geom is not None:
             # Read shapefile
             gdf_features = gpd.read_file(bounding_geom)
-            feature_geom = gdf_features.dissolve() # Dissolve features to one geometry
+            feature_geom = gdf_features.dissolve()  # Dissolve features to one geometry
 
         # Get boundary for envelope or convex hull
-        if boundary_type == 'envelope':
+        if boundary_type == "envelope":
             boundary = feature_geom.geometry.envelope
-        elif boundary_type == 'convex_hull':
+        elif boundary_type == "convex_hull":
             boundary = feature_geom.geometry.convex_hull
 
         # Adjust boundary with the buffer
@@ -132,10 +140,10 @@ def subset_data(filename, bbox = None, track_points = None, bounding_geom = None
         boundary = boundary.buffer(buffer * buffer_scale)
 
         # Read and subset
-        if boundary_type == 'envelope':
-            gdf = gpd.read_file(filename, bbox = boundary)
-        elif boundary_type == 'convex_hull':
-            gdf = gpd.read_file(filename, mask = boundary)
+        if boundary_type == "envelope":
+            gdf = gpd.read_file(filename, bbox=boundary)
+        elif boundary_type == "convex_hull":
+            gdf = gpd.read_file(filename, mask=boundary)
 
         if clip:
             gdf = gdf.clip(boundary.to_crs(gdf.crs))
@@ -145,6 +153,7 @@ def subset_data(filename, bbox = None, track_points = None, bounding_geom = None
         gdf.to_file(outfile)
 
     return gdf, boundary
+
 
 def get_extent(filepath):
     """
@@ -163,6 +172,7 @@ def get_extent(filepath):
     with fiona.open(filepath) as f:
         extent = f.bounds
     return extent
+
 
 def get_crs(filepath):
     """
@@ -183,6 +193,7 @@ def get_crs(filepath):
         crs = f.crs
     return crs
 
+
 def get_file_info(filepath):
     """
     Get metadata from a spatial dataset, without reading the dataset into memory.
@@ -201,6 +212,7 @@ def get_file_info(filepath):
         info = f.meta
     return info
 
+
 def get_geometry(filepath):
     """
     Get geometry of a spatial dataset, without reading the dataset into memory.
@@ -218,6 +230,7 @@ def get_geometry(filepath):
     with fiona.open(filepath) as f:
         geom = f.geometry
     return geom
+
 
 def get_file_len(filepath):
     """

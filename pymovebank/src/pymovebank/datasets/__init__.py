@@ -3,22 +3,32 @@ Datasets for pymovebank
 """
 
 import os
+import shutil
 from pathlib import Path
 import wget
 from zipfile import ZipFile
+import requests
+from datasize import DataSize
 
-__all__ = ["available", "get_path", "install_roads_dataset" ]
+__all__ = ["available", "get_path", "install_roads_dataset"]
 
 _module_path = Path(__file__).parent
 
-_large_datasets_paths = [f for f in (_module_path / 'large_datasets').iterdir()
-                   if not (str(f.name).startswith(".") or str(f.name).startswith("__"))]
-_large_datasets_names = [f.name for f in _large_datasets_paths ]
-_small_datasets_paths = [f for f in (_module_path / 'small_datasets').iterdir()
-                   if not (str(f.name).startswith(".") or str(f.name).startswith("__"))]
-_small_datasets_names = [f.name for f in _small_datasets_paths ]
-_dict_available = dict(zip(_large_datasets_names, _large_datasets_paths)) | \
-            dict(zip(_small_datasets_names, _small_datasets_paths))
+_large_datasets_paths = [
+    f
+    for f in (_module_path / "large_datasets").iterdir()
+    if not (str(f.name).startswith(".") or str(f.name).startswith("__"))
+]
+_large_datasets_names = [f.name for f in _large_datasets_paths]
+_small_datasets_paths = [
+    f
+    for f in (_module_path / "small_datasets").iterdir()
+    if not (str(f.name).startswith(".") or str(f.name).startswith("__"))
+]
+_small_datasets_names = [f.name for f in _small_datasets_paths]
+_dict_available = dict(zip(_large_datasets_names, _large_datasets_paths)) | dict(
+    zip(_small_datasets_names, _small_datasets_paths)
+)
 available = list(_dict_available.keys())
 
 
@@ -33,11 +43,17 @@ def get_path(dataset):
         all options.
     """
     if dataset in available:
-        return str(_dict_available[dataset])
+        path = _dict_available[dataset]
+        if path.suffix == ".zip":
+            path = "zip://" + str(path)
+        else:
+            path = str(path)
+        return path
     else:
         msg = "The dataset '{data}' is not available. ".format(data=dataset)
         msg += "Available datasets are {}".format(", ".join(available))
         raise ValueError(msg)
+
 
 def install_roads_dataset():
     """
@@ -53,16 +69,51 @@ def install_roads_dataset():
         - Add option to download the global dataset in gdb format instead
     """
 
-    print("Installing North America roads dataset. It's a large download and "
-          "will take a few mintues...")
+    # Remove any partially downloaded datasets
+    _remove_temp_downloads()
 
-    roads_url = 'https://dataportaal.pbl.nl/downloads/GRIP4/GRIP4_Region1_vector_shp.zip'
-    install_path = Path(_module_path) / 'large_datasets'
-    install_path.mkdir(exist_ok=True)
-    filename = wget.download(roads_url, out=str(install_path))
+    roads_url = "https://dataportaal.pbl.nl/downloads/GRIP4/GRIP4_Region1_vector_shp.zip"
 
-    filepath = install_path / Path(filename)
-    print("Installed dataset at: " + str(filepath))
-    with ZipFile(str(filepath), 'r') as zipObj:
-        zipObj.extractall(str(install_path / Path(filename).stem))
-    os.remove(filepath)
+    # Confirm user wants to proceed with download
+    while True:
+        filesize = requests.head(roads_url).headers["Content-Length"]
+        print()
+        response = input("The download is {:.2GB}. Do you want to proceed? [y/n]".format(DataSize(filesize + "B")))
+        if response.lower() == "y":
+            print("Installing North America roads dataset. It's a large download and will take a few mintues...")
+            install_path = Path(_module_path) / "large_datasets"
+            install_path.mkdir(exist_ok=True)
+
+            download_path = install_path / "temp_downloads"
+            download_path.mkdir(exist_ok=True)
+            os.chdir(download_path)  # Run wget from temp downloads directory
+            filename = wget.download(roads_url, out=str(install_path))
+            filepath = install_path / Path(filename)
+            print("Installed dataset at: " + filepath)
+            # with ZipFile(str(filepath), "r") as zipObj:
+            #     extract_path = str(install_path / Path(filename).stem)
+            #     zipObj.extractall(extract_path)
+            #     print("Installed dataset at: " + extract_path)
+            # os.remove(filepath)
+        elif response.lower() == "n":
+            break
+        else:
+            print("Invalid answer. Please answer [y/n]")
+
+
+def _remove_temp_downloads():
+    """
+    Delete any partially downloaded files from failed attempts to install datasets.
+    """
+    download_path = Path(_module_path) / "large_datasets/temp_downloads"
+    if os.path.exists(download_path) and os.listdir(download_path):
+        print("Found partially downloaded files in pymovebank.datasets.")
+        while True:
+            response = input("Do you want to delete these files before you download a new dataset? [y/n]")
+            if response.lower() == "y":
+                shutil.rmtree(download_path)
+                break
+            elif response.lower() == "n":
+                break
+            else:
+                print("Invalid answer. Please answer [y/n]")
