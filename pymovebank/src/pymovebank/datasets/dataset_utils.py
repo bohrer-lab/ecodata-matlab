@@ -17,7 +17,8 @@ _module_path = Path(__file__).parent
 _large_datasets_paths = [
     f
     for f in (_module_path / "large_datasets").iterdir()
-    if not (str(f.name).startswith(".") or str(f.name).startswith("__"))
+    if not (str(f.name).startswith(".") or str(f.name).startswith("__")
+            or str(f.name)=="temp_downloads")
 ]
 _large_datasets_names = [f.name for f in _large_datasets_paths]
 _small_datasets_paths = [
@@ -89,9 +90,15 @@ def install_roads_dataset():
             download_path = install_path / "temp_downloads"
             download_path.mkdir(exist_ok=True)
             os.chdir(download_path)
-            filename = wget.download(roads_url, out=str(install_path))
-            filepath = install_path / Path(filename)
-            print("Installed dataset at: " + filepath)
+            try:
+                filename = wget.download(roads_url, out=str(install_path))
+                filepath = install_path / Path(filename)
+                print("Installed dataset at: " + str(filepath))
+            except BaseException as e:
+                download_path = Path(_module_path) / "large_datasets/temp_downloads"
+                shutil.rmtree(download_path)
+                print(f"\nFailed to download dataset because of {e!r}")
+            break
         elif response.lower() == "n":
             print("Download cancelled.")
             break

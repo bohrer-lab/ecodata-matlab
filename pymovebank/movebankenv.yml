@@ -16,4 +16,6 @@ dependencies:
   - pip
   - pip:
     - wget
-    - -e .
+    - requests
+    - datasize
+    - -e .  # Installs pymovebank in editable mode

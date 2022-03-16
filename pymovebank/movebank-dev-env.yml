@@ -1,0 +1,29 @@
+channels:
+- conda-forge
+- defaults
+dependencies:
+- cartopy
+- cfgrib
+- geopandas
+- ipykernel
+- ipython
+- matplotlib
+- pandas
+- pip
+- python=3.9
+- shapely
+- xarray
+- pip:
+  - -e .
+  - black
+  - conda-merge
+  - datasize
+  - isort
+  - m2r2
+  - nbsphinx
+  - pytest
+  - requests
+  - sphinx_press_theme
+  - sphinxcontrib-matlabdomain
+  - wget
+name: testenv

@@ -1,20 +1,14 @@
-name: movebank-doc-env
+name: pmv-devreqs
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.9
-  - xarray
-  - cfgrib
-  - geopandas
-  - shapely
-  - matplotlib
-  - pandas
-  - cartopy
-  - ipython
   - pip
   - pip:
-    - wget
+    - conda-merge
+    - black
+    - isort
+    - pytest
     - m2r2
     - sphinx_press_theme
     - sphinxcontrib-matlabdomain

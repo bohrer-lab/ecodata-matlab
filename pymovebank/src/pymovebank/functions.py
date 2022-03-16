@@ -1,13 +1,14 @@
 """Python functions for data subsetting and file conversion.
 See also the example scripts of how these are used."""
 
-import xarray as xr
-
-from shapely.geometry import Polygon
+import fiona
 import geopandas as gpd
 import pandas as pd
-import fiona
+import xarray as xr
+from shapely.geometry import Polygon
 
+import warnings
+warnings.filterwarnings("ignore", message="Geometry is in a geographic CRS")
 
 def grib2nc(filein, fileout):
     """
@@ -33,13 +34,16 @@ def subset_data(
     bbox=None,
     track_points=None,
     bounding_geom=None,
-    boundary_type="envelope",
-    buffer=0.1,
+    boundary_type="rectangular",
+    buffer=0,
     clip=False,
     outfile=None,
 ):
     """
-    Subsets a dataset to an area of interest.
+    Subsets a spatial dataset to an area of interest.
+
+    Allowable data formats are those supported by GeoPandas; for more information
+    see [Reading spatial data with GeoPandas](https://geopandas.org/en/stable/docs/user_guide/io.html)
 
     There are three subsetting options:
         - **Specify a bounding box**: Provide coordinates for a bounding box.
@@ -77,10 +81,12 @@ def subset_data(
         Path to shapefile with bounding geometry.
     boundary_type : str, optional
         Specifies whether the bounding shape should be rectangular (``boundary_type=
-        'rectangular'``)
-        or convex hull(``boundary_type = 'convex_hull'``), by default 'envelope'
+        'rectangular'``) or convex hull(``boundary_type = 'convex_hull'``), by
+        default 'rectangular'
     buffer : float, optional
-        Buffer size, by default 0.1
+        Buffer size around the track points or bounding geometry, relative to the
+        extent of the track points or bounding geometry. By default 0. Note that
+        using a buffer will slow down processing.
     clip : bool, optional
         Whether or not to clip the subsetted data to the specified boundary (i.e., cut off
         intersected features at the boundary edge). By default False.
@@ -106,9 +112,12 @@ def subset_data(
         sum([item is not None for item in [bbox, track_points, bounding_geom]]) == 1
     ), "subset_data: Must specify one and only one of the subsetting options bbox, track_points, or bounding_shp "
 
+    dataset_crs = get_crs(filename)
+
     # Subset for bbox case
     if bbox is not None:
         gdf = gpd.read_file(filename, bbox=bbox)
+        boundary = bbox2poly(bbox)
 
     # Subset for track_points and bounding_geom case
     else:
@@ -128,31 +137,57 @@ def subset_data(
             gdf_features = gpd.read_file(bounding_geom)
             feature_geom = gdf_features.dissolve()  # Dissolve features to one geometry
 
-        # Get boundary for envelope or convex hull
-        if boundary_type == "envelope":
-            boundary = feature_geom.geometry.envelope
+        # Get boundary for envelope, convex hull, or mask
+        if boundary_type == "rectangular":
+            boundary = feature_geom.geometry.to_crs(dataset_crs).envelope
         elif boundary_type == "convex_hull":
-            boundary = feature_geom.geometry.convex_hull
+            boundary = feature_geom.geometry.to_crs(dataset_crs).convex_hull
+        elif boundary_type == "mask":
+            boundary = feature_geom.to_crs(dataset_crs)
 
         # Adjust boundary with the buffer
-        tot_bounds = boundary.geometry.total_bounds
-        buffer_scale = max([tot_bounds[2] - tot_bounds[0], tot_bounds[3] - tot_bounds[1]])
-        boundary = boundary.buffer(buffer * buffer_scale)
+        if buffer != 0:
+            tot_bounds = boundary.geometry.total_bounds
+            buffer_scale = max([tot_bounds[2] - tot_bounds[0], tot_bounds[3] - tot_bounds[1]])
+            boundary = boundary.buffer(buffer * buffer_scale)
 
         # Read and subset
-        if boundary_type == "envelope":
+        if boundary_type == "rectangular":
             gdf = gpd.read_file(filename, bbox=boundary)
-        elif boundary_type == "convex_hull":
+        elif boundary_type == "convex_hull" or boundary_type == "mask":
             gdf = gpd.read_file(filename, mask=boundary)
 
-        if clip:
-            gdf = gdf.clip(boundary.to_crs(gdf.crs))
+    if clip:
+        gdf = gdf.clip(boundary.to_crs(gdf.crs))
 
     # Write new data to file if output path was specified
     if outfile is not None:
         gdf.to_file(outfile)
 
     return gdf, boundary
+
+def bbox2poly(bbox):
+    long_min = bbox[0]
+    lat_min = bbox[1]
+    long_max = bbox[2]
+    lat_max = bbox [3]
+
+    polygon = Polygon([[long_min, lat_min],
+                        [long_min, lat_max],
+                        [long_max,lat_max],
+                        [long_max, lat_min]])
+
+    return gpd.GeoSeries(polygon, crs="EPSG:4326")
+
+def read_track_data(filein, dissolve=False):
+    #read track csv
+    track_df = pd.read_csv(filein)
+    track_gdf = gpd.GeoDataFrame(
+    track_df, geometry=gpd.points_from_xy(track_df['location-long'],
+                track_df['location-lat']), crs="EPSG:4326")
+    if dissolve:
+        track_gdf = track_gdf.dissolve()
+    return track_gdf
 
 
 def get_extent(filepath):
@@ -189,8 +224,13 @@ def get_crs(filepath):
     _type_ # TODO
         crs of dataset
     """
-    with fiona.open(filepath) as f:
-        crs = f.crs
+    with fiona.Env():
+        with fiona.open(filepath) as f:
+            crs = (
+                f.crs["init"]
+                if f.crs and "init" in f.crs
+                else f.crs_wkt
+            )
     return crs
 
 
