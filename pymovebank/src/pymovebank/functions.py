@@ -1,5 +1,5 @@
 """Python functions for data subsetting and file conversion.
-See also the example scripts of how these are used."""
+See the notebooks in the examples section for demos of how these are used."""
 
 import fiona
 import geopandas as gpd
@@ -8,7 +8,9 @@ import xarray as xr
 from shapely.geometry import Polygon
 
 import warnings
+
 warnings.filterwarnings("ignore", message="Geometry is in a geographic CRS")
+
 
 def grib2nc(filein, fileout):
     """
@@ -127,7 +129,9 @@ def subset_data(
         if track_points is not None:
             df = pd.read_csv(track_points)
             gdf_track = gpd.GeoDataFrame(
-                df, geometry=gpd.points_from_xy(df["location-long"], df["location-lat"]), crs=track_crs
+                df,
+                geometry=gpd.points_from_xy(df["location-long"], df["location-lat"]),
+                crs=track_crs,
             )
             feature_geom = gdf_track.dissolve()  # Dissolve points to a single geometry
 
@@ -148,7 +152,9 @@ def subset_data(
         # Adjust boundary with the buffer
         if buffer != 0:
             tot_bounds = boundary.geometry.total_bounds
-            buffer_scale = max([tot_bounds[2] - tot_bounds[0], tot_bounds[3] - tot_bounds[1]])
+            buffer_scale = max(
+                [abs(tot_bounds[2] - tot_bounds[0]), abs(tot_bounds[3] - tot_bounds[1])]
+            )
             boundary = boundary.buffer(buffer * buffer_scale)
 
         # Read and subset
@@ -166,25 +172,35 @@ def subset_data(
 
     return gdf, boundary
 
+
 def bbox2poly(bbox):
     long_min = bbox[0]
     lat_min = bbox[1]
     long_max = bbox[2]
-    lat_max = bbox [3]
+    lat_max = bbox[3]
 
-    polygon = Polygon([[long_min, lat_min],
-                        [long_min, lat_max],
-                        [long_max,lat_max],
-                        [long_max, lat_min]])
+    polygon = Polygon(
+        [
+            [long_min, lat_min],
+            [long_min, lat_max],
+            [long_max, lat_max],
+            [long_max, lat_min],
+        ]
+    )
 
     return gpd.GeoSeries(polygon, crs="EPSG:4326")
 
+
 def read_track_data(filein, dissolve=False):
-    #read track csv
+    # read track csv
     track_df = pd.read_csv(filein)
     track_gdf = gpd.GeoDataFrame(
-    track_df, geometry=gpd.points_from_xy(track_df['location-long'],
-                track_df['location-lat']), crs="EPSG:4326")
+        track_df,
+        geometry=gpd.points_from_xy(
+            track_df["location-long"], track_df["location-lat"]
+        ),
+        crs="EPSG:4326",
+    )
     if dissolve:
         track_gdf = track_gdf.dissolve()
     return track_gdf
@@ -226,11 +242,7 @@ def get_crs(filepath):
     """
     with fiona.Env():
         with fiona.open(filepath) as f:
-            crs = (
-                f.crs["init"]
-                if f.crs and "init" in f.crs
-                else f.crs_wkt
-            )
+            crs = f.crs["init"] if f.crs and "init" in f.crs else f.crs_wkt
     return crs
 
 

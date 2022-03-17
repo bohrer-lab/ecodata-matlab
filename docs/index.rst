@@ -5,16 +5,21 @@
 
 Welcome to Movebank Visualization's documentation!
 ==================================================
-.. mdinclude:: ../README.md
+.. include:: ../README.md
+   :parser: myst_parser.sphinx_
 
-.. mdinclude:: ../pymovebank/README.md
+.. include:: ../pymovebank/README.md
+   :parser: myst_parser.sphinx_
 
 Contents
 ========
 
 .. toctree::
+   :maxdepth: 3
+
    movebank_functions
    examples
+   roads
    pymovebank
 
 

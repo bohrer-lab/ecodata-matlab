@@ -17,8 +17,11 @@ _module_path = Path(__file__).parent
 _large_datasets_paths = [
     f
     for f in (_module_path / "large_datasets").iterdir()
-    if not (str(f.name).startswith(".") or str(f.name).startswith("__")
-            or str(f.name)=="temp_downloads")
+    if not (
+        str(f.name).startswith(".")
+        or str(f.name).startswith("__")
+        or str(f.name) == "temp_downloads"
+    )
 ]
 _large_datasets_names = [f.name for f in _large_datasets_paths]
 _small_datasets_paths = [
@@ -73,16 +76,24 @@ def install_roads_dataset():
     # Remove any partially downloaded datasets
     _remove_temp_downloads()
 
-    roads_url = "https://dataportaal.pbl.nl/downloads/GRIP4/GRIP4_Region1_vector_shp.zip"
+    roads_url = (
+        "https://dataportaal.pbl.nl/downloads/GRIP4/GRIP4_Region1_vector_shp.zip"
+    )
 
     # Confirm user wants to proceed with download
     while True:
         # Get size of requested file
         filesize = requests.head(roads_url).headers["Content-Length"]
         print()
-        response = input("The download is {:.2GB}. Do you want to proceed? [y/n]".format(DataSize(filesize + "B")))
+        response = input(
+            "The download is {:.2GB}. Do you want to proceed? [y/n]".format(
+                DataSize(filesize + "B")
+            )
+        )
         if response.lower() == "y":
-            print("Installing North America roads dataset. It's a large download and will take a few mintues...")
+            print(
+                "Installing North America roads dataset. It's a large download and will take a few mintues..."
+            )
             install_path = Path(_module_path) / "large_datasets"
             install_path.mkdir(exist_ok=True)
 
@@ -114,7 +125,9 @@ def _remove_temp_downloads():
     if os.path.exists(download_path) and os.listdir(download_path):
         print("Found partially downloaded files in pymovebank.datasets.")
         while True:
-            response = input("Do you want to delete these files before you download a new dataset? [y/n]")
+            response = input(
+                "Do you want to delete these files before you download a new dataset? [y/n]"
+            )
             if response.lower() == "y":
                 shutil.rmtree(download_path)
                 print("Removed files.")

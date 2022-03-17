@@ -10,7 +10,9 @@ def test_that_valid_dataset_returns_correct_path():
     path = pymovebank.get_path(dataset)
 
     # path is correct
-    correct_path = str(pymovebank.datasets.dataset_utils._module_path / "small_datasets" / dataset)
+    correct_path = str(
+        pymovebank.datasets.dataset_utils._module_path / "small_datasets" / dataset
+    )
     assert path == correct_path
 
 

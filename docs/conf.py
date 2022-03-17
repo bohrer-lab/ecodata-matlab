@@ -12,16 +12,17 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
-sys.path.insert(0, os.path.abspath('../pymovebank/src/'))
+
+sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath("../pymovebank/src/"))
 from pathlib import Path
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'Movebank Visualization'
-copyright = '2022, Justine Missik'
-author = 'Justine Missik'
+project = "Movebank Visualization"
+copyright = "2022, Justine Missik"
+author = "Justine Missik"
 
 
 # -- General configuration ---------------------------------------------------
@@ -30,27 +31,36 @@ author = 'Justine Missik'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',  # Create neat summary tables for modules/classes/methods etc
-    'sphinx.ext.napoleon',
-    'sphinx.ext.githubpages',
-    'sphinx.ext.todo',
-    'matplotlib.sphinxext.plot_directive',
-    'sphinxcontrib.matlab',
-    'm2r2'
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",  # Create neat summary tables for modules/classes/methods etc
+    "sphinx.ext.napoleon",
+    "sphinx.ext.githubpages",
+    "sphinx.ext.todo",
+    # 'myst_nb',
+    "nbsphinx",
+    "nbsphinx_link",
+    "matplotlib.sphinxext.plot_directive",
+    "sphinxcontrib.matlab",
+    # 'm2r2'
+    "myst_parser",
 ]
 
-autosummary_generate = True  # Turn on sphinx.ext.autosummary
+pygments_style='default'
 
-source_suffix = ['.rst', '.md']
+nbsphinx_execute = "never"
+
+autosummary_generate = True  # Turn on sphinx.ext.autosummary
+add_module_names = False
+
+source_suffix = [".rst", ".md", ".ipynb"]
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 todo_include_todos = True
 
@@ -59,8 +69,8 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# html_theme = 'sphinx_book_theme'
-html_theme = 'press'
+html_theme = "sphinx_book_theme"
+# html_theme = 'press'
 # html_theme = 'alabaster'
 # html_theme = 'pydata_sphinx_theme'
 
@@ -78,7 +88,5 @@ matlab_src_dir = Path(__file__).parent.parent
 # primary_domain = 'mat'
 
 html_theme_options = {
-    "external_links": [
-        ("Github", "https://github.com/jemissik/movebank_vis")
-   ]
+    "external_links": [("Github", "https://github.com/jemissik/movebank_vis")]
 }

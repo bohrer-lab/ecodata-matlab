@@ -18,12 +18,14 @@ dependencies:
   - black
   - conda-merge
   - datasize
+  - docutils>=0.17
   - isort
   - m2r2
-  - nbsphinx
+  - myst-parser
+  - pydata_sphinx_theme
   - pytest
   - requests
-  - sphinx_press_theme
+  - sphinx_book_theme
   - sphinxcontrib-matlabdomain
   - wget
-name: testenv
+name: pmv-devreqs

@@ -8,5 +8,5 @@ from pymovebank.functions import (
     grib2nc,
     subset_data,
     read_track_data,
-    bbox2poly
+    bbox2poly,
 )
