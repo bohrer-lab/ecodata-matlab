@@ -79,3 +79,7 @@ __pycache__/
 *.tmp
 
 .ipynb_checkpoints
+
+#app files
+apps/*
+! *.mlapp
