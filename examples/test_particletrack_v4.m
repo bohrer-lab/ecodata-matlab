@@ -17,17 +17,19 @@ recordmovie = true;    % Set to true to record AVI.
 videoFilename = fullfile(pwd,'output/eagles_final2.avi'); % Name of movie to output.
 frame_rate = 14;
 
-start_date = [];
-end_date = [];
+% start_date = [];
+% end_date = [];
 
 start_lon = 0;
 end_lon = 0;
 start_lat = 0;
 end_lat = 0;
 %
-% start_date = datetime("15-May-2004");
+start_date = datetime("15-May-2004");
 % end_date = datetime("30-Sep-2004");
-%
+end_date = datetime("30-May-2004");
+
+
 % start_lon = -125;
 % end_lon = -100;
 % start_lat = 30;
@@ -48,12 +50,12 @@ d_elevation = 200;
 
 parent_path = fileparts(mfilename('fullpath'));
 % directory for wind data netcdf
-netcdf_path = fullfile(parent_path, "..", "data", "user_datasets", "wind_data", "adaptor.mars.internal-1654960100.582873-11470-5-61b1b1cb-cfbe-49fd-a03f-3f06495e0ed9.nc");
-% netcdf_path = fullfile(parent_path, "..", "data", "wind_data", "eagle_ds_2004_thinned2.nc");
+% netcdf_path = fullfile(parent_path, "..", "data", "user_datasets", "wind_data", "adaptor.mars.internal-1654960100.582873-11470-5-61b1b1cb-cfbe-49fd-a03f-3f06495e0ed9.nc");
+netcdf_path = fullfile(parent_path, "..", "data", "user_datasets", "wind_data", "eagle_ds_2004_thinned2.nc");
 % directory for u component data
-u_d = dir(fullfile(parent_path, "..", "data", "user_datasets", "wind_data", "ECMWF_wind_BC_caribou_April2008-1678726286799667131", "ECMWF_wind_BC_caribou_April2008-1678726286799667131", "ECMWF ERA5 SL Wind (10 m above Ground U Component)"));
+% u_d = dir(fullfile(parent_path, "..", "data", "user_datasets", "wind_data", "ECMWF_wind_BC_caribou_April2008-1678726286799667131", "ECMWF_wind_BC_caribou_April2008-1678726286799667131", "ECMWF ERA5 SL Wind (10 m above Ground U Component)"));
 % directory for v component data
-v_d = dir(fullfile(parent_path, "..", "data", "user_datasets", "wind_data", "ECMWF_wind_BC_caribou_April2008-1678726286799667131", "ECMWF_wind_BC_caribou_April2008-1678726286799667131", "ECMWF ERA5 SL Wind (10 m above Ground V Component)"));
+% v_d = dir(fullfile(parent_path, "..", "data", "user_datasets", "wind_data", "ECMWF_wind_BC_caribou_April2008-1678726286799667131", "ECMWF_wind_BC_caribou_April2008-1678726286799667131", "ECMWF ERA5 SL Wind (10 m above Ground V Component)"));
 file_ts_pre_str = "Component)-";
 file_ts_post_str = "-0-0.tif";
 ts_input_format = "yyyyMMddHHmmssSSS";
