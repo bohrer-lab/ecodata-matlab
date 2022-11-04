@@ -3,6 +3,7 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
         track_data
         gridded_data
         gridded_varname
+        kwargs.output_directory
         kwargs.output_file
 %         kwargs.output_fname
         kwargs.individuals = []
@@ -58,30 +59,31 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     
     % Set up video writer
 %     videoFilename = fullfile(kwargs.output_directory, kwargs.output_fname);
-    videoFilename = kwargs.output_file;
-
-    if exist(videoFilename,'file')
-        delete(videoFilename)
-    end
-    writer = VideoWriter(videoFilename);
-    writer.FrameRate = kwargs.frame_rate;
-    writer.Quality = 100;
-    open(writer)
-    
-    % get geolimits for map
-    buffer = 0.10 * (max([(max(data.location_lat)-(min(data.location_lat))) (max(data.location_long)-(min(data.location_long)))]));
-    [latlim, lonlim] = get_geolimits(data, .10);
-    
-    % Projection
-    m_proj('lambert','lon',lonlim,'lat',latlim);
-    m_grid('linestyle', 'none', 'tickdir', 'out', 'linewidth', 3);
-    % set(gcf,'color','w');   % Set background colour before m_image call
-    
-%     fig = gcf;
-%     fig.WindowState = 'maximized';
-    
-    
-    hold on
+%     videoFilename = kwargs.output_file;
+% 
+%     if exist(videoFilename,'file')
+%         delete(videoFilename)
+%     end
+%     writer = VideoWriter(videoFilename);
+%     writer.FrameRate = kwargs.frame_rate;
+%     writer.Quality = 100;
+%     open(writer)
+%     
+%     % get geolimits for map
+%     f = figure(Visible='off');
+%     buffer = 0.10 * (max([(max(data.location_lat)-(min(data.location_lat))) (max(data.location_long)-(min(data.location_long)))]));
+%     [latlim, lonlim] = get_geolimits(data, .10);
+%     
+%     % Projection
+%     m_proj('lambert','lon',lonlim,'lat',latlim);
+%     m_grid('linestyle', 'none', 'tickdir', 'out', 'linewidth', 3);
+%     % set(gcf,'color','w');   % Set background colour before m_image call
+%     
+% %     fig = gcf;
+% %     fig.WindowState = 'maximized';
+%     
+%     
+%     hold on
     
     
     
@@ -89,8 +91,24 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     
     
     %% plotting
-    
+    frame_number = 0;
     for k=kwargs.start_time:kwargs.end_time
+
+            % get geolimits for map
+        f = figure(Visible='off');
+        buffer = 0.10 * (max([(max(data.location_lat)-(min(data.location_lat))) (max(data.location_long)-(min(data.location_long)))]));
+        [latlim, lonlim] = get_geolimits(data, .10);
+        
+        % Projection
+        m_proj('lambert','lon',lonlim,'lat',latlim);
+        m_grid('linestyle', 'none', 'tickdir', 'out', 'linewidth', 3);
+        % set(gcf,'color','w');   % Set background colour before m_image call
+        
+    %     fig = gcf;
+    %     fig.WindowState = 'maximized';
+        
+        
+        hold on
     
         if ismember(k, nctimestamp)
             A = nc_var(:, :, nctimestamp == k)';
@@ -165,19 +183,22 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     
             % Save the current frame as an RGB image.
     %         gcf.WindowState = 'maximized';      % Maximize the figure to your whole screen.
-            frame = getframe(gcf);
+%             frame = getframe(gcf);
     
     
             if kwargs.save_frames
                 %save image of each frame
                 % Construct an output image file name.
-                outputBaseFileName = sprintf('Frame-%s.png', k);
-                outputFullFileName = fullfile(output_directory, outputBaseFileName);
-                exportgraphics(gcf,outputFullFileName,'Resolution', frame_resolution)
+                outputBaseFileName = sprintf('Frame%s.png', num2str(frame_number));
+                outputFullFileName = fullfile(kwargs.output_directory, outputBaseFileName);
+                exportgraphics(gcf,outputFullFileName,'Resolution', kwargs.frame_resolution)
+                frame_number = frame_number + 1;
+                close(f)
             end
+
     
     
-        writeVideo(writer,frame);
+%         writeVideo(writer,frame);
         for i=1:length(h_cells); delete(h_cells{i}); end
         for i=1:length(s_cells); delete(s_cells{i}); end
     %     delete(CH)
@@ -185,5 +206,5 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     %     delete(gs);
     %     clf
     end
-    close(writer)
+%     close(writer)
     close all
