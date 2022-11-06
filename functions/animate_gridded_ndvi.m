@@ -3,6 +3,9 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
         track_data
         gridded_data
         gridded_varname
+        kwargs.shapefile = NaN,
+        kwargs.raster_image = NaN,
+        kwargs.raster_cmap = NaN,
         kwargs.output_directory
         kwargs.output_file
 %         kwargs.output_fname
@@ -53,61 +56,29 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     % adjust the start time for the plot so it doesn't start before there is
     % MODIS data available
     if kwargs.start_time < min(nctimestamp); kwargs.start_time = min(nctimestamp); end
+
+
+    [A,R] = readgeoraster(kwargs.raster_image);
+    % correct the issue with readgeoraster turning the array upside-down
+    A_flipped = flipud(A);
     
-    %% Set up for map and animation
-    
-    
-    % Set up video writer
-%     videoFilename = fullfile(kwargs.output_directory, kwargs.output_fname);
-%     videoFilename = kwargs.output_file;
-% 
-%     if exist(videoFilename,'file')
-%         delete(videoFilename)
-%     end
-%     writer = VideoWriter(videoFilename);
-%     writer.FrameRate = kwargs.frame_rate;
-%     writer.Quality = 100;
-%     open(writer)
-%     
-%     % get geolimits for map
-%     f = figure(Visible='off');
-%     buffer = 0.10 * (max([(max(data.location_lat)-(min(data.location_lat))) (max(data.location_long)-(min(data.location_long)))]));
-%     [latlim, lonlim] = get_geolimits(data, .10);
-%     
-%     % Projection
-%     m_proj('lambert','lon',lonlim,'lat',latlim);
-%     m_grid('linestyle', 'none', 'tickdir', 'out', 'linewidth', 3);
-%     % set(gcf,'color','w');   % Set background colour before m_image call
-%     
-% %     fig = gcf;
-% %     fig.WindowState = 'maximized';
-%     
-%     
-%     hold on
-    
-    
-    
-    
-    
+
     
     %% plotting
     frame_number = 0;
     for k=kwargs.start_time:kwargs.end_time
 
-            % get geolimits for map
-        f = figure(Visible='off');
+            %% Set up for map
+    
+        % get geolimits for map
+        figure(Visible='off');
         buffer = 0.10 * (max([(max(data.location_lat)-(min(data.location_lat))) (max(data.location_long)-(min(data.location_long)))]));
         [latlim, lonlim] = get_geolimits(data, .10);
         
         % Projection
-        m_proj('lambert','lon',lonlim,'lat',latlim);
+        m_proj('Cylindrical Equal-Area','lat',latlim,'long',lonlim)
         m_grid('linestyle', 'none', 'tickdir', 'out', 'linewidth', 3);
-        % set(gcf,'color','w');   % Set background colour before m_image call
-        
-    %     fig = gcf;
-    %     fig.WindowState = 'maximized';
-        
-        
+    
         hold on
     
         if ismember(k, nctimestamp)
@@ -117,13 +88,13 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
             else 
                 colormap(m_colmap(kwargs.cmap))
             end
-            m_image(nc_long,nc_lat, A);
+            grd = m_image(nc_long,nc_lat, A);
     %         alpha 0.2;
             caxis([-0.1 1])
             cb = colorbar;
             ylabel(cb,strrep(gridded_varname, '_', ' '),'FontSize',12);
         end
-    
+        
         hold on
     
         h_cells = cell(1,length(inds));
@@ -175,9 +146,31 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     
     
         end
+                freezeColors
+                %shapefile 
+                if ~isnan(kwargs.shapefile)
+                    shp = shaperead(shapefile);
+                
+                    for i=1:length(shp)
+                        [shp(i).X, shp(i).Y] = m_ll2xy(shp(i).X, shp(i).Y, 'clip', 'off');
+                    end
+                    shapes =  mapshow(shp, 'FaceColor', [.678 .847 .902], 'EdgeColor', [.678 .847 .902]);
+                end
+            
+                % raster image
+                if ~isnan(kwargs.raster_image)
+
+                    % color map for the raster. Here using just a single color  
+                    colormap(kwargs.raster_cmap);
+                    r_img = m_image(R.LongitudeLimits, R.LatitudeLimits, A_flipped);
+                end
+                freezeColors
+                m_grid('linestyle', 'none', 'tickdir', 'out', 'linewidth', 3);
+                
     
     %     addpoints(an, data.location_lat(k), data.location_long(k));
             title(datestr(k))
+            
     
             drawnow
     
@@ -193,18 +186,19 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
                 outputFullFileName = fullfile(kwargs.output_directory, outputBaseFileName);
                 exportgraphics(gcf,outputFullFileName,'Resolution', kwargs.frame_resolution)
                 frame_number = frame_number + 1;
-                close(f)
             end
 
-    
-    
+          delete(grd)
+            delete(h) 
+            delete(s)
+            delete(r_img)
 %         writeVideo(writer,frame);
         for i=1:length(h_cells); delete(h_cells{i}); end
         for i=1:length(s_cells); delete(s_cells{i}); end
     %     delete(CH)
     
     %     delete(gs);
-    %     clf
+        clf
     end
 %     close(writer)
     close all
