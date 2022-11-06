@@ -58,11 +58,16 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     if kwargs.start_time < min(nctimestamp); kwargs.start_time = min(nctimestamp); end
 
 
-    [A,R] = readgeoraster(kwargs.raster_image);
+    [raster_array,raster_ref] = readgeoraster(kwargs.raster_image);
     % correct the issue with readgeoraster turning the array upside-down
-    A_flipped = flipud(A);
+    raster_array_f = flipud(raster_array);
     
-
+    figure(Visible='off');
+    if kwargs.invert_cmap
+        gridded_cmap = flipud(m_colmap(kwargs.cmap));
+    else 
+        gridded_cmap = m_colmap(kwargs.cmap);
+    end
     
     %% plotting
     frame_number = 0;
@@ -71,7 +76,7 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
             %% Set up for map
     
         % get geolimits for map
-        figure(Visible='off');
+        f = figure(Visible='off');
         buffer = 0.10 * (max([(max(data.location_lat)-(min(data.location_lat))) (max(data.location_long)-(min(data.location_long)))]));
         [latlim, lonlim] = get_geolimits(data, .10);
         
@@ -81,13 +86,10 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     
         hold on
     
+        % Plot gridded env data
         if ismember(k, nctimestamp)
             A = nc_var(:, :, nctimestamp == k)';
-            if kwargs.invert_cmap
-                colormap(flipud(m_colmap(kwargs.cmap)));
-            else 
-                colormap(m_colmap(kwargs.cmap))
-            end
+            colormap(gridded_cmap)
             grd = m_image(nc_long,nc_lat, A);
     %         alpha 0.2;
             caxis([-0.1 1])
@@ -96,6 +98,34 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
         end
         
         hold on
+
+        freezeColors
+        %shapefile 
+        if ~isnan(kwargs.shapefile)
+            shp = shaperead(shapefile);
+        
+            for i=1:length(shp)
+                [shp(i).X, shp(i).Y] = m_ll2xy(shp(i).X, shp(i).Y, 'clip', 'off');
+            end
+            shapes =  mapshow(shp, 'FaceColor', [.678 .847 .902], 'EdgeColor', [.678 .847 .902]);
+        end
+    
+        % raster image
+        if ~isnan(kwargs.raster_image)
+
+            % color map for the raster. Here using just a single color  
+            colormap(kwargs.raster_cmap);
+            r_img = m_image(raster_ref.LongitudeLimits, raster_ref.LatitudeLimits, raster_array_f);
+        end
+        freezeColors
+        hold on
+
+        % So the color bar will use the cmap for the env data, not the
+        % raster image 
+        colormap(gridded_cmap)
+
+
+        % Track data
     
         h_cells = cell(1,length(inds));
         s_cells = cell(1,length(inds));
@@ -146,38 +176,13 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     
     
         end
-                freezeColors
-                %shapefile 
-                if ~isnan(kwargs.shapefile)
-                    shp = shaperead(shapefile);
-                
-                    for i=1:length(shp)
-                        [shp(i).X, shp(i).Y] = m_ll2xy(shp(i).X, shp(i).Y, 'clip', 'off');
-                    end
-                    shapes =  mapshow(shp, 'FaceColor', [.678 .847 .902], 'EdgeColor', [.678 .847 .902]);
-                end
-            
-                % raster image
-                if ~isnan(kwargs.raster_image)
+        m_grid('linestyle', 'none', 'tickdir', 'out', 'linewidth', 3);
 
-                    % color map for the raster. Here using just a single color  
-                    colormap(kwargs.raster_cmap);
-                    r_img = m_image(R.LongitudeLimits, R.LatitudeLimits, A_flipped);
-                end
-                freezeColors
-                m_grid('linestyle', 'none', 'tickdir', 'out', 'linewidth', 3);
                 
-    
-    %     addpoints(an, data.location_lat(k), data.location_long(k));
-            title(datestr(k))
+           title(datestr(k))
             
     
             drawnow
-    
-            % Save the current frame as an RGB image.
-    %         gcf.WindowState = 'maximized';      % Maximize the figure to your whole screen.
-%             frame = getframe(gcf);
-    
     
             if kwargs.save_frames
                 %save image of each frame
@@ -192,13 +197,9 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
             delete(h) 
             delete(s)
             delete(r_img)
-%         writeVideo(writer,frame);
         for i=1:length(h_cells); delete(h_cells{i}); end
         for i=1:length(s_cells); delete(s_cells{i}); end
-    %     delete(CH)
-    
-    %     delete(gs);
+
         clf
     end
-%     close(writer)
     close all
