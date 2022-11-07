@@ -6,6 +6,7 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
         kwargs.shapefile = NaN,
         kwargs.raster_image = NaN,
         kwargs.raster_cmap = NaN,
+        kwargs.labeled_pointsf = NaN;
         kwargs.output_directory
         kwargs.output_file
 %         kwargs.output_fname
@@ -34,12 +35,16 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     data = data((data.location_long>=kwargs.lonmin) & (data.location_long <=kwargs.lonmax) & ...
         (data.location_lat>=kwargs.latmin) & (data.location_lat <= kwargs.latmax),:);
     
-    % filter to time of interest
-    data = data((data.timestamp >= kwargs.start_time) & (data.timestamp <= kwargs.end_time), :);
-    
     % split to separate tt for each individual animal,
     % and interpolate to daily
     [inds, c] = group_by_individual_and_resample(data, days(1));
+
+    for i=1:length(c)
+        % filter to time of interest
+        d =  c{1,i}{2};
+        c{1,i}{2} = d((d.timestamp >= kwargs.start_time) & (d.timestamp <= kwargs.end_time), :);
+    end
+    
     
     
     % unpack MODIS netcdf data
@@ -68,6 +73,10 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     else 
         gridded_cmap = m_colmap(kwargs.cmap);
     end
+
+    if ~isnan(kwargs.labeled_pointsf)
+        labeled_pts = readtable(kwargs.labeled_pointsf); 
+    end
     
     %% plotting
     frame_number = 0;
@@ -78,7 +87,9 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
         % get geolimits for map
         f = figure(Visible='off');
         buffer = 0.10 * (max([(max(data.location_lat)-(min(data.location_lat))) (max(data.location_long)-(min(data.location_long)))]));
-        [latlim, lonlim] = get_geolimits(data, .10);
+%         [latlim, lonlim] = get_geolimits(data, .10);
+        latlim = [kwargs.latmin kwargs.latmax];
+        lonlim = [kwargs.lonmin kwargs.lonmax];
         
         % Projection
         m_proj('Cylindrical Equal-Area','lat',latlim,'long',lonlim)
@@ -89,26 +100,20 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
         % Plot gridded env data
         if ismember(k, nctimestamp)
             A = nc_var(:, :, nctimestamp == k)';
-            colormap(gridded_cmap)
             grd = m_image(nc_long,nc_lat, A);
     %         alpha 0.2;
-            caxis([-0.1 1])
+
+        end
+        colormap(gridded_cmap)
+
+        caxis([-0.1 1])
             cb = colorbar;
             ylabel(cb,strrep(gridded_varname, '_', ' '),'FontSize',12);
-        end
         
         hold on
 
         freezeColors
-        %shapefile 
-        if ~isnan(kwargs.shapefile)
-            shp = shaperead(shapefile);
-        
-            for i=1:length(shp)
-                [shp(i).X, shp(i).Y] = m_ll2xy(shp(i).X, shp(i).Y, 'clip', 'off');
-            end
-            shapes =  mapshow(shp, 'FaceColor', [.678 .847 .902], 'EdgeColor', [.678 .847 .902]);
-        end
+
     
         % raster image
         if ~isnan(kwargs.raster_image)
@@ -120,6 +125,26 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
         freezeColors
         hold on
 
+                %shapefile 
+        if ~isnan(kwargs.shapefile)
+            shp = shaperead(kwargs.shapefile);
+        
+            for i=1:length(shp)
+                [shp(i).X, shp(i).Y] = m_ll2xy(shp(i).X, shp(i).Y, 'clip', 'off');
+            end
+            shapes =  mapshow(shp, 'color', 'k', 'LineWidth', 1.05); %'FaceColor', [.678 .847 .902]  'EdgeColor', [1 1 1]
+        end
+
+        %labeled points 
+    if ~isnan(kwargs.labeled_pointsf)
+        m_scatter(labeled_pts.longitude, labeled_pts.latitude, 30, 'r', 'filled')
+
+        for i=1:height(labeled_pts)
+            m_text(labeled_pts.label_longitude(i),labeled_pts.label_latitude(i), labeled_pts.label{i}, 'horizontal', labeled_pts.label_loc{i},'FontSize', 8)
+        end
+    end
+
+
         % So the color bar will use the cmap for the env data, not the
         % raster image 
         colormap(gridded_cmap)
@@ -129,9 +154,12 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     
         h_cells = cell(1,length(inds));
         s_cells = cell(1,length(inds));
+%         track_colors = linspecer(length(inds));
+        track_colors = lines(length(inds));
     
         for i=1:length(inds)
             data_ind = c{1,i}{2};
+            track_color = track_colors(i, :);
     
             if max(data_ind.timestamp) >= k
     
@@ -151,20 +179,24 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
                     yseg = [y(1:end-1),y(2:end)];
     
         %             scatterColors = flipud(hot(size(x,1)));
-                    zeds = zeros(size(xseg,1), 1);
-                    blk = [zeds zeds zeds];
-                    segColors = blk;
+%                     zeds = zeros(size(xseg,1), 1);
+%                     trace_colors = [zeds zeds zeds];
+
+                    trace_colors = repmat(track_color, size(xseg,1), 1);
+                    segColors = trace_colors;
     %                 segColors = flipud(spring(size(xseg,1))); % Choose a colormap
-                    scatterColor = [101/255 67/255 33/255];
-                    seg_amap = logspace(0,1,size(xseg,1));
-                    seg_amap = seg_amap/max(seg_amap);
+                    scatterColor = track_color;%[101/255 67/255 33/255];
+%                     seg_amap = logspace(0,1,size(xseg,1));
+%                     seg_amap = seg_amap/max(seg_amap);
+
+                    seg_amap = repmat(0.5, size(xseg,1), 1);
     
         %             sc_amap = logspace(0,1,size(x,1));
         %             sc_amap = sc_amap/max(sc_amap);
     
                     segColors(:,4) = seg_amap;
     
-                    h = m_plot(xseg',yseg','LineWidth',3);
+                    h = m_plot(xseg',yseg','LineWidth',1);
                     s = m_scatter(x(end),y(end),150,scatterColor,'h','filled');
                     h_cells{i} = h;
                     s_cells{i} = s;
@@ -193,10 +225,10 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
                 frame_number = frame_number + 1;
             end
 
-          delete(grd)
-            delete(h) 
-            delete(s)
-            delete(r_img)
+%           delete(grd)
+%             delete(h) 
+%             delete(s)
+%             delete(r_img)
         for i=1:length(h_cells); delete(h_cells{i}); end
         for i=1:length(s_cells); delete(s_cells{i}); end
 
