@@ -17,6 +17,9 @@ function [inds,c] = group_by_individual_and_resample(data, resample_interval)
     for i = 1:length(c), c{1,i} = {inds{i},data2(strcmp(data2.individual_local_identifier, inds{i}), :)}; end
 
     %resample
-    for i = 1:length(c), c{1,i}{2} = resample_track_data(c{1,i}{2}(:, {'location_lat', 'location_long'}), resample_interval); end
+    for i = 1:length(c)
+        c{1,i}{2} = sortrows(c{1,i}{2}, 'timestamp');
+        c{1,i}{2} = resample_track_data(c{1,i}{2}(:, {'location_lat', 'location_long'}), resample_interval); 
+    end
 
 end
