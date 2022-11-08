@@ -1,21 +1,17 @@
-function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
+function animate_gridded_ndvi(track_data, kwargs)
     arguments
         track_data
-        gridded_data
-        gridded_varname
+        kwargs.gridded_data
+        kwargs.gridded_varname
         kwargs.shapefile = NaN,
         kwargs.raster_image = NaN,
         kwargs.raster_cmap = NaN,
         kwargs.labeled_pointsf = NaN;
         kwargs.output_directory
-        kwargs.output_file
-%         kwargs.output_fname
         kwargs.individuals = []
         kwargs.start_time
         kwargs.end_time 
         kwargs.track_memory
-        kwargs.frame_rate 
-        kwargs.save_frames = false
         kwargs.frame_resolution = 600
         kwargs.latmin
         kwargs.latmax
@@ -28,7 +24,7 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     close all
     
     
-    %% read and prepare data
+    %% read and prepare track data
     data = track_data;
 
     % Select bbox 
@@ -46,12 +42,11 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     end
     
     
-    
     % unpack MODIS netcdf data
-    nc_lat = ncread(gridded_data, 'lat');
-    nc_long = ncread(gridded_data, 'lon');
-    nc_var= ncread(gridded_data, gridded_varname);
-    nc_time = ncread(gridded_data, 'time');
+    nc_lat = ncread(kwargs.gridded_data, 'lat');
+    nc_long = ncread(kwargs.gridded_data, 'lon');
+    nc_var= ncread(kwargs.gridded_data, kwargs.gridded_varname);
+    nc_time = ncread(kwargs.gridded_data, 'time');
     
     %TODO 
     % Time in the MODIS netcdf if stored as days since 2000-01-01. Convert to
@@ -82,7 +77,7 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
     frame_number = 0;
     for k=kwargs.start_time:kwargs.end_time
 
-            %% Set up for map
+        %% Set up for map
     
         % get geolimits for map
         f = figure(Visible='off');
@@ -114,7 +109,7 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
 
         caxis([-0.1 1])
             cb = colorbar;
-            ylabel(cb,strrep(gridded_varname, '_', ' '),'FontSize',12);
+            ylabel(cb,strrep(kwargs.gridded_varname, '_', ' '),'FontSize',12);
         
         hold on
 
@@ -211,34 +206,33 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
                 end
     
             end
-    
-    
         end
+
+        % Draw axis grid at the end to make sure it isn't covered by
+        % anything
         m_grid('linestyle', 'none', 'tickdir', 'out', 'linewidth', 3);
-
-                
-           title(datestr(k))
-            
+      
+        title(datestr(k))
+        drawnow
     
-            drawnow
-    
-            if kwargs.save_frames
-                %save image of each frame
-                % Construct an output image file name.
-                outputBaseFileName = sprintf('Frame%s.png', num2str(frame_number));
-                outputFullFileName = fullfile(kwargs.output_directory, outputBaseFileName);
-                exportgraphics(gcf,outputFullFileName,'Resolution', kwargs.frame_resolution)
-                frame_number = frame_number + 1;
-            end
+        %save image of each frame
+        % Construct an output image file name.
+        outputBaseFileName = sprintf('Frame%s.png', num2str(frame_number));
+        outputFullFileName = fullfile(kwargs.output_directory, outputBaseFileName);
+        exportgraphics(gcf,outputFullFileName,'Resolution', kwargs.frame_resolution)
+        frame_number = frame_number + 1;
 
-%           delete(grd)
-%             delete(h) 
-%             delete(s)
-%             delete(r_img)
+        % Delete variables 
         for i=1:length(h_cells); delete(h_cells{i}); end
         for i=1:length(s_cells); delete(s_cells{i}); end
+        if exist('grd', 'var'); clear grd; end
+        if exist('h', 'var'); clear h; end
+        if exist('s', 'var'); clear s; end
+        if exist('r_img', 'var'); clear r_img; end
 
+
+        % Make sure no figure objects stay in memory
         clf
+        close all
     end
-    close all
 end
