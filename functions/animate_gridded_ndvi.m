@@ -98,10 +98,16 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
         hold on
     
         % Plot gridded env data
+%         dates = withtol(kwargs.start_time,days(14));
+%         first_date = dates(1);
+%         current_data = nc_var(:, :, nctimestamp == first_date)';
         if ismember(k, nctimestamp)
             A = nc_var(:, :, nctimestamp == k)';
             grd = m_image(nc_long,nc_lat, A);
+            current_data = A;
     %         alpha 0.2;
+        else
+            grd = m_image(nc_long,nc_lat, current_data);
 
         end
         colormap(gridded_cmap)
@@ -235,3 +241,4 @@ function animate_gridded_ndvi(track_data, gridded_data, gridded_varname, kwargs)
         clf
     end
     close all
+end
