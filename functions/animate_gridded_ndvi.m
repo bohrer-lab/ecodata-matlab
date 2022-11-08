@@ -3,20 +3,20 @@ function animate_gridded_ndvi(track_data, kwargs)
         track_data
         kwargs.gridded_data
         kwargs.gridded_varname
-        kwargs.shapefile = NaN,
-        kwargs.raster_image = NaN,
-        kwargs.raster_cmap = NaN,
-        kwargs.labeled_pointsf = NaN;
+        kwargs.shapefile = NaN
+        kwargs.raster_image = NaN
+        kwargs.raster_cmap = NaN
+        kwargs.labeled_pointsf = NaN
         kwargs.output_directory
         kwargs.individuals = []
         kwargs.start_time
         kwargs.end_time 
         kwargs.track_memory
         kwargs.frame_resolution = 600
-        kwargs.latmin
-        kwargs.latmax
-        kwargs.lonmin
-        kwargs.lonmax
+        kwargs.latmin = NaN
+        kwargs.latmax = NaN
+        kwargs.lonmin = NaN
+        kwargs.lonmax = NaN
         kwargs.cmap = 'green'
         kwargs.invert_cmap = true 
     end
@@ -26,11 +26,19 @@ function animate_gridded_ndvi(track_data, kwargs)
     
     % Read and prepare input datasets
 
+    % Get geolimits for map and datasets 
+    if any(isnan([kwargs.latmin kwargs.latmax kwargs.lonmin kwargs.lonmax]))
+        [latlim, lonlim] = get_geolimits(track_data, .10);
+    else 
+        latlim = [kwargs.latmin kwargs.latmax];
+        lonlim = [kwargs.lonmin kwargs.lonmax];
+    end
+
     %% Prepare track data
 
     % Select bbox 
     data = select_bbox(track_data, 'location_lat', 'location_long', ...
-        kwargs.latmin, kwargs.latmax, kwargs.lonmin, kwargs.lonmax);
+        latlim(1), latlim(2), lonlim(1), lonlim(2));
     
     % split to separate tt for each individual animal,
     % and interpolate to daily
@@ -74,8 +82,10 @@ function animate_gridded_ndvi(track_data, kwargs)
     if ~isnan(kwargs.labeled_pointsf)
         labeled_pts = readtable(kwargs.labeled_pointsf); 
         labeled_pts = select_bbox(labeled_pts, 'latitude', 'longitude', ...
-            kwargs.latmin, kwargs.latmax, kwargs.lonmin, kwargs.lonmax);
+            latlim(1), latlim(2), lonlim(1), lonlim(2));
     end
+
+
     
     %% plotting
     frame_number = 0;
@@ -83,16 +93,10 @@ function animate_gridded_ndvi(track_data, kwargs)
 
         %% Set up for map
     
-        % get geolimits for map
-        f = figure(Visible='off');
-        buffer = 0.10 * (max([(max(data.location_lat)-(min(data.location_lat))) (max(data.location_long)-(min(data.location_long)))]));
-%         [latlim, lonlim] = get_geolimits(data, .10);
-        latlim = [kwargs.latmin kwargs.latmax];
-        lonlim = [kwargs.lonmin kwargs.lonmax];
+        figure(Visible='off');
         
-        % Projection
+        % Map projection
         m_proj('Cylindrical Equal-Area','lat',latlim,'long',lonlim)
-        m_grid('linestyle', 'none', 'tickdir', 'out', 'linewidth', 3);
     
         hold on
     
