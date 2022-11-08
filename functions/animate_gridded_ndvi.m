@@ -1,8 +1,7 @@
 function animate_gridded_ndvi(track_data, kwargs)
     arguments
         track_data
-        kwargs.gridded_data
-        kwargs.gridded_varname
+        kwargs.gridded_data % Map of filename, and variable labels 
         kwargs.shapefile = NaN
         kwargs.raster_image = NaN
         kwargs.raster_cmap = NaN
@@ -17,8 +16,6 @@ function animate_gridded_ndvi(track_data, kwargs)
         kwargs.latmax = NaN
         kwargs.lonmin = NaN
         kwargs.lonmax = NaN
-        kwargs.cmap = 'green'
-        kwargs.invert_cmap = true 
     end
 
     close all
@@ -52,10 +49,10 @@ function animate_gridded_ndvi(track_data, kwargs)
     
     
     % unpack MODIS netcdf data
-    nc_lat = ncread(kwargs.gridded_data, 'lat');
-    nc_long = ncread(kwargs.gridded_data, 'lon');
-    nc_var= ncread(kwargs.gridded_data, kwargs.gridded_varname);
-    nc_time = ncread(kwargs.gridded_data, 'time');
+    nc_lat = ncread(kwargs.gridded_data('filename'), kwargs.gridded_data('latvar'));
+    nc_long = ncread(kwargs.gridded_data('filename'), kwargs.gridded_data('lonvar'));
+    nc_var= ncread(kwargs.gridded_data('filename'), kwargs.gridded_data('var_of_interest'));
+    nc_time = ncread(kwargs.gridded_data('filename'), kwargs.gridded_data('timevar'));
     
     %TODO 
     % Time in the MODIS netcdf if stored as days since 2000-01-01. Convert to
@@ -72,10 +69,10 @@ function animate_gridded_ndvi(track_data, kwargs)
     raster_array_f = flipud(raster_array);
     
     figure(Visible='off');
-    if kwargs.invert_cmap
-        gridded_cmap = flipud(m_colmap(kwargs.cmap));
+    if kwargs.gridded_data('invert_cmap')
+        gridded_cmap = flipud(m_colmap(kwargs.gridded_data('cmap')));
     else 
-        gridded_cmap = m_colmap(kwargs.cmap);
+        gridded_cmap = m_colmap(kwargs.gridded_data('cmap'));
     end
 
     % Labeled points
@@ -117,7 +114,7 @@ function animate_gridded_ndvi(track_data, kwargs)
 
         caxis([-0.1 1])
             cb = colorbar;
-            ylabel(cb,strrep(kwargs.gridded_varname, '_', ' '),'FontSize',12);
+            ylabel(cb,strrep(kwargs.gridded_data('var_of_interest'), '_', ' '),'FontSize',12);
         
         hold on
 
