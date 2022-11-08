@@ -24,12 +24,13 @@ function animate_gridded_ndvi(track_data, kwargs)
     close all
     
     
-    %% read and prepare track data
-    data = track_data;
+    % Read and prepare input datasets
+
+    %% Prepare track data
 
     % Select bbox 
-    data = data((data.location_long>=kwargs.lonmin) & (data.location_long <=kwargs.lonmax) & ...
-        (data.location_lat>=kwargs.latmin) & (data.location_lat <= kwargs.latmax),:);
+    data = select_bbox(track_data, 'location_lat', 'location_long', ...
+        kwargs.latmin, kwargs.latmax, kwargs.lonmin, kwargs.lonmax);
     
     % split to separate tt for each individual animal,
     % and interpolate to daily
@@ -69,8 +70,11 @@ function animate_gridded_ndvi(track_data, kwargs)
         gridded_cmap = m_colmap(kwargs.cmap);
     end
 
+    % Labeled points
     if ~isnan(kwargs.labeled_pointsf)
         labeled_pts = readtable(kwargs.labeled_pointsf); 
+        labeled_pts = select_bbox(labeled_pts, 'latitude', 'longitude', ...
+            kwargs.latmin, kwargs.latmax, kwargs.lonmin, kwargs.lonmax);
     end
     
     %% plotting
