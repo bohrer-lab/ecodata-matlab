@@ -2,7 +2,7 @@ function animate_gridded_ndvi(track_data, kwargs)
     arguments
         track_data
         kwargs.gridded_data % Map of filename, and variable labels 
-        kwargs.shapefile = NaN
+        kwargs.shapefile_stack = {}
         kwargs.raster_image = NaN
         kwargs.raster_cmap = NaN
         kwargs.labeled_pointsf = NaN
@@ -63,10 +63,11 @@ function animate_gridded_ndvi(track_data, kwargs)
     % MODIS data available
     if kwargs.start_time < min(nctimestamp); kwargs.start_time = min(nctimestamp); end
 
-
-    [raster_array,raster_ref] = readgeoraster(kwargs.raster_image);
-    % correct the issue with readgeoraster turning the array upside-down
-    raster_array_f = flipud(raster_array);
+    if ~isnan(kwargs.raster_image)
+        [raster_array,raster_ref] = readgeoraster(kwargs.raster_image);
+        % correct the issue with readgeoraster turning the array upside-down
+        raster_array_f = flipud(raster_array);
+    end
     
     figure(Visible='off');
     if kwargs.gridded_data('invert_cmap')
@@ -131,14 +132,25 @@ function animate_gridded_ndvi(track_data, kwargs)
         freezeColors
         hold on
 
-                %shapefile 
-        if ~isnan(kwargs.shapefile)
-            shp = shaperead(kwargs.shapefile);
-        
-            for i=1:length(shp)
-                [shp(i).X, shp(i).Y] = m_ll2xy(shp(i).X, shp(i).Y, 'clip', 'off');
+        % Shapefiles 
+        if ~isempty(kwargs.shapefile_stack) 
+            for n_shp=1:length(kwargs.shapefile_stack)
+                shp_layer = kwargs.shapefile_stack{n_shp};
+                shp = shaperead(shp_layer('filename'));
+                 
+                % Convert to m_map coordinates
+                for i=1:length(shp)
+                    [shp(i).X, shp(i).Y] = m_ll2xy(shp(i).X, shp(i).Y, 'clip', 'off');
+                end
+                
+                % Check geometry type and plot
+                if strcmp(shp(1).Geometry, 'Line')
+                    mapshow(shp, 'color', shp_layer('LineColor'), 'LineWidth', shp_layer('LineWidth')); 
+                elseif strcmp(shp(1).Geometry, 'Polygon')
+                    mapshow(shp,'FaceColor', shp_layer('FaceColor'), ...
+                        'EdgeColor', shp_layer('EdgeColor'), 'FaceAlpha', shp_layer('FaceAlpha'));
+                end
             end
-            shapes =  mapshow(shp, 'color', 'k', 'LineWidth', 1.05); %'FaceColor', [.678 .847 .902]  'EdgeColor', [1 1 1]
         end
 
         %labeled points 
