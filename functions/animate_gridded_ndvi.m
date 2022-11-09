@@ -2,6 +2,7 @@ function animate_gridded_ndvi(track_data, kwargs)
     arguments
         track_data
         kwargs.gridded_data % Map of filename, and variable labels 
+        kwargs.contour_data = {}
         kwargs.shapefile_stack = {}
         kwargs.raster_image = NaN
         kwargs.raster_cmap = NaN
@@ -48,20 +49,15 @@ function animate_gridded_ndvi(track_data, kwargs)
     end
     
     
-    % unpack MODIS netcdf data
-    nc_lat = ncread(kwargs.gridded_data('filename'), kwargs.gridded_data('latvar'));
-    nc_long = ncread(kwargs.gridded_data('filename'), kwargs.gridded_data('lonvar'));
-    nc_var= ncread(kwargs.gridded_data('filename'), kwargs.gridded_data('var_of_interest'));
-    nc_time = ncread(kwargs.gridded_data('filename'), kwargs.gridded_data('timevar'));
-    
-    %TODO 
-    % Time in the MODIS netcdf if stored as days since 2000-01-01. Convert to
-    % regular timestamp
-    nctimestamp = datetime(datevec(double(nc_time + datenum('2000-01-01 00:00:00'))));
+    % unpack gridded_data
+    [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf(kwargs.gridded_data('filename'), ...
+        kwargs.gridded_data('latvar'), kwargs.gridded_data('lonvar'), kwargs.gridded_data('timevar'), ...
+        kwargs.gridded_data('var_of_interest'));
+
     
     % adjust the start time for the plot so it doesn't start before there is
     % MODIS data available
-    if kwargs.start_time < min(nctimestamp); kwargs.start_time = min(nctimestamp); end
+    if kwargs.start_time < min(nc_time); kwargs.start_time = min(nc_time); end
 
     if ~isnan(kwargs.raster_image)
         [raster_array,raster_ref] = readgeoraster(kwargs.raster_image);
@@ -101,9 +97,9 @@ function animate_gridded_ndvi(track_data, kwargs)
         % Plot gridded env data
 %         dates = withtol(kwargs.start_time,days(14));
 %         first_date = dates(1);
-%         current_data = nc_var(:, :, nctimestamp == first_date)';
-        if ismember(k, nctimestamp)
-            A = nc_var(:, :, nctimestamp == k)';
+%         current_data = nc_var(:, :, nc_time == first_date)';
+        if ismember(k, nc_time)
+            A = nc_var(:, :, nc_time == k)';
             grd = m_image(nc_long,nc_lat, A);
             current_data = A;
     %         alpha 0.2;
@@ -163,8 +159,7 @@ function animate_gridded_ndvi(track_data, kwargs)
     end
 
 
-        % So the color bar will use the cmap for the env data, not the
-        % raster image 
+        % So the color bar will use the cmap for the env data
         colormap(gridded_cmap)
 
 
