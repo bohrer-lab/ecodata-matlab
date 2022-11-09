@@ -3,7 +3,7 @@ function animate_gridded_ndvi(track_data, kwargs)
         track_data
         kwargs.gridded_data % Map of filename, and variable labels 
         kwargs.contour_data = containers.Map()
-        kwargs.shapefile_stack = containers.Map()
+        kwargs.shapefile_stack = {}
         kwargs.raster_image = NaN
         kwargs.raster_cmap = NaN
         kwargs.labeled_pointsf = NaN
