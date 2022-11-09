@@ -17,6 +17,7 @@ function animate_gridded_ndvi(track_data, kwargs)
         kwargs.latmax = NaN
         kwargs.lonmin = NaN
         kwargs.lonmax = NaN
+        kwargs.color_by = 'individual'
     end
 
     close all
@@ -59,6 +60,15 @@ function animate_gridded_ndvi(track_data, kwargs)
     % MODIS data available
     if kwargs.start_time < min(nc_time); kwargs.start_time = min(nc_time); end
 
+    % Contour data 
+    if ~isempty(kwargs.contour_data)
+        [contour_lat, contour_lon, contour_time, contour_var] = unpack_netcdf( ...
+            kwargs.contour_data('filename'), kwargs.contour_data('latvar'), ...
+            kwargs.contour_data('lonvar'), kwargs.contour_data('timevar'), ...
+            kwargs.contour_data('var_of_interest'));
+    end
+
+    % Raster image 
     if ~isnan(kwargs.raster_image)
         [raster_array,raster_ref] = readgeoraster(kwargs.raster_image);
         % correct the issue with readgeoraster turning the array upside-down
@@ -149,12 +159,24 @@ function animate_gridded_ndvi(track_data, kwargs)
             end
         end
 
+        % Contour data 
+        if ~isempty(kwargs.contour_data)
+            % make grid for lat/lon 
+            [LAT,LON] = meshgrid(contour_lat, contour_lon);
+            m_contour(LON, LAT, contour_var(:,:,contour_time==k), ...
+                'ShowText',kwargs.contour_data('ShowText'), ...
+                'LineWidth', kwargs.contour_data('LineWidth'), ...
+                'LineColor', kwargs.contour_data('LineColor'))
+        end
+
+
         %labeled points 
     if ~isnan(kwargs.labeled_pointsf)
         m_scatter(labeled_pts.longitude, labeled_pts.latitude, 30, 'r', 'filled')
 
         for i=1:height(labeled_pts)
-            m_text(labeled_pts.label_longitude(i),labeled_pts.label_latitude(i), labeled_pts.label{i}, 'horizontal', labeled_pts.label_loc{i},'FontSize', 8)
+            m_text(labeled_pts.label_longitude(i),labeled_pts.label_latitude(i), ...
+                labeled_pts.label{i}, 'horizontal', labeled_pts.label_loc{i},'FontSize', 8)
         end
     end
 
