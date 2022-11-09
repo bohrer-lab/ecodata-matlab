@@ -233,6 +233,7 @@ function animate_gridded_ndvi(track_data, kwargs)
     
                     h = m_plot(xseg',yseg','LineWidth',1);
                     s = m_scatter(x(end),y(end),150,scatterColor,'h','filled');
+                    
                     h_cells{i} = h;
                     s_cells{i} = s;
                     set(h, {'Color'}, mat2cell(segColors,ones(size(xseg,1),1),4))
