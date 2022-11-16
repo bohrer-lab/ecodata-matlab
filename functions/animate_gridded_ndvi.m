@@ -186,7 +186,12 @@ function animate_gridded_ndvi(track_data, kwargs)
         % Attribute grouping 
         group_labels = track_groups.keys;
         track_colors = lines(length(group_labels));
+
+        % Create legend items for each group
         legend_items = gobjects(length(group_labels),1);
+        for l=1:length(legend_items)
+            legend_items(l) = scatter(nan, nan, 150, track_colors(l, :), kwargs.marker_style,'filled');
+        end
         
         % Loop for attribute groups
         for j=1:length(track_groups)
@@ -249,7 +254,6 @@ function animate_gridded_ndvi(track_data, kwargs)
         
                 end
             end
-            legend_items(j) = s;
         end
 
         % Draw axis grid at the end to make sure it isn't covered by
