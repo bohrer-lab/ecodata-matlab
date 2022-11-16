@@ -6,7 +6,7 @@ function animate_gridded_ndvi(track_data, kwargs)
         kwargs.shapefile_stack = {}
         kwargs.raster_image = NaN
         kwargs.raster_cmap = NaN
-        kwargs.labeled_pointsf = NaN
+        kwargs.labeled_points = containers.Map()
         kwargs.output_directory
         kwargs.start_time
         kwargs.end_time 
@@ -79,8 +79,8 @@ function animate_gridded_ndvi(track_data, kwargs)
     end
 
     % Labeled points
-    if ~isnan(kwargs.labeled_pointsf)
-        labeled_pts = readtable(kwargs.labeled_pointsf); 
+    if ~isempty(kwargs.labeled_points)
+        labeled_pts = readtable(kwargs.labeled_points('filename')); 
         labeled_pts = select_bbox(labeled_pts, 'latitude', 'longitude', ...
             latlim(1), latlim(2), lonlim(1), lonlim(2));
     end
@@ -107,10 +107,10 @@ function animate_gridded_ndvi(track_data, kwargs)
         if ismember(k, nc_time)
             A = nc_var(:, :, nc_time == k)';
             grd = m_image(nc_long,nc_lat, A);
-            current_data = A;
-    %         alpha 0.2;
-        else
-            grd = m_image(nc_long,nc_lat, current_data);
+%             current_data = A;
+%     %         alpha 0.2;
+%         else
+%             grd = m_image(nc_long,nc_lat, current_data);
 
         end
         colormap(gridded_cmap)
@@ -167,12 +167,13 @@ function animate_gridded_ndvi(track_data, kwargs)
 
 
         %labeled points 
-    if ~isnan(kwargs.labeled_pointsf)
-        m_scatter(labeled_pts.longitude, labeled_pts.latitude, 30, 'r', 'filled')
+    if ~isempty(kwargs.labeled_points)
+        m_scatter(labeled_pts.longitude, labeled_pts.latitude, ...
+            kwargs.labeled_points("marker_size"), kwargs.labeled_points("marker_color"), 'filled')
 
         for i=1:height(labeled_pts)
-            m_text(labeled_pts.label_longitude(i),labeled_pts.label_latitude(i), ...
-                labeled_pts.label{i}, 'horizontal', labeled_pts.label_loc{i},'FontSize', 8)
+            m_text(labeled_pts.longitude(i),labeled_pts.latitude(i), ...
+                labeled_pts.label{i}, 'horizontal', 'left', 'FontSize', 8)
         end
     end
 
