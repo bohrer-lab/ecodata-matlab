@@ -16,7 +16,9 @@ function animate_gridded_ndvi(track_data, kwargs)
         kwargs.latmax = NaN
         kwargs.lonmin = NaN
         kwargs.lonmax = NaN
-        kwargs.color_by = 'individual'
+        kwargs.group_by = 'individual_local_identifier'
+        kwargs.marker_style = 'hexagram'
+        kwargs.track_width = 1
     end
 
     close all
@@ -37,17 +39,12 @@ function animate_gridded_ndvi(track_data, kwargs)
     % Select bbox 
     data = select_bbox(track_data, 'location_lat', 'location_long', ...
         latlim(1), latlim(2), lonlim(1), lonlim(2));
-    
-    % split to separate tt for each individual animal,
-    % and interpolate to daily
-    [inds, c] = group_by_individual_and_resample(data, days(1));
 
-    for i=1:length(c)
-        % filter to time of interest
-        d =  c{1,i}{2};
-        c{1,i}{2} = d((d.timestamp >= kwargs.start_time) & (d.timestamp <= kwargs.end_time), :);
-    end
+    % Filter time range 
+    data = select_timerange_tracks(data, kwargs.start_time, kwargs.end_time);
     
+    % Attribute groupings for track data
+    track_groups = group_and_resample_tracks(data, kwargs.group_by, days(1));
     
     % unpack gridded_data
     [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf(kwargs.gridded_data('filename'), ...
@@ -185,61 +182,74 @@ function animate_gridded_ndvi(track_data, kwargs)
 
 
         % Track data
-    
-        h_cells = cell(1,length(inds));
-        s_cells = cell(1,length(inds));
-%         track_colors = linspecer(length(inds));
-        track_colors = lines(length(inds));
-    
-        for i=1:length(inds)
-            data_ind = c{1,i}{2};
-            track_color = track_colors(i, :);
-    
-            if max(data_ind.timestamp) >= k
-    
-                if height(data_ind(timerange(kwargs.start_time,k), :)) < kwargs.track_memory
-    
-                    oldest_point = kwargs.start_time;
-                else
-    
-                    oldest_point = data_ind.timestamp(find(data_ind.timestamp == k) - kwargs.track_memory + 1);
-                end
-    
-                x = data_ind.location_long(oldest_point:k);
-                y = data_ind.location_lat(oldest_point:k);
-    
-                if ~isempty(x)
-                    xseg = [x(1:end-1),x(2:end)];
-                    yseg = [y(1:end-1),y(2:end)];
-    
-        %             scatterColors = flipud(hot(size(x,1)));
-%                     zeds = zeros(size(xseg,1), 1);
-%                     trace_colors = [zeds zeds zeds];
 
-                    trace_colors = repmat(track_color, size(xseg,1), 1);
-                    segColors = trace_colors;
-    %                 segColors = flipud(spring(size(xseg,1))); % Choose a colormap
-                    scatterColor = track_color;%[101/255 67/255 33/255];
-%                     seg_amap = logspace(0,1,size(xseg,1));
-%                     seg_amap = seg_amap/max(seg_amap);
+        % Attribute grouping 
+        group_labels = track_groups.keys;
+        track_colors = lines(length(group_labels));
+        legend_items = gobjects(length(group_labels),1);
+        
+        % Loop for attribute groups
+        for j=1:length(track_groups)
+            
+            track_color = track_colors(j, :);
+            group = track_groups(group_labels{j});
+            inds = group.keys;
 
-                    seg_amap = repmat(0.5, size(xseg,1), 1);
+            % Plot each individual in the group
+            h_cells = cell(1,length(inds));
+            s_cells = cell(1,length(inds));
     
-        %             sc_amap = logspace(0,1,size(x,1));
-        %             sc_amap = sc_amap/max(sc_amap);
+            for i=1:length(inds)
+                data_ind = group(inds{i});
+        
+                if max(data_ind.timestamp) >= k
+        
+                    if height(data_ind(timerange(kwargs.start_time,k), :)) < kwargs.track_memory
+        
+                        oldest_point = kwargs.start_time;
+                    else
+        
+                        oldest_point = data_ind.timestamp(find(data_ind.timestamp == k) - kwargs.track_memory + 1);
+                    end
+        
+                    x = data_ind.location_long(oldest_point:k);
+                    y = data_ind.location_lat(oldest_point:k);
+        
+                    if ~isempty(x)
+                        xseg = [x(1:end-1),x(2:end)];
+                        yseg = [y(1:end-1),y(2:end)];
+        
+            %             scatterColors = flipud(hot(size(x,1)));
+    %                     zeds = zeros(size(xseg,1), 1);
+    %                     trace_colors = [zeds zeds zeds];
     
-                    segColors(:,4) = seg_amap;
+                        trace_colors = repmat(track_color, size(xseg,1), 1);
+                        segColors = trace_colors;
+        %                 segColors = flipud(spring(size(xseg,1))); % Choose a colormap
+                        scatterColor = track_color;%[101/255 67/255 33/255];
+    %                     seg_amap = logspace(0,1,size(xseg,1));
+    %                     seg_amap = seg_amap/max(seg_amap);
     
-                    h = m_plot(xseg',yseg','LineWidth',1);
-                    s = m_scatter(x(end),y(end),150,scatterColor,'h','filled');
-                    
-                    h_cells{i} = h;
-                    s_cells{i} = s;
-                    set(h, {'Color'}, mat2cell(segColors,ones(size(xseg,1),1),4))
-    %             set(s, 'AlphaData', sc_amap)
+                        seg_amap = repmat(0.5, size(xseg,1), 1);
+        
+            %             sc_amap = logspace(0,1,size(x,1));
+            %             sc_amap = sc_amap/max(sc_amap);
+        
+                        segColors(:,4) = seg_amap;
+        
+                        h = m_plot(xseg',yseg','LineWidth',kwargs.track_width);
+                        s = m_scatter(x(end),y(end),150,scatterColor,kwargs.marker_style,'filled');
+                        
+                        
+                        h_cells{i} = h;
+                        s_cells{i} = s;
+                        set(h, {'Color'}, mat2cell(segColors,ones(size(xseg,1),1),4))
+        %             set(s, 'AlphaData', sc_amap)
+                    end
+        
                 end
-    
             end
+            legend_items(j) = s;
         end
 
         % Draw axis grid at the end to make sure it isn't covered by
@@ -247,6 +257,7 @@ function animate_gridded_ndvi(track_data, kwargs)
         m_grid('linestyle', 'none', 'tickdir', 'out', 'linewidth', 3);
       
         title(datestr(k))
+        legend(legend_items, group_labels, 'Location', 'northeastoutside')
         drawnow
     
         %save image of each frame
