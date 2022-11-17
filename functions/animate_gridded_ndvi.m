@@ -1,7 +1,7 @@
 function animate_gridded_ndvi(track_data, kwargs)
     arguments
         track_data
-        kwargs.gridded_data % Map of filename, and variable labels 
+        kwargs.gridded_data = containers.Map() % Map of filename, and variable labels 
         kwargs.contour_data = containers.Map()
         kwargs.shapefile_stack = {}
         kwargs.raster_image = NaN
@@ -46,15 +46,17 @@ function animate_gridded_ndvi(track_data, kwargs)
     % Attribute groupings for track data
     track_groups = group_and_resample_tracks(data, kwargs.group_by, days(1));
     
-    % unpack gridded_data
-    [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf(kwargs.gridded_data('filename'), ...
-        kwargs.gridded_data('latvar'), kwargs.gridded_data('lonvar'), kwargs.gridded_data('timevar'), ...
-        kwargs.gridded_data('var_of_interest'));
-
+    % Gridded timeseries data
+    if ~isempty(kwargs.gridded_data)
+        [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf(kwargs.gridded_data('filename'), ...
+            kwargs.gridded_data('latvar'), kwargs.gridded_data('lonvar'), kwargs.gridded_data('timevar'), ...
+            kwargs.gridded_data('var_of_interest'));
     
-    % adjust the start time for the plot so it doesn't start before there is
-    % MODIS data available
-    if kwargs.start_time < min(nc_time); kwargs.start_time = min(nc_time); end
+        
+        % adjust the start time for the plot so it doesn't start before there is
+        % MODIS data available
+        if kwargs.start_time < min(nc_time); kwargs.start_time = min(nc_time); end
+    end
 
     % Contour data 
     if ~isempty(kwargs.contour_data)
@@ -70,13 +72,6 @@ function animate_gridded_ndvi(track_data, kwargs)
         % correct the issue with readgeoraster turning the array upside-down
         raster_array_f = flipud(raster_array);
     end
-    
-    figure(Visible='off');
-    if kwargs.gridded_data('invert_cmap')
-        gridded_cmap = flipud(m_colmap(kwargs.gridded_data('cmap')));
-    else 
-        gridded_cmap = m_colmap(kwargs.gridded_data('cmap'));
-    end
 
     % Labeled points
     if ~isempty(kwargs.labeled_points)
@@ -84,8 +79,7 @@ function animate_gridded_ndvi(track_data, kwargs)
         labeled_pts = select_bbox(labeled_pts, 'latitude', 'longitude', ...
             latlim(1), latlim(2), lonlim(1), lonlim(2));
     end
-
-
+    
     
     %% plotting
     frame_number = 0;
@@ -101,27 +95,36 @@ function animate_gridded_ndvi(track_data, kwargs)
         hold on
     
         % Plot gridded env data
-%         dates = withtol(kwargs.start_time,days(14));
-%         first_date = dates(1);
-%         current_data = nc_var(:, :, nc_time == first_date)';
-        if ismember(k, nc_time)
-            A = nc_var(:, :, nc_time == k)';
-            grd = m_image(nc_long,nc_lat, A);
-%             current_data = A;
-%     %         alpha 0.2;
-%         else
-%             grd = m_image(nc_long,nc_lat, current_data);
+        if ~isempty(kwargs.gridded_data)
 
+            % Color map for gridded data
+            if kwargs.gridded_data('invert_cmap')
+                gridded_cmap = flipud(m_colmap(kwargs.gridded_data('cmap')));
+            else 
+                gridded_cmap = m_colmap(kwargs.gridded_data('cmap'));
+            end
+    %         dates = withtol(kwargs.start_time,days(14));
+    %         first_date = dates(1);
+    %         current_data = nc_var(:, :, nc_time == first_date)';
+            if ismember(k, nc_time)
+                A = nc_var(:, :, nc_time == k)';
+                grd = m_image(nc_long,nc_lat, A);
+    %             current_data = A;
+    %     %         alpha 0.2;
+    %         else
+    %             grd = m_image(nc_long,nc_lat, current_data);
+    
+            end
+            colormap(gridded_cmap)
+    
+            caxis([-0.1 1])
+                cb = colorbar;
+                ylabel(cb,strrep(kwargs.gridded_data('var_of_interest'), '_', ' '),'FontSize',12);
+            
+            hold on
+    
+            freezeColors
         end
-        colormap(gridded_cmap)
-
-        caxis([-0.1 1])
-            cb = colorbar;
-            ylabel(cb,strrep(kwargs.gridded_data('var_of_interest'), '_', ' '),'FontSize',12);
-        
-        hold on
-
-        freezeColors
 
     
         % raster image
@@ -179,7 +182,9 @@ function animate_gridded_ndvi(track_data, kwargs)
 
 
         % So the color bar will use the cmap for the env data
-        colormap(gridded_cmap)
+        if ~isempty(kwargs.gridded_data)
+            colormap(gridded_cmap)
+        end
 
 
         % Track data
