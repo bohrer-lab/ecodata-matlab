@@ -1,8 +1,14 @@
 function animate_gridded_ndvi(track_data, kwargs)
     arguments
         track_data
+        kwargs.track_frequency = days(1)
+        kwargs.track_memory = 20
+        kwargs.marker_style = 'hexagram'
+        kwargs.track_width = 1
+        kwargs.group_by = 'individual_local_identifier'
         kwargs.gridded_data = containers.Map() % Map of filename, and variable labels 
         kwargs.contour_data = containers.Map()
+        kwargs.elevation = containers.Map()
         kwargs.shapefile_stack = {}
         kwargs.raster_image = NaN
         kwargs.raster_cmap = NaN
@@ -10,16 +16,11 @@ function animate_gridded_ndvi(track_data, kwargs)
         kwargs.output_directory
         kwargs.start_time
         kwargs.end_time 
-        kwargs.track_memory = 20
         kwargs.frame_resolution = 600
         kwargs.latmin = NaN
         kwargs.latmax = NaN
         kwargs.lonmin = NaN
         kwargs.lonmax = NaN
-        kwargs.group_by = 'individual_local_identifier'
-        kwargs.marker_style = 'hexagram'
-        kwargs.track_width = 1
-        kwargs.elevation = containers.Map()
     end
 
     close all
@@ -45,7 +46,7 @@ function animate_gridded_ndvi(track_data, kwargs)
     data = select_timerange_tracks(data, kwargs.start_time, kwargs.end_time);
     
     % Attribute groupings for track data
-    track_groups = group_and_resample_tracks(data, kwargs.group_by, days(1));
+    track_groups = group_and_resample_tracks(data, kwargs.group_by, kwargs.track_frequency);
     
     % Gridded timeseries data
     if ~isempty(kwargs.gridded_data)
@@ -89,7 +90,7 @@ function animate_gridded_ndvi(track_data, kwargs)
     
     %% plotting
     frame_number = 0;
-    for k=kwargs.start_time:kwargs.end_time
+    for k=kwargs.start_time:kwargs.track_frequency:kwargs.end_time
 
         %% Set up for map
     
@@ -229,7 +230,7 @@ function animate_gridded_ndvi(track_data, kwargs)
         
                 if max(data_ind.timestamp) >= k
         
-                    if height(data_ind(timerange(kwargs.start_time,k), :)) < kwargs.track_memory
+                    if height(data_ind(timerange(kwargs.start_time,k, 'closed'), :)) < kwargs.track_memory
         
                         oldest_point = kwargs.start_time;
                     else
@@ -237,8 +238,8 @@ function animate_gridded_ndvi(track_data, kwargs)
                         oldest_point = data_ind.timestamp(find(data_ind.timestamp == k) - kwargs.track_memory + 1);
                     end
         
-                    x = data_ind.location_long(oldest_point:k);
-                    y = data_ind.location_lat(oldest_point:k);
+                    x = data_ind.location_long(oldest_point:kwargs.track_frequency:k + kwargs.track_frequency);
+                    y = data_ind.location_lat(oldest_point:kwargs.track_frequency:k + kwargs.track_frequency);
         
                     if ~isempty(x)
                         xseg = [x(1:end-1),x(2:end)];
