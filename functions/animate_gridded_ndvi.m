@@ -19,6 +19,7 @@ function animate_gridded_ndvi(track_data, kwargs)
         kwargs.group_by = 'individual_local_identifier'
         kwargs.marker_style = 'hexagram'
         kwargs.track_width = 1
+        kwargs.elevation = containers.Map()
     end
 
     close all
@@ -64,6 +65,11 @@ function animate_gridded_ndvi(track_data, kwargs)
             kwargs.contour_data('filename'), kwargs.contour_data('latvar'), ...
             kwargs.contour_data('lonvar'), kwargs.contour_data('timevar'), ...
             kwargs.contour_data('var_of_interest'));
+    end
+
+    % Elevation data 
+    if ~isempty(kwargs.elevation)
+        [elev,elev_long,elev_lat]=m_etopo2([lonlim(1) lonlim(2) latlim(1) latlim(2)]);
     end
 
     % Raster image 
@@ -168,17 +174,25 @@ function animate_gridded_ndvi(track_data, kwargs)
                 'LineColor', kwargs.contour_data('LineColor'))
         end
 
+        % Elevation 
+        if ~isempty(kwargs.elevation)
+            m_etopo2('contour', floor(linspace(min(elev, [], 'all'), ...
+                max(elev, [], 'all'), kwargs.elevation('nlevels'))), ...
+                'LineColor', kwargs.elevation('LineColor'), ...
+                'LineWidth', kwargs.elevation('LineWidth'), ...
+                'ShowText', kwargs.elevation('ShowText'))
+        end
 
         %labeled points 
-    if ~isempty(kwargs.labeled_points)
-        m_scatter(labeled_pts.longitude, labeled_pts.latitude, ...
-            kwargs.labeled_points("marker_size"), kwargs.labeled_points("marker_color"), 'filled')
-
-        for i=1:height(labeled_pts)
-            m_text(labeled_pts.longitude(i),labeled_pts.latitude(i), ...
-                labeled_pts.label{i}, 'horizontal', 'left', 'FontSize', 8)
+        if ~isempty(kwargs.labeled_points)
+            m_scatter(labeled_pts.longitude, labeled_pts.latitude, ...
+                kwargs.labeled_points("marker_size"), kwargs.labeled_points("marker_color"), 'filled')
+    
+            for i=1:height(labeled_pts)
+                m_text(labeled_pts.longitude(i),labeled_pts.latitude(i), ...
+                    labeled_pts.label{i}, 'horizontal', 'left', 'FontSize', 8)
+            end
         end
-    end
 
 
         % So the color bar will use the cmap for the env data
