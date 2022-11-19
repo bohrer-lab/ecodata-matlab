@@ -6,6 +6,8 @@ function animate_gridded_ndvi(track_data, kwargs)
         kwargs.marker_style = 'hexagram'
         kwargs.track_width = 1
         kwargs.track_cmap = lines
+        kwargs.fade_tracks = false
+        kwargs.track_alpha = 0.6
         kwargs.group_by = 'individual_local_identifier'
         kwargs.gridded_data = containers.Map() % Map of filename, and variable labels 
         kwargs.contour_data = containers.Map()
@@ -54,11 +56,10 @@ function animate_gridded_ndvi(track_data, kwargs)
         [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf(kwargs.gridded_data('filename'), ...
             kwargs.gridded_data('latvar'), kwargs.gridded_data('lonvar'), kwargs.gridded_data('timevar'), ...
             kwargs.gridded_data('var_of_interest'));
-    
-        
-        % adjust the start time for the plot so it doesn't start before there is
-        % MODIS data available
-        if kwargs.start_time < min(nc_time); kwargs.start_time = min(nc_time); end
+        % Initialize current nc data to the earliest array in the timeseries
+        current_nc_time=min(nc_time);
+        current_nc_frame= nc_var(:, :, 1)';
+
     end
 
     % Contour data 
@@ -111,17 +112,16 @@ function animate_gridded_ndvi(track_data, kwargs)
             else 
                 gridded_cmap = m_colmap(kwargs.gridded_data('cmap'));
             end
-    %         dates = withtol(kwargs.start_time,days(14));
-    %         first_date = dates(1);
-    %         current_data = nc_var(:, :, nc_time == first_date)';
+
             if ismember(k, nc_time)
                 A = nc_var(:, :, nc_time == k)';
                 grd = m_image(nc_long,nc_lat, A);
-    %             current_data = A;
-    %     %         alpha 0.2;
-    %         else
-    %             grd = m_image(nc_long,nc_lat, current_data);
-    
+                current_nc_time = k;
+                current_nc_frame = A;
+            % In case gridded dataset starts later than tracks
+            elseif current_nc_time < k 
+                % Use last timestep that had data 
+                grd = m_image(nc_long, nc_lat, current_nc_frame);
             end
             colormap(gridded_cmap)
     
@@ -223,19 +223,12 @@ function animate_gridded_ndvi(track_data, kwargs)
             inds = group.keys;
 
             % Plot each individual in the group
-%             h_cells = cell(1,length(inds));
-%             s_cells = cell(1,length(inds));
-    
             for i=1:length(inds)
                 data_ind = group(inds{i});
-        
-%                 if max(data_ind.timestamp) >= k 
-        
+                
                 if height(data_ind(timerange(kwargs.start_time,k, 'closed'), :)) < kwargs.track_memory
-    
                     oldest_point = kwargs.start_time;
                 else
-    
                     oldest_point = data_ind.timestamp(find(data_ind.timestamp == k) - kwargs.track_memory + 1);
                 end
     
@@ -245,22 +238,17 @@ function animate_gridded_ndvi(track_data, kwargs)
                 if ~isempty(x)
                     xseg = [x(1:end-1),x(2:end)];
                     yseg = [y(1:end-1),y(2:end)];
-    
-        %             scatterColors = flipud(hot(size(x,1)));
-%                     zeds = zeros(size(xseg,1), 1);
-%                     trace_colors = [zeds zeds zeds];
 
                     trace_colors = repmat(track_color, size(xseg,1), 1);
                     segColors = trace_colors;
-    %                 segColors = flipud(spring(size(xseg,1))); % Choose a colormap
-                    scatterColor = track_color;%[101/255 67/255 33/255];
-%                     seg_amap = logspace(0,1,size(xseg,1));
-%                     seg_amap = seg_amap/max(seg_amap);
+                    scatterColor = track_color;
 
-                    seg_amap = repmat(0.5, size(xseg,1), 1);
-    
-        %             sc_amap = logspace(0,1,size(x,1));
-        %             sc_amap = sc_amap/max(sc_amap);
+                    if kwargs.fade_tracks
+                        seg_amap = logspace(0,1,size(xseg,1));
+                        seg_amap = seg_amap/max(seg_amap);
+                    else
+                        seg_amap = repmat(kwargs.track_alpha, size(xseg,1), 1);
+                    end
     
                     segColors(:,4) = seg_amap;
     
@@ -273,14 +261,9 @@ function animate_gridded_ndvi(track_data, kwargs)
                         s = m_scatter(x_point,y_point,150,scatterColor,kwargs.marker_style,'filled');
                     end
                     
-                    
-%                     h_cells{i} = h;
-%                     s_cells{i} = s;
                     set(h, {'Color'}, mat2cell(segColors,ones(size(xseg,1),1),4))
-    %             set(s, 'AlphaData', sc_amap)
                 end
         
-%                 end
             end
         end
 
