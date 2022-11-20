@@ -4,6 +4,8 @@ function animate_gridded_ndvi(track_data, kwargs)
         kwargs.track_frequency = days(1)
         kwargs.track_memory = 20
         kwargs.marker_style = 'hexagram'
+        kwargs.track_marker_size = 150
+        kwargs.track_marker_color = NaN
         kwargs.track_width = 1
         kwargs.track_cmap = lines
         kwargs.fade_tracks = false
@@ -241,7 +243,12 @@ function animate_gridded_ndvi(track_data, kwargs)
 
                     trace_colors = repmat(track_color, size(xseg,1), 1);
                     segColors = trace_colors;
-                    scatterColor = track_color;
+
+                    if isnan(kwargs.track_marker_color)
+                        scatterColor = track_color;
+                    else
+                        scatterColor = kwargs.track_marker_color;
+                    end
 
                     if kwargs.fade_tracks
                         seg_amap = logspace(0,1,size(xseg,1));
@@ -258,7 +265,8 @@ function animate_gridded_ndvi(track_data, kwargs)
                     y_point = data_ind.location_lat(k);
 
                     if ~isempty(data_ind(k,:))
-                        s = m_scatter(x_point,y_point,150,scatterColor,kwargs.marker_style,'filled');
+                        s = m_scatter(x_point,y_point,kwargs.track_marker_size, ...
+                            scatterColor,kwargs.marker_style,'filled');
                     end
                     
                     set(h, {'Color'}, mat2cell(segColors,ones(size(xseg,1),1),4))
