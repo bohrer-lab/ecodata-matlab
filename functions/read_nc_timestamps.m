@@ -1,12 +1,18 @@
-function nc_timestamp = read_nc_timestamps(nc_filename, timevar)
+function nc_timestamp = read_nc_timestamps(nc_filename, timevar, kwargs)
     % Checks the time format of the dataset, and produces a datetime
     % accordingly 
     % Checks for ECMWF format and NASA format
     % Other options not yet supported 
+    arguments
+        nc_filename
+        timevar
+        kwargs.start = 1
+        kwargs.count = Inf
+    end
 
     % Read the time metadata 
     time_units = ncreadatt(nc_filename, timevar, 'units');
-    netcdf_time = ncread(nc_filename, timevar);
+    netcdf_time = ncread(nc_filename, timevar, kwargs.start, kwargs.count);
 
     % ECMWF format 
     if startsWith(time_units, 'hours since 1900-01-01')
