@@ -10,8 +10,23 @@ function nc_timestamp = read_nc_timestamps(nc_filename, timevar, kwargs)
         kwargs.count = Inf
     end
 
+    % Get dimension info 
+    dim_info = struct2table(ncinfo(nc_filename).Dimensions);
+    ndims = height(dim_info);
+    
+    % Get index of time dimension
+    tind = find(strcmp(dim_info.Name, timevar));
+
+    % Get max index for time dimension
+    tind_max = dim_info.Length(tind);
+
     % Read the time metadata 
     time_units = ncreadatt(nc_filename, timevar, 'units');
+
+    if kwargs.start + kwargs.count > tind_max
+        kwargs.count = Inf;
+    end
+
     netcdf_time = ncread(nc_filename, timevar, kwargs.start, kwargs.count);
 
     % ECMWF format 

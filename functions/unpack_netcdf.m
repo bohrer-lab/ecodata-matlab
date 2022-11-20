@@ -17,13 +17,20 @@ end
     
     % Get index of time dimension
     tind = find(strcmp(dim_info.Name, timevar));
+
+    % Get max index for time dimension
+    tind_max = dim_info.Length(tind);
     
     % Set up arrays for start and count 
     start_array = ones(1, ndims);
     count_array = ones(1, ndims);
     count_array(:) = Inf;
     start_array(tind) = kwargs.start;
-    count_array(tind) = kwargs.count;
+    if kwargs.start + kwargs.count <= tind_max
+        count_array(tind) = kwargs.count;
+    else 
+        count_array(tind) = Inf;
+    end
 
     % Read lat and lon 
     lat = ncread(filename, latvar);
