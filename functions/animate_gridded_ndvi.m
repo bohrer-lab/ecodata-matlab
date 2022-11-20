@@ -26,6 +26,7 @@ function animate_gridded_ndvi(track_data, kwargs)
         kwargs.latmax = NaN
         kwargs.lonmin = NaN
         kwargs.lonmax = NaN
+        kwargs.chunk_size = 10
     end
 
     close all
@@ -55,9 +56,13 @@ function animate_gridded_ndvi(track_data, kwargs)
     
     % Gridded timeseries data
     if ~isempty(kwargs.gridded_data)
+        nc_start = 1;
         [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf(kwargs.gridded_data('filename'), ...
-            kwargs.gridded_data('latvar'), kwargs.gridded_data('lonvar'), kwargs.gridded_data('timevar'), ...
-            kwargs.gridded_data('var_of_interest'));
+            kwargs.gridded_data('latvar'), kwargs.gridded_data('lonvar'), ...
+            kwargs.gridded_data('timevar'), ...
+            kwargs.gridded_data('var_of_interest'), ...
+            start=nc_start, count=kwargs.chunk_size);
+        chunk_tmax = max(nc_time);
         % Initialize current nc data to the earliest array in the timeseries
         current_nc_time=min(nc_time);
         current_nc_frame= nc_var(:, :, 1)';
@@ -86,7 +91,8 @@ function animate_gridded_ndvi(track_data, kwargs)
 
     % Labeled points
     if ~isempty(kwargs.labeled_points)
-        labeled_pts = readtable(kwargs.labeled_points('filename')); 
+        labeled_pts = prepare_labels(kwargs.labeled_points('filename'), ...
+            kwargs.start_time, kwargs.end_time); 
         labeled_pts = select_bbox(labeled_pts, 'latitude', 'longitude', ...
             latlim(1), latlim(2), lonlim(1), lonlim(2));
     end
@@ -107,6 +113,21 @@ function animate_gridded_ndvi(track_data, kwargs)
     
         % Plot gridded env data
         if ~isempty(kwargs.gridded_data)
+
+            % Load new chunk of gridded data if needed 
+            while chunk_tmax < k
+                nc_start = nc_start + kwargs.chunk_size;
+                [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf( ...
+                    kwargs.gridded_data('filename'), ...
+                    kwargs.gridded_data('latvar'), ...
+                    kwargs.gridded_data('lonvar'), ...
+                    kwargs.gridded_data('timevar'), ...
+                    kwargs.gridded_data('var_of_interest'), ...
+                    start=nc_start, count=kwargs.chunk_size);
+                
+                    chunk_tmax = max(nc_time);
+            end
+
 
             % Color map for gridded data
             if kwargs.gridded_data('invert_cmap')
@@ -189,12 +210,14 @@ function animate_gridded_ndvi(track_data, kwargs)
 
         %labeled points 
         if ~isempty(kwargs.labeled_points)
-            m_scatter(labeled_pts.longitude, labeled_pts.latitude, ...
+            labels_filtered = labeled_pts(k>=labeled_pts.start_time & k<=labeled_pts.end_time,:);
+
+            m_scatter(labels_filtered.longitude, labels_filtered.latitude, ...
                 kwargs.labeled_points("marker_size"), kwargs.labeled_points("marker_color"), 'filled')
     
-            for i=1:height(labeled_pts)
-                m_text(labeled_pts.longitude(i),labeled_pts.latitude(i), ...
-                    labeled_pts.label{i}, 'horizontal', 'left', 'FontSize', 8)
+            for i=1:height(labels_filtered)
+                m_text(labels_filtered.longitude(i),labels_filtered.latitude(i), ...
+                    labels_filtered.label{i}, 'horizontal', 'left', 'FontSize', 8)
             end
         end
 
