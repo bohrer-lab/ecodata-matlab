@@ -1,104 +1,203 @@
-%% Test examples 
-addpath ../functions/
-addpath ../m_map/
-addpath ../data
+% Test examples for animation function 
+% Current working directory should be movebank_vis
 
-%% GNWT bears
-% Gridded NDVI, daily resolution
-% Shapefile with roads 
-% Geotif with lakes 
-% File with labeled points (no time constraint) 
+%% Setup
+% Current directory should be movebank_vis
+addpath(genpath('functions'))
+addpath(genpath('m_map'))
+addpath(genpath('data'))
 
-trackfile = '/Users/jmissik/Desktop/repos.nosync/pymovebank/pymovebank/datasets/user_datasets/GNWT-ENR_Laval University Black Bear Monitoring.csv';
-ncfile = '/Users/jmissik/Desktop/repos.nosync/pymovebank/pymovebank/datasets/user_datasets/NDVI_bears_daily.nc';
+% Files 
+trackfile = get_fullpath('bears_with_ref.csv');
+ncfile = get_fullpath('NDVI_bears_daily.nc');
+roads_shapefile = get_fullpath('GNWT_bear_roads.shp');
+lakes_shapefile = get_fullpath('GNWT_lakes_lowres_bear.shp');
+river_shapefile = get_fullpath('GNWT_rivers_lowres_bear.shp');
+lakes_rasterfile = get_fullpath('GNWT_local_lakes.tif');
+labels_file = get_fullpath('communities_location_labels.csv');
 
-roads_shapefile = '/Users/jmissik/Desktop/repos.nosync/pymovebank/pymovebank/datasets/user_datasets/GNWT_bear_roads.shp/GNWT_bear_roads.shp';
-roads = containers.Map({'filename', 'LineColor', 'LineWidth'}, {roads_shapefile, 'k', 1.1});
-
-rasterfile = '/Users/jmissik/Desktop/repos.nosync/pymovebank/pymovebank/datasets/user_datasets/GNWT_local_lakes.tif';
-raster_color = [0.1294    0.6745    0.8706]; %light blue
-
-labeled_pointsf = '/Users/jmissik/Desktop/Postdoc/Animal movement/GNWT_data/communities_location_labels.csv';
-
-output_directory = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/output/bear_test';
-
-start_time = datetime('2022-06-01 00:00:00');
-end_time = datetime('2022-6-15 00:00:00');
-
-
-track_memory = 500; % track memory
-
-latmin = 61;
-latmax = 63.7;
-lonmin = -118;
-lonmax = -113.7;
-track_data = read_downloaded_data(trackfile);
-
-
-animate_gridded_ndvi(track_data, ...
-    gridded_data=ncfile, gridded_varname='_500_m_16_days_EVI', ...
-    shapefile = roads('filename'), raster_image=rasterfile, ...
-    raster_cmap = raster_color, labeled_pointsf=labeled_pointsf, ...
-    start_time=start_time, end_time=end_time, track_memory=track_memory, ...
-    output_directory = output_directory, latmin=latmin, ...
-    latmax = latmax, lonmin=lonmin, lonmax=lonmax, cmap='green', invert_cmap=1)
-
-%% Without passing lat/lon limits, using defaults calculated by tracks extent
-% Gridded NDVI, daily resolution
-% Shapefile with roads 
-% Shapefile with rivers
-% Shapefile with lakes 
-% File with labeled points (no time constraint) 
-
-% Tracks
-trackfile = '/Users/jmissik/Desktop/repos.nosync/pymovebank/pymovebank/datasets/user_datasets/GNWT-ENR_Laval University Black Bear Monitoring.csv';
-track_memory = 500; % track memory
-
-% Gridded data
-ncfile = '/Users/jmissik/Desktop/repos.nosync/pymovebank/pymovebank/datasets/user_datasets/NDVI_bears_daily.nc';
-gridded_data = containers.Map( ...
+% Gridded NDVI data
+ndvi_data = containers.Map( ...
     {'filename', 'latvar', 'lonvar', 'timevar', 'var_of_interest', 'cmap', 'invert_cmap'}, ...
-    {ncfile, 'lat', 'lon', 'time', '_500_m_16_days_EVI', 'green', 'true'});
-
-% Roads shapefile 
-roads_shapefile = '/Users/jmissik/Desktop/repos.nosync/pymovebank/pymovebank/datasets/user_datasets/GNWT_bear_roads.shp/GNWT_bear_roads.shp';
-roads = containers.Map({'filename', 'LineColor', 'LineWidth'}, {roads_shapefile, 'k', 1.05});
+    {ncfile, 'lat', 'lon', 'time', '_500_m_16_days_NDVI', 'green', 'true'});
 
 % Shapefile of lakes 
-lakes_shapefile = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/data/user_datasets/GNWT_data/GNWT_lakes_lowres_bear.shp/GNWT_lakes_lowres_bear.shp';
 lakes_color = [0.1294    0.6745    0.8706]; %light blue
 lakes = containers.Map( ...
     {'filename', 'FaceColor', 'EdgeColor', 'FaceAlpha'}, ...
     {lakes_shapefile, lakes_color, lakes_color, 1});
 
 % Shapefile of rivers 
-river_shapefile = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/data/user_datasets/GNWT_data/GNWT_rivers_lowres_bear.shp/GNWT_rivers_lowres_bear.shp';
 river_color = [0.1294    0.6745    0.8706]; %light blue
 rivers = containers.Map( ...
     {'filename', 'LineColor', 'LineWidth'}, ...
     {river_shapefile, river_color, 1});
 
-shapefile_stack = {lakes, rivers, roads};
+% Shapefile of roads 
+roads = containers.Map({'filename', 'LineColor', 'LineWidth'}, ...
+                       {roads_shapefile, 'k', 1.1});
 
 % Labeled points
-labeled_pointsf = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/data/user_datasets/GNWT_data/communities_location_labels.csv';
+label_data = containers.Map({'filename', 'marker_color', 'marker_size'}, ...
+                            {labels_file, 'k', 10});
 
-output_directory = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/output/bear_test';
+% Contour data 
+contour_file = get_fullpath('ECMWF_bears_daily.nc');
+contour_data = containers.Map( ...
+    {'filename', 'latvar', 'lonvar', 'timevar', 'var_of_interest', 'LineColor', 'LineWidth', 'LineAlpha', 'ShowText'}, ...
+    {contour_file, 'latitude', 'longitude', 'time', 't2m', 'k', 0.7, 0.4, 'off'});
 
-start_time = datetime('2022-06-01 00:00:00');
-end_time = datetime('2022-6-15 00:00:00');
-
-
-
+% Track data
 track_data = read_downloaded_data(trackfile);
 
+% Output location
+output_directory = fullfile('output', 'bear_test');
+
+%% Bears with NDVI, water, labeled points
+% Color by nickname
+
+track_memory = 500;
+start_time = datetime('2022-06-01');
+end_time = datetime('2022-6-15');
+
+shapefile_stack = {lakes, rivers};
 
 animate_gridded_ndvi(track_data, ...
-    gridded_data=gridded_data, ...
-    shapefile_stack = shapefile_stack, ...
-    labeled_pointsf=labeled_pointsf, ...
+    gridded_data=ndvi_data, ...
+    shapefile_stack=shapefile_stack, ...
+    labeled_points = label_data, ...
     start_time=start_time, end_time=end_time, track_memory=track_memory, ...
-    output_directory = output_directory);
+    output_directory = output_directory, ...
+    group_by='animal_nick_name');
+
+%% Without gridded data
+% Color by nickname
+
+track_memory = 500;
+start_time = datetime('2022-06-01');
+end_time = datetime('2022-6-15');
+
+shapefile_stack = {lakes, rivers};
+
+animate_gridded_ndvi(track_data, ...
+    shapefile_stack=shapefile_stack, ...
+    labeled_points = label_data, ...
+    start_time=start_time, end_time=end_time, track_memory=track_memory, ...
+    output_directory = output_directory, ...
+    group_by='animal_nick_name');
+
+%% Fade tracks
+
+track_memory = 500;
+start_time = datetime('2022-06-01');
+end_time = datetime('2022-6-15');
+
+shapefile_stack = {lakes, rivers};
+
+animate_gridded_ndvi(track_data, ...
+    shapefile_stack=shapefile_stack, ...
+    fade_tracks=true,...
+    labeled_points = label_data, ...
+    start_time=start_time, end_time=end_time, track_memory=track_memory, ...
+    output_directory = output_directory, ...
+    group_by='animal_nick_name');
+
+
+%% Custom colormap, track marker size 
+% Color by nickname
+
+colors = cmap_from_colors([    0.6353    0.0784    0.1843
+    0.8510    0.3255    0.0980
+    0.7176    0.2745    1.0000]);
+
+track_memory = 500;
+start_time = datetime('2022-06-01');
+end_time = datetime('2022-6-15');
+
+shapefile_stack = {lakes, rivers};
+
+animate_gridded_ndvi(track_data, ...
+    track_cmap=colors,...
+    track_marker_size = 70, ...
+    shapefile_stack=shapefile_stack, ...
+    labeled_points = label_data, ...
+    start_time=start_time, end_time=end_time, track_memory=track_memory, ...
+    output_directory = output_directory, ...
+    group_by='animal_nick_name');
+
+
+%% Hourly time resolution
+% Color by nickname
+
+track_memory = 500;
+start_time = datetime('2022-06-01');
+end_time = datetime('2022-6-03');
+
+shapefile_stack = {lakes, rivers};
+
+animate_gridded_ndvi(track_data, ...
+    track_frequency = hours(1), ...
+    shapefile_stack=shapefile_stack, ...
+    labeled_points = label_data, ...
+    start_time=start_time, end_time=end_time, track_memory=track_memory, ...
+    output_directory = output_directory, ...
+    group_by='animal_nick_name');
+
+%% Hourly track resolution, daily gridded data resolution
+% Color by nickname
+
+track_memory = 500;
+start_time = datetime('2022-06-01');
+end_time = datetime('2022-6-03');
+
+shapefile_stack = {lakes, rivers};
+
+animate_gridded_ndvi(track_data, ...
+    gridded_data=ndvi_data, ...
+    track_frequency = hours(1), ...
+    shapefile_stack=shapefile_stack, ...
+    labeled_points = label_data, ...
+    start_time=start_time, end_time=end_time, track_memory=track_memory, ...
+    output_directory = output_directory, ...
+    group_by='animal_nick_name');
+
+%% With elevation contours
+% Color by nickname
+
+elevation = containers.Map({'nlevels', 'LineColor', 'LineWidth', 'ShowText'}, ...
+                            {5, 'k', 1, 'off'});
+
+track_memory = 500;
+start_time = datetime('2022-06-01');
+
+end_time = datetime('2022-6-15');
+
+shapefile_stack = {lakes, rivers};
+
+animate_gridded_ndvi(track_data, ...
+    shapefile_stack=shapefile_stack, ...
+    labeled_points = label_data, ...
+    elevation=elevation, ...
+    start_time=start_time, end_time=end_time, track_memory=track_memory, ...
+    output_directory = output_directory, ...
+    group_by='animal_nick_name');
+
+%% Test track memory stays after end of data
+% Color by nickname
+
+track_memory = 500;
+start_time = datetime('2022-09-01');
+end_time = datetime('2022-09-30');
+
+shapefile_stack = {lakes, rivers};
+
+animate_gridded_ndvi(track_data, ...
+    shapefile_stack=shapefile_stack, ...
+    labeled_points = label_data, ...
+    start_time=start_time, end_time=end_time, track_memory=track_memory, ...
+    output_directory = output_directory, ...
+    group_by='animal_nick_name');
+
 
 %% Including a contour variable
 % Gridded NDVI, daily resolution
@@ -108,120 +207,38 @@ animate_gridded_ndvi(track_data, ...
 % Shapefile with lakes 
 % File with labeled points (no time constraint) 
 
-% Tracks
-trackfile = '/Users/jmissik/Desktop/repos.nosync/pymovebank/pymovebank/datasets/user_datasets/GNWT-ENR_Laval University Black Bear Monitoring.csv';
-track_memory = 500; % track memory
+track_memory = 500;
+start_time = datetime('2022-06-01');
 
-% Gridded data
-ncfile = '/Users/jmissik/Desktop/repos.nosync/pymovebank/pymovebank/datasets/user_datasets/NDVI_bears_daily.nc';
-gridded_data = containers.Map( ...
-    {'filename', 'latvar', 'lonvar', 'timevar', 'var_of_interest', 'cmap', 'invert_cmap'}, ...
-    {ncfile, 'lat', 'lon', 'time', '_500_m_16_days_EVI', 'green', 'true'});
+end_time = datetime('2022-6-15');
 
-% Contour data 
-contour_file = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/data/user_datasets/GNWT_data/ECMWF_bears_daily.nc';
-contour_data = containers.Map( ...
-    {'filename', 'latvar', 'lonvar', 'timevar', 'var_of_interest', 'LineColor', 'LineWidth', 'LineAlpha', 'ShowText'}, ...
-    {contour_file, 'latitude', 'longitude', 'time', 't2m', 'k', 0.7, 0.4, 'off'});
-
-% Roads shapefile 
-roads_shapefile = '/Users/jmissik/Desktop/repos.nosync/pymovebank/pymovebank/datasets/user_datasets/GNWT_bear_roads.shp/GNWT_bear_roads.shp';
-roads = containers.Map({'filename', 'LineColor', 'LineWidth'}, {roads_shapefile, 'k', 1.05});
-
-% Shapefile of lakes 
-lakes_shapefile = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/data/user_datasets/GNWT_data/GNWT_lakes_lowres_bear.shp/GNWT_lakes_lowres_bear.shp';
-lakes_color = [0.1294    0.6745    0.8706]; %light blue
-lakes = containers.Map( ...
-    {'filename', 'FaceColor', 'EdgeColor', 'FaceAlpha'}, ...
-    {lakes_shapefile, lakes_color, lakes_color, 1});
-
-% Shapefile of rivers 
-river_shapefile = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/data/user_datasets/GNWT_data/GNWT_rivers_lowres_bear.shp/GNWT_rivers_lowres_bear.shp';
-river_color = [0.1294    0.6745    0.8706]; %light blue
-rivers = containers.Map( ...
-    {'filename', 'LineColor', 'LineWidth'}, ...
-    {river_shapefile, river_color, 1});
-
-shapefile_stack = {lakes, rivers, roads};
-
-% Labeled points
-labeled_pointsf = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/data/user_datasets/GNWT_data/communities_location_labels.csv';
-
-output_directory = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/output/bear_test';
-
-start_time = datetime('2022-06-01 00:00:00');
-end_time = datetime('2022-6-15 00:00:00');
-
-
-
-track_data = read_downloaded_data(trackfile);
-
+shapefile_stack = {rivers, lakes};
 
 animate_gridded_ndvi(track_data, ...
-    gridded_data=gridded_data, ...
+    gridded_data=ndvi_data, ...
     contour_data=contour_data, ...
     shapefile_stack = shapefile_stack, ...
-    labeled_pointsf=labeled_pointsf, ...
     start_time=start_time, end_time=end_time, track_memory=track_memory, ...
     output_directory = output_directory);
 
+%% Labels start & end 
+% Color by nickname
 
-%% %% Including a contour variable, no roads or labeled points
-% Gridded NDVI, daily resolution
-% ECMWF temperature, plotted as contour 
+labels_file = get_fullpath('test_labels.csv');
+label_data = containers.Map({'filename', 'marker_color', 'marker_size'}, ...
+                            {labels_file, 'k', 10});
 
-% Tracks
-trackfile = '/Users/jmissik/Desktop/repos.nosync/pymovebank/pymovebank/datasets/user_datasets/GNWT-ENR_Laval University Black Bear Monitoring.csv';
-track_memory = 500; % track memory
-
-% Gridded data
-ncfile = '/Users/jmissik/Desktop/repos.nosync/pymovebank/pymovebank/datasets/user_datasets/NDVI_bears_daily.nc';
-gridded_data = containers.Map( ...
-    {'filename', 'latvar', 'lonvar', 'timevar', 'var_of_interest', 'cmap', 'invert_cmap'}, ...
-    {ncfile, 'lat', 'lon', 'time', '_500_m_16_days_EVI', 'green', 'true'});
-
-% Shapefile of lakes 
-lakes_shapefile = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/data/user_datasets/GNWT_data/GNWT_lakes_lowres_bear.shp/GNWT_lakes_lowres_bear.shp';
-lakes_color = [0.1294    0.6745    0.8706]; %light blue
-lakes = containers.Map( ...
-    {'filename', 'FaceColor', 'EdgeColor', 'FaceAlpha'}, ...
-    {lakes_shapefile, lakes_color, lakes_color, 1});
-
-% Shapefile of rivers 
-river_shapefile = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/data/user_datasets/GNWT_data/GNWT_rivers_lowres_bear.shp/GNWT_rivers_lowres_bear.shp';
-river_color = [0.1294    0.6745    0.8706]; %light blue
-rivers = containers.Map( ...
-    {'filename', 'LineColor', 'LineWidth'}, ...
-    {river_shapefile, river_color, 1});
+track_memory = 500;
+start_time = datetime('2022-06-01');
+end_time = datetime('2022-6-15');
 
 shapefile_stack = {lakes, rivers};
 
-% Contour data 
-contour_file = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/data/user_datasets/GNWT_data/ECMWF_bears_daily.nc';
-contour_color = [0.5020    0.5020    0.5020];
-contour_data = containers.Map( ...
-    {'filename', 'latvar', 'lonvar', 'timevar', 'var_of_interest', 'LineColor', 'LineWidth', 'ShowText'}, ...
-    {contour_file, 'latitude', 'longitude', 'time', 't2m', contour_color, 0.7, 'off'});
-
-output_directory = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/output/bear_test';
-
-start_time = datetime('2022-06-01 00:00:00');
-end_time = datetime('2022-6-15 00:00:00');
-
-
-
-track_data = read_downloaded_data(trackfile);
-
-
 animate_gridded_ndvi(track_data, ...
-    gridded_data=gridded_data, ...
-    contour_data=contour_data, ...
     shapefile_stack=shapefile_stack, ...
+    labeled_points = label_data, ...
     start_time=start_time, end_time=end_time, track_memory=track_memory, ...
-    output_directory = output_directory);
-
-
-
-
+    output_directory = output_directory, ...
+    group_by='animal_nick_name');
 
 
