@@ -1,14 +1,22 @@
 # Movebank login credentials
 movebank_credentials.txt
 
+#data
+data/user_datasets/*
+!data/user_datasets/.gitkeep
+
+#large data
+pymovebank/src/pymovebank/datasets/large_datasets/
+
 #docs build
 docs/_build/
 #docs autosummary
 docs/_autosummary/
 
 #m_map package
-m_map/
-
+m_map/doc/
+m_map/data/*
+!m_map/data/.gitkeep
 # Output
 output/
 
@@ -63,3 +71,15 @@ __pycache__/
 
 ## File-based project format:
 *.iws
+
+# egg
+*.egg*
+
+#temp
+*.tmp
+
+.ipynb_checkpoints
+
+#app files
+apps/*
+!*.mlapp

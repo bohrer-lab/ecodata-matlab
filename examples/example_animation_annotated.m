@@ -5,12 +5,12 @@
 clearvars;
 
 addpath functions/
-addpath data/
+addpath data/example_datasets/
 
 
 % MODIS SNOW
 data = read_downloaded_data('snow_caribou.csv');
-data = data(strcmp(data.individual_local_identifier, 'BP_car032'), :);
+data = select_individual(data, 'BP_car032');
 var = 'MODISSnow500m8dTerraSnowCover';
 
 fileout = 'output/caribou_snow_animation.avi';

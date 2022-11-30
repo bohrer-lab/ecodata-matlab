@@ -1,18 +1,20 @@
-name: doc-env
+name: pmv-devreqs
 channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.9
-  - xarray
-  - cfgrib
-  - geopandas
-  - shapely
-  - matplotlib
-  - pandas
-  - cartopy
+  - pandoc
   - pip
   - pip:
+    - conda-merge
+    - black
+    - isort
+    - pytest
     - m2r2
-    - sphinx_press_theme
+    - pydata_sphinx_theme
+    - sphinx_book_theme
     - sphinxcontrib-matlabdomain
+    - myst-parser
+    - docutils>=0.17
+    - nbsphinx
+    - nbsphinx-link
