@@ -1,9 +1,10 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report to help us improve! Please take a look at the open issues before
+  submitting a bug report to see if the issue has already been reported.
 title: ''
-labels: ''
-assignees: ''
+labels: bug
+assignees: jemissik
 
 ---
 
@@ -19,6 +20,9 @@ Steps to reproduce the behavior:
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
+
+**Error log**
+If applicable, please copy the error text from the app's status box to assist with debugging.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
