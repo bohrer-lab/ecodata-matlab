@@ -8,9 +8,6 @@ Welcome to Movebank Visualization's documentation!
 .. include:: ../README.md
    :parser: myst_parser.sphinx_
 
-.. include:: ../pymovebank/README.md
-   :parser: myst_parser.sphinx_
-
 Contents
 ========
 
@@ -19,9 +16,6 @@ Contents
 
    movebank_functions
    examples
-   roads
-   pymovebank
-
 
 Indices and tables
 ==================

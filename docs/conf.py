@@ -14,7 +14,6 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(".."))
-sys.path.insert(0, os.path.abspath("../pymovebank/src/"))
 from pathlib import Path
 
 
@@ -36,12 +35,7 @@ extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.githubpages",
     "sphinx.ext.todo",
-    # 'myst_nb',
-    "nbsphinx",
-    "nbsphinx_link",
-    "matplotlib.sphinxext.plot_directive",
     "sphinxcontrib.matlab",
-    # 'm2r2'
     "myst_parser",
 ]
 
@@ -69,8 +63,8 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_book_theme"
-# html_theme = 'press'
+# html_theme = "sphinx_book_theme"
+html_theme = "press"
 # html_theme = 'alabaster'
 # html_theme = 'pydata_sphinx_theme'
 

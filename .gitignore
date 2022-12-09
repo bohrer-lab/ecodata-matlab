@@ -5,9 +5,6 @@ movebank_credentials.txt
 data/user_datasets/*
 !data/user_datasets/.gitkeep
 
-#large data
-pymovebank/src/pymovebank/datasets/large_datasets/
-
 #docs build
 docs/_build/
 #docs autosummary
