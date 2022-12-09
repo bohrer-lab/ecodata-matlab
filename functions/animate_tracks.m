@@ -1,4 +1,4 @@
-function animate_gridded_ndvi(track_data, kwargs)
+function animate_tracks(track_data, kwargs)
     arguments
         track_data
         kwargs.track_frequency = days(1)

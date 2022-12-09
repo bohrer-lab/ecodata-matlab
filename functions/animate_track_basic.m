@@ -1,4 +1,4 @@
-function fig = animate_track(data, output_animation)
+function fig = animate_track_basic(data, output_animation)
     % Create an animation of Movebank track data
     %
     % Args:
