@@ -14,6 +14,7 @@ Contents
 .. toctree::
    :maxdepth: 3
 
+   user_guide
    movebank_functions
    examples
 
