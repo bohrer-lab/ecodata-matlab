@@ -1,4 +1,4 @@
-Functions
-=========
+Code reference
+==============
 .. mat:automodule:: functions
    :members:

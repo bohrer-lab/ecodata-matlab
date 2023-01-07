@@ -1,9 +1,6 @@
-# User guide
+# Using the app
 
-## Installation
-
-[Download the installers here](https://github.com/jemissik/movebank_vis/releases)
-
+![app gui](images/app_screenshot.png)
 ## Track visualization options
 
 - Track frequency: Sets the time frequency of the tracks that will be shown. The track data is always resampled to this frequency for animation. So if it is set to 24 hours the animation will generate one frame per day, if it is set to 1 hour the animation will give one frame per hour, etc.

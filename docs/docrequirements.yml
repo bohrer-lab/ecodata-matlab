@@ -1,12 +1,14 @@
 name: mat-docs
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - pip
   - pip:
     - pydata_sphinx_theme
     - sphinx_book_theme
     - sphinx-press-theme
+    - sphinxawesome-theme
+    - furo
+    - sphinx-material
     - sphinxcontrib-matlabdomain
     - myst-parser

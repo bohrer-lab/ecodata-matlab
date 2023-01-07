@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Movebank Visualization's documentation!
+Welcome to ECODATA-Animate's documentation!
 ==================================================
 .. include:: ../README.md
    :parser: myst_parser.sphinx_
@@ -14,9 +14,9 @@ Contents
 .. toctree::
    :maxdepth: 3
 
-   user_guide
-   movebank_functions
-   examples
+   user_guide/index
+   support
+   matlab_functions
 
 Indices and tables
 ==================
