@@ -1,0 +1,4 @@
+sphinx
+furo
+sphinxcontrib-matlabdomain
+myst-parser
