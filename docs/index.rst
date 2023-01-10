@@ -17,6 +17,7 @@ Contents
    user_guide/index
    support
    matlab_functions
+   developer_guide
 
 Indices and tables
 ==================
