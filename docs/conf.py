@@ -66,7 +66,6 @@ todo_include_todos = True
 # html_theme = "press"
 # html_theme = "sphinx_material"
 # html_theme = 'alabaster'
-# html_theme = 'pydata_sphinx_theme'
 html_theme = "furo"
 # html_theme = "sphinxawesome_theme"
 

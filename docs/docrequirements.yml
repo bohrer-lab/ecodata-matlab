@@ -4,11 +4,12 @@ channels:
 dependencies:
   - pip
   - pip:
-    - pydata_sphinx_theme
-    - sphinx_book_theme
-    - sphinx-press-theme
-    - sphinxawesome-theme
+    # - pydata_sphinx_theme
+    # - sphinx_book_theme
+    # - sphinx-press-theme
+    # - sphinxawesome-theme
+    - sphinx
     - furo
-    - sphinx-material
+    # - sphinx-material
     - sphinxcontrib-matlabdomain
     - myst-parser
