@@ -19,5 +19,7 @@ Inputs to ECODATA-Animate include:
 
 See the [documentation pages](https://ecodata-animate.readthedocs.io/en/latest/)
 
+[GitHub repository](https://github.com/jemissik/movebank_vis)
+
 
 Check out the [overview page on Movebank's website](https://www.movebank.org/cms/movebank-content/ecodata)
