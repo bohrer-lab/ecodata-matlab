@@ -19,8 +19,8 @@ from pathlib import Path
 
 # -- Project information -----------------------------------------------------
 
-project = "Movebank Visualization"
-copyright = "2022, Justine Missik"
+project = "ECODATA-Animate"
+copyright = "2023, Justine Missik"
 author = "Justine Missik"
 
 
@@ -33,7 +33,6 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",  # Create neat summary tables for modules/classes/methods etc
     "sphinx.ext.napoleon",
-    "sphinx.ext.githubpages",
     "sphinx.ext.todo",
     "sphinxcontrib.matlab",
     "myst_parser",
@@ -64,9 +63,11 @@ todo_include_todos = True
 # a list of builtin themes.
 #
 # html_theme = "sphinx_book_theme"
-html_theme = "press"
+# html_theme = "press"
+# html_theme = "sphinx_material"
 # html_theme = 'alabaster'
-# html_theme = 'pydata_sphinx_theme'
+html_theme = "furo"
+# html_theme = "sphinxawesome_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
