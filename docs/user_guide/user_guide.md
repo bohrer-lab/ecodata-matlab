@@ -8,7 +8,7 @@ After opening the program, you will see a main window with six tabs, each contai
 
 ## Animal track data
 
-Here you upload a file of animal tracking data to animate. This should follow the format is used when [accessing data from Movebank](https://www.movebank.org/cms/movebank-content/access-data#download_data_in_movebank_format), following formats described in the [Movebank Attribute Dictionary](https://www.movebank.org/cms/movebank-content/movebank-attribute-dictionary). This file should contain at least [timestamp](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000200/), [location-long](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000146/) and [location-lat](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000145/). It can be composed of tracking data subsets or combinations from multiple Movebank studies, as well as additional columns such as environmental covariates from [Env-DATA](https://www.movebank.org/cms/movebank-content/env-data) or [MoveApps](https://www.moveapps.org/), or reference data attributes.
+Here you upload a file of animal tracking data to animate. This should follow the format used when [accessing data from Movebank](https://www.movebank.org/cms/movebank-content/access-data#download_data_in_movebank_format), following formats described in the [Movebank Attribute Dictionary](https://www.movebank.org/cms/movebank-content/movebank-attribute-dictionary). This file should contain at least the attributes [timestamp](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000200/), [location-long](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000146/) and [location-lat](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000145/). It can be composed of tracking data subsets or combinations from multiple Movebank studies, as well as additional columns such as environmental covariates from [Env-DATA](https://www.movebank.org/cms/movebank-content/env-data) or [MoveApps](https://www.moveapps.org/), or reference data attributes.  
 
 1. Click on "Select track data". Browse to the .csv file containing your tracking data.  
 2. After the file is loaded, the filepath will be displayed, and the time range and geographic extent will be automatically populated based on the contents of the file.
@@ -63,7 +63,7 @@ Here you can optionally define arbitrary points and labels to display in the ani
 Information to include is as follows (all coordinates in decimal deg:
 - *longitude* and *latitude* (required): coordinates for the location of interest, in decimal degrees, WGS84
 - *label* (required): the text to display
-- *start_time* and *end_time* (optional): can be used to restrict the display of the label to the specified range of dates
+- *start_time* and *end_time* (optional): can be used to restrict the display of the label to the specified range of dates, in format yyyy-mm-dd
 - *label_longitude* and *label_latitude* (to be included in next release): coordinates for the upper inside corner of the label text should be placed on the map (upper left corner for a label to the right of the point, upper right corner for a label placed to the left of the point)
 - *label_loc* (to be included in next release): "right" or "left", indicating the placement of the label relative to the point
 
