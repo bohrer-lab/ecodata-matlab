@@ -61,5 +61,4 @@ Before using this program, prepare data to include in the animation. Inputs to E
 ---
 maxdepth: 2
 ---
-installation
 user_guide
