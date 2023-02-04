@@ -48,7 +48,7 @@ Before using this program, prepare data to include in the animation. Inputs to E
 - When clicking a button to select a filepath, the browser window might not automatically appear, and may be hidden behind other application windows or displayed on another monitor. Minimizing other windows or clicking on the application icon from the Dock may help to find it.
 ![ecodata-animate_dock_icon](./images/ecodata-animate_dock_icon.png)
 - After selecting a file or setting the output filepath, expect that it may take several seconds before the information loads or updates appear in the status window.
-- For help or to share suggestions, submit a GitHub issue or contact support@movebank.org.
+- For help or to share suggestions, [submit a GitHub issue](https://github.com/jemissik/movebank_vis/issues) or contact support@movebank.org.
 
 ## Links
 
