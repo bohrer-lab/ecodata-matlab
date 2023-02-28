@@ -26,6 +26,7 @@ function generate_frame(frame_time, kwargs)
         kwargs.lonlim = Nan;
         kwargs.track_groups = containers.Map()
         kwargs.frame_number = 1;
+        kwargs.show_legend=true;
     end
 
 
@@ -175,9 +176,11 @@ function generate_frame(frame_time, kwargs)
     track_colors = kwargs.track_cmap(1:length(group_labels),:);
 
     % Create legend items for each group
-    legend_items = gobjects(length(group_labels),1);
-    for l=1:length(legend_items)
-        legend_items(l) = scatter(nan, nan, 150, track_colors(l, :), kwargs.marker_style,'filled');
+    if kwargs.show_legend
+        legend_items = gobjects(length(group_labels),1);
+        for l=1:length(legend_items)
+            legend_items(l) = scatter(nan, nan, 150, track_colors(l, :), kwargs.marker_style,'filled');
+        end
     end
     
     % Loop for attribute groups
@@ -243,7 +246,9 @@ function generate_frame(frame_time, kwargs)
     m_grid('linestyle', 'none', 'tickdir', 'out', 'linewidth', 3);
   
     title(datestr(frame_time))
-    legend(legend_items, group_labels, 'Location', 'northeastoutside')
+    if kwargs.show_legend
+        legend(legend_items, group_labels, 'Location', 'northeastoutside')
+    end
     drawnow
 
     %save image of each frame
