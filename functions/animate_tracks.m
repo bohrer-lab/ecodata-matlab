@@ -28,6 +28,7 @@ function animate_tracks(track_data, kwargs)
         kwargs.lonmax = NaN
         kwargs.chunk_size = 10
         kwargs.last_frame_only = false
+        kwargs.show_legend = true;
     end
 
     close all
@@ -122,7 +123,7 @@ function animate_tracks(track_data, kwargs)
             fade_tracks=kwargs.fade_tracks, track_cmap=kwargs.track_cmap, track_width=kwargs.track_width, ...
             marker_style=kwargs.marker_style, track_marker_size=kwargs.track_marker_size, ...
             track_marker_color=kwargs.track_marker_color, track_frequency=kwargs.track_frequency, ...
-            track_memory=kwargs.track_memory)
+            track_memory=kwargs.track_memory, show_legend=kwargs.show_legend)
     else
         for k=kwargs.start_time:kwargs.track_frequency:kwargs.end_time
             generate_frame(k, latlim=latlim, lonlim=lonlim, track_groups=track_groups, ...
@@ -135,7 +136,7 @@ function animate_tracks(track_data, kwargs)
                 fade_tracks=kwargs.fade_tracks, track_cmap=kwargs.track_cmap, track_width=kwargs.track_width, ...
                 marker_style=kwargs.marker_style, track_marker_size=kwargs.track_marker_size, ...
                 track_marker_color=kwargs.track_marker_color, track_frequency=kwargs.track_frequency, ...
-                track_memory=kwargs.track_memory)
+                track_memory=kwargs.track_memory, show_legend=kwargs.show_legend)
             frame_number = frame_number + 1;
         end
     end
