@@ -15,7 +15,7 @@ function generate_frame(tracks, frame_time, kwargs)
         kwargs.frame_resolution = 600
         kwargs.latlim = NaN;
         kwargs.lonlim = Nan;
-        kwargs.frame_number = 1;
+        kwargs.frame_number = 0;
         kwargs.show_legend=true;
     end
 
@@ -34,7 +34,7 @@ function generate_frame(tracks, frame_time, kwargs)
     if ~isempty(kwargs.gridded_data)
 
         % Load new chunk of gridded data
-        nc_time_index=read_nc_timestamps(kwargs.gridded_data('filename'), 'time');;
+        nc_time_index=read_nc_timestamps(kwargs.gridded_data('filename'), 'time');
         times_before_frame = nc_time_index(nc_time_index <= frame_time);
         current_nc_time = find(min(abs(times_before_frame-frame_time))==abs(times_before_frame-frame_time));
 

@@ -16,7 +16,6 @@ function animate_tracks(tracks, kwargs)
         kwargs.latmax = NaN
         kwargs.lonmin = NaN
         kwargs.lonmax = NaN
-        kwargs.chunk_size = 10
         kwargs.last_frame_only = false
         kwargs.show_legend = true;
     end
@@ -48,18 +47,6 @@ function animate_tracks(tracks, kwargs)
     % Gridded timeseries data
     if ~isempty(kwargs.gridded_data)
         nc_time_index = read_nc_timestamps(kwargs.gridded_data('filename'), 'time');
-%         kwargs.gridded_data("nc_time_index") = nc_time_index;
-%         nc_start = 1;
-%         [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf(kwargs.gridded_data('filename'), ...
-%             kwargs.gridded_data('latvar'), kwargs.gridded_data('lonvar'), ...
-%             kwargs.gridded_data('timevar'), ...
-%             kwargs.gridded_data('var_of_interest'), ...
-%             start=nc_start, count=kwargs.chunk_size);
-%         chunk_tmax = max(nc_time);
-        % Initialize current nc data to the earliest array in the timeseries
-%         current_nc_time=min(nc_time);
-%         current_nc_frame= nc_var(:, :, 1)';
-
     end
 
     % Contour data 
@@ -98,11 +85,10 @@ function animate_tracks(tracks, kwargs)
     
     
     %% plotting
-    frame_number = 0;
 
     if kwargs.last_frame_only
         generate_frame(tracks, kwargs.end_time, latlim=latlim, lonlim=lonlim, ...
-            start_time=kwargs.start_time, end_time=kwargs.end_time, frame_number=frame_number, ...
+            start_time=kwargs.start_time, end_time=kwargs.end_time, ...
             output_directory=kwargs.output_directory, frame_resolution=kwargs.frame_resolution, ...
             labeled_points=kwargs.labeled_points, raster_image=kwargs.raster_image, ...
             raster_cmap=kwargs.raster_cmap, shapefile_stack = kwargs.shapefile_stack, ...
@@ -110,6 +96,7 @@ function animate_tracks(tracks, kwargs)
             contour_data=kwargs.contour_data, ...
             show_legend=kwargs.show_legend)
     else
+            frame_number = 0;
         for k=kwargs.start_time:kwargs.track_frequency:kwargs.end_time
             generate_frame(tracks, k, latlim=latlim, lonlim=lonlim, ...
                 start_time=kwargs.start_time, end_time=kwargs.end_time, frame_number=frame_number, ...
