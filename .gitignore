@@ -24,7 +24,7 @@ test_data/
 scratch/
 
 # autosaved files
-.asv
+*.asv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
