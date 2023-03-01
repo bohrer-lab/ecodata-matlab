@@ -1,4 +1,4 @@
-function data = read_downloaded_data(filename)
+function data = read_track_data(filename)
     % Read Movebank data that has already been saved locally as a csv
     %
     % Args:
