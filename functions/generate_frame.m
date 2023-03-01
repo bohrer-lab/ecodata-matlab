@@ -101,20 +101,20 @@ function generate_frame(tracks, frame_time, kwargs)
     % Shapefiles 
     if ~isempty(kwargs.shapefile_stack) 
         for n_shp=1:length(kwargs.shapefile_stack)
-            shp_layer = kwargs.shapefile_stack{n_shp};
-            shp = shaperead(shp_layer('filename'));
+            shp = kwargs.shapefile_stack{n_shp};
+            shp.load_data();
              
             % Convert to m_map coordinates
-            for i=1:length(shp)
-                [shp(i).X, shp(i).Y] = m_ll2xy(shp(i).X, shp(i).Y, 'clip', 'off');
+            for i=1:length(shp.data)
+                [shp.data(i).X, shp.data(i).Y] = m_ll2xy(shp.data(i).X, shp.data(i).Y, 'clip', 'off');
             end
             
             % Check geometry type and plot
-            if strcmp(shp(1).Geometry, 'Line')
-                mapshow(shp, 'color', shp_layer('LineColor'), 'LineWidth', shp_layer('LineWidth')); 
-            elseif strcmp(shp(1).Geometry, 'Polygon')
-                mapshow(shp,'FaceColor', shp_layer('FaceColor'), ...
-                    'EdgeColor', shp_layer('EdgeColor'), 'FaceAlpha', shp_layer('FaceAlpha'));
+            if shp.is_line()
+                mapshow(shp.data, 'color', shp.line_color, 'LineWidth', shp.line_width); 
+            elseif shp.is_poly()
+                mapshow(shp.data,'FaceColor', shp.face_color, ...
+                    'EdgeColor', shp.edge_color, 'FaceAlpha', shp.face_alpha);
             end
         end
     end
