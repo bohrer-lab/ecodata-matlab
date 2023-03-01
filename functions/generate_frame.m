@@ -1,16 +1,7 @@
-function generate_frame(frame_time, kwargs)
+function generate_frame(tracks, frame_time, kwargs)
     arguments
+        tracks
         frame_time
-        kwargs.track_frequency = days(1)
-        kwargs.track_memory = 20
-        kwargs.marker_style = 'hexagram'
-        kwargs.track_marker_size = 150
-        kwargs.track_marker_color = NaN
-        kwargs.track_width = 1
-        kwargs.track_cmap = lines
-        kwargs.fade_tracks = false
-        kwargs.track_alpha = 0.6
-        kwargs.group_by = 'individual_local_identifier'
         kwargs.gridded_data = containers.Map() % Map of filename, and variable labels 
         kwargs.contour_data = containers.Map()
         kwargs.elevation = containers.Map()
@@ -24,8 +15,7 @@ function generate_frame(frame_time, kwargs)
         kwargs.frame_resolution = 600
         kwargs.latlim = NaN;
         kwargs.lonlim = Nan;
-        kwargs.track_groups = containers.Map()
-        kwargs.frame_number = 1;
+        kwargs.frame_number = 0;
         kwargs.show_legend=true;
     end
 
@@ -44,7 +34,7 @@ function generate_frame(frame_time, kwargs)
     if ~isempty(kwargs.gridded_data)
 
         % Load new chunk of gridded data
-        nc_time_index=read_nc_timestamps(kwargs.gridded_data('filename'), 'time');;
+        nc_time_index=read_nc_timestamps(kwargs.gridded_data('filename'), 'time');
         times_before_frame = nc_time_index(nc_time_index <= frame_time);
         current_nc_time = find(min(abs(times_before_frame-frame_time))==abs(times_before_frame-frame_time));
 
@@ -172,36 +162,36 @@ function generate_frame(frame_time, kwargs)
     % Track data
 
     % Attribute grouping 
-    group_labels = kwargs.track_groups.keys;
-    track_colors = kwargs.track_cmap(1:length(group_labels),:);
+    group_labels = tracks.track_groups.keys;
+    track_colors = tracks.track_cmap(1:length(group_labels),:);
 
     % Create legend items for each group
     if kwargs.show_legend
         legend_items = gobjects(length(group_labels),1);
         for l=1:length(legend_items)
-            legend_items(l) = scatter(nan, nan, 150, track_colors(l, :), kwargs.marker_style,'filled');
+            legend_items(l) = scatter(nan, nan, 150, track_colors(l, :), tracks.marker_style,'filled');
         end
     end
     
     % Loop for attribute groups
-    for j=1:length(kwargs.track_groups)
+    for j=1:length(tracks.track_groups)
         
         track_color = track_colors(j, :);
-        group = kwargs.track_groups(group_labels{j});
+        group = tracks.track_groups(group_labels{j});
         inds = group.keys;
 
         % Plot each individual in the group
         for i=1:length(inds)
             data_ind = group(inds{i});
             
-            if height(data_ind(timerange(kwargs.start_time, frame_time, 'closed'), :)) < kwargs.track_memory
+            if height(data_ind(timerange(kwargs.start_time, frame_time, 'closed'), :)) < tracks.track_memory
                 oldest_point = kwargs.start_time;
             else
-                oldest_point = data_ind.timestamp(find(data_ind.timestamp == frame_time) - kwargs.track_memory + 1);
+                oldest_point = data_ind.timestamp(find(data_ind.timestamp == frame_time) - tracks.track_memory + 1);
             end
 
-            x = data_ind.location_long(oldest_point:kwargs.track_frequency:frame_time);
-            y = data_ind.location_lat(oldest_point:kwargs.track_frequency:frame_time);
+            x = data_ind.location_long(oldest_point:tracks.frequency:frame_time);
+            y = data_ind.location_lat(oldest_point:tracks.frequency:frame_time);
 
             if ~isempty(x)
                 xseg = [x(1:end-1),x(2:end)];
@@ -210,29 +200,29 @@ function generate_frame(frame_time, kwargs)
                 trace_colors = repmat(track_color, size(xseg,1), 1);
                 segColors = trace_colors;
 
-                if isnan(kwargs.track_marker_color)
+                if isnan(tracks.marker_color)
                     scatterColor = track_color;
                 else
-                    scatterColor = kwargs.track_marker_color;
+                    scatterColor = tracks.marker_color;
                 end
 
-                if kwargs.fade_tracks
+                if tracks.fade_tracks
                     seg_amap = logspace(0,1,size(xseg,1));
                     seg_amap = seg_amap/max(seg_amap);
                 else
-                    seg_amap = repmat(kwargs.track_alpha, size(xseg,1), 1);
+                    seg_amap = repmat(tracks.track_alpha, size(xseg,1), 1);
                 end
 
                 segColors(:,4) = seg_amap;
 
-                h = m_plot(xseg',yseg','LineWidth',kwargs.track_width);
+                h = m_plot(xseg',yseg','LineWidth',tracks.track_width);
 
                 x_point = data_ind.location_long(frame_time);
                 y_point = data_ind.location_lat(frame_time);
 
                 if ~isempty(data_ind(frame_time,:))
-                    s = m_scatter(x_point,y_point,kwargs.track_marker_size, ...
-                        scatterColor,kwargs.marker_style,'filled');
+                    s = m_scatter(x_point,y_point,tracks.marker_size, ...
+                        scatterColor,tracks.marker_style,'filled');
                 end
                 
                 set(h, {'Color'}, mat2cell(segColors,ones(size(xseg,1),1),4))
