@@ -238,10 +238,19 @@ function generate_frame(tracks, frame_time, kwargs)
     % anything
     m_grid('linestyle', 'none', 'tickdir', 'out', 'linewidth', 3);
   
-    title(datestr(frame_time))
+    % Add timestamp label
+    if mod(tracks.frequency, hours(24)) == 0
+        time_label = string(frame_time, 'dd-MMM-yyy');
+    else 
+        time_label = string(frame_time, "dd-MMM-uuuu HH:mm");
+    end
+    title(time_label)
+
+    % Add legend
     if kwargs.show_legend
         legend(legend_items, group_labels, 'Location', 'northeastoutside')
     end
+
     drawnow
 
     %save image of each frame
