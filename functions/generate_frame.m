@@ -34,7 +34,7 @@ function generate_frame(tracks, frame_time, kwargs)
     if ~isempty(kwargs.gridded_data)
 
         % Load new chunk of gridded data
-        nc_time_index=read_nc_timestamps(kwargs.gridded_data('filename'), 'time');
+        nc_time_index=read_nc_timestamps(kwargs.gridded_data('filename'), kwargs.gridded_data('timevar'));
         times_before_frame = nc_time_index(nc_time_index <= frame_time);
         current_nc_time = find(min(abs(times_before_frame-frame_time))==abs(times_before_frame-frame_time));
 

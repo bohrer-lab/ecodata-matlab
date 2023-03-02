@@ -43,11 +43,6 @@ function animate_tracks(tracks, kwargs)
     
     % Attribute groupings for track data
     tracks.group_and_resample();
-    
-    % Gridded timeseries data
-    if ~isempty(kwargs.gridded_data)
-        nc_time_index = read_nc_timestamps(kwargs.gridded_data('filename'), 'time');
-    end
 
     % Contour data 
     if ~isempty(kwargs.contour_data)
