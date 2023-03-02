@@ -30,52 +30,37 @@ function generate_frame(tracks, frame_time, kwargs)
 
     hold on
 
-    % Plot gridded env data
+    %% Plot gridded env data
     if ~isempty(kwargs.gridded_data)
 
-        % Load new chunk of gridded data
+        % Load new slice of gridded data
         nc_time_index=read_nc_timestamps(kwargs.gridded_data('filename'), kwargs.gridded_data('timevar'));
         times_before_frame = nc_time_index(nc_time_index <= frame_time);
+
         current_nc_time = find(min(abs(times_before_frame-frame_time))==abs(times_before_frame-frame_time));
 
-        [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf( ...
-                kwargs.gridded_data('filename'), ...
-                kwargs.gridded_data('latvar'), ...
-                kwargs.gridded_data('lonvar'), ...
-                kwargs.gridded_data('timevar'), ...
-                kwargs.gridded_data('var_of_interest'), ...
-                start=current_nc_time, count=1);
-%         while chunk_tmax < frame_time
-%             nc_start = nc_start + kwargs.chunk_size;
-%             [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf( ...
-%                 kwargs.gridded_data('filename'), ...
-%                 kwargs.gridded_data('latvar'), ...
-%                 kwargs.gridded_data('lonvar'), ...
-%                 kwargs.gridded_data('timevar'), ...
-%                 kwargs.gridded_data('var_of_interest'), ...
-%                 start=nc_start, count=1);
-%             
-% %                 chunk_tmax = max(nc_time);
-%         end
+        if ~isempty(current_nc_time)
 
-
-        % Color map for gridded data
-        if kwargs.gridded_data('invert_cmap')
-            gridded_cmap = flipud(m_colmap(kwargs.gridded_data('cmap')));
-        else 
-            gridded_cmap = m_colmap(kwargs.gridded_data('cmap'));
-        end
-
-        if ismember(frame_time, nc_time)
-            A = nc_var(:, :, nc_time == frame_time)';
+            [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf( ...
+                    kwargs.gridded_data('filename'), ...
+                    kwargs.gridded_data('latvar'), ...
+                    kwargs.gridded_data('lonvar'), ...
+                    kwargs.gridded_data('timevar'), ...
+                    kwargs.gridded_data('var_of_interest'), ...
+                    start=current_nc_time, count=1);
+    
+    
+            % Color map for gridded data
+            if kwargs.gridded_data('invert_cmap')
+                gridded_cmap = flipud(m_colmap(kwargs.gridded_data('cmap')));
+            else 
+                gridded_cmap = m_colmap(kwargs.gridded_data('cmap'));
+            end
+    
+            A = nc_var(:, :, nc_time == nc_time_index(current_nc_time))';
             grd = m_image(nc_long,nc_lat, A);
-%             current_nc_time = frame_time;
-%             current_nc_frame = A;
-        % In case gridded dataset starts later than tracks
-%         elseif current_nc_time < frame_time
-%             % Use last timestep that had data 
-%             grd = m_image(nc_long, nc_lat, current_nc_frame);
         end
+
         colormap(gridded_cmap)
 
         caxis([-0.1 1])
@@ -88,7 +73,7 @@ function generate_frame(tracks, frame_time, kwargs)
     end
 
 
-    % raster image
+    %% raster image
     if ~isnan(kwargs.raster_image)
 
         % color map for the raster. Here using just a single color  
@@ -98,7 +83,7 @@ function generate_frame(tracks, frame_time, kwargs)
     freezeColors
     hold on
 
-    % Shapefiles 
+    %% Shapefiles 
     if ~isempty(kwargs.shapefile_stack) 
         for n_shp=1:length(kwargs.shapefile_stack)
             shp = kwargs.shapefile_stack{n_shp};
@@ -119,17 +104,35 @@ function generate_frame(tracks, frame_time, kwargs)
         end
     end
 
-    % Contour data 
+    %% Contour data 
     if ~isempty(kwargs.contour_data)
-        % make grid for lat/lon 
-        [LAT,LON] = meshgrid(contour_lat, contour_lon);
-        m_contour(LON, LAT, contour_var(:,:,contour_time==frame_time), ...
-            'ShowText',kwargs.contour_data('ShowText'), ...
-            'LineWidth', kwargs.contour_data('LineWidth'), ...
-            'LineColor', kwargs.contour_data('LineColor'))
+        % Load time slice of contour data 
+        contour_time_index=read_nc_timestamps(kwargs.contour_data('filename'), kwargs.contour_data('timevar'));
+        times_before_frame = contour_time_index(contour_time_index <= frame_time);
+
+        current_contour_time = find(min(abs(times_before_frame-frame_time))==abs(times_before_frame-frame_time));
+
+        if ~isempty(current_contour_time)
+            [contour_lat, contour_lon, contour_time, contour_var] = unpack_netcdf( ...
+                kwargs.contour_data('filename'), kwargs.contour_data('latvar'), ...
+                kwargs.contour_data('lonvar'), kwargs.contour_data('timevar'), ...
+                kwargs.contour_data('var_of_interest'), start=current_contour_time, ...
+                count=1);
+        
+            A = contour_var(:, :, contour_time == contour_time_index(current_contour_time));
+
+            % make grid for lat/lon 
+            [LAT,LON] = meshgrid(contour_lat, contour_lon);
+
+            % plot contours
+            m_contour(LON, LAT, A, ...
+                'ShowText',kwargs.contour_data('ShowText'), ...
+                'LineWidth', kwargs.contour_data('LineWidth'), ...
+                'LineColor', kwargs.contour_data('LineColor'))
+        end
     end
 
-    % Elevation 
+    %% Elevation 
     if ~isempty(kwargs.elevation)
         m_etopo2('contour', floor(linspace(min(elev, [], 'all'), ...
             max(elev, [], 'all'), kwargs.elevation('nlevels'))), ...
@@ -138,7 +141,7 @@ function generate_frame(tracks, frame_time, kwargs)
             'ShowText', kwargs.elevation('ShowText'))
     end
 
-    %labeled points 
+    %% Labeled points 
     if ~isempty(kwargs.labeled_points)
         labeled_pts = kwargs.labeled_points("data");
         labels_filtered = labeled_pts(frame_time>=labeled_pts.start_time & frame_time<=labeled_pts.end_time,:);
@@ -159,7 +162,7 @@ function generate_frame(tracks, frame_time, kwargs)
     end
 
 
-    % Track data
+    %% Track data
 
     % Attribute grouping 
     group_labels = tracks.track_groups.keys;
@@ -248,8 +251,6 @@ function generate_frame(tracks, frame_time, kwargs)
     exportgraphics(gcf,outputFullFileName,'Resolution', kwargs.frame_resolution)
 
     % Delete variables 
-%         for i=1:length(h_cells); delete(h_cells{i}); end
-%         for i=1:length(s_cells); delete(s_cells{i}); end
     if exist('grd', 'var'); clear grd; end
     if exist('h', 'var'); clear h; end
     if exist('s', 'var'); clear s; end

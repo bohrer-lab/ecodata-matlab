@@ -43,15 +43,7 @@ function animate_tracks(tracks, kwargs)
     
     % Attribute groupings for track data
     tracks.group_and_resample();
-
-    % Contour data 
-    if ~isempty(kwargs.contour_data)
-        [contour_lat, contour_lon, contour_time, contour_var] = unpack_netcdf( ...
-            kwargs.contour_data('filename'), kwargs.contour_data('latvar'), ...
-            kwargs.contour_data('lonvar'), kwargs.contour_data('timevar'), ...
-            kwargs.contour_data('var_of_interest'));
-        
-    end
+    
 
     % Elevation data 
     if ~isempty(kwargs.elevation)
