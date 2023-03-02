@@ -50,6 +50,13 @@ Before using this program, prepare data to include in the animation. Inputs to E
 - After selecting a file or setting the output filepath, expect that it may take several seconds before the information loads or updates appear in the status window.
 - For help or to share suggestions, [submit a GitHub issue](https://github.com/jemissik/movebank_vis/issues) or contact support@movebank.org.
 
+**Saving and reloading settings**
+- When an animation is created, the animation settings are saved to the output directory in a file called
+``settings.mat``.
+- Settings files can be reloaded into the app. To reload settings from a previous animation, click the
+``Load settings`` button at the top of the app, and select a ``settings.mat`` file. You can then adjust the settings
+for a new animation.
+
 ## Links
 
 - [GitHub repository](https://github.com/jemissik/movebank_vis)
