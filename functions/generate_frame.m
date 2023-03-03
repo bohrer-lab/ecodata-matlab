@@ -34,7 +34,7 @@ function generate_frame(tracks, frame_time, kwargs)
     if ~isempty(kwargs.gridded_data)
 
         % Load new slice of gridded data
-        nc_time_index=read_nc_timestamps(kwargs.gridded_data('filename'), kwargs.gridded_data('timevar'));
+        nc_time_index=read_nc_timestamps(kwargs.gridded_data.filename, kwargs.gridded_data.timevar);
         times_before_frame = nc_time_index(nc_time_index <= frame_time);
 
         current_nc_time = find(min(abs(times_before_frame-frame_time))==abs(times_before_frame-frame_time));
@@ -42,19 +42,19 @@ function generate_frame(tracks, frame_time, kwargs)
         if ~isempty(current_nc_time)
 
             [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf( ...
-                    kwargs.gridded_data('filename'), ...
-                    kwargs.gridded_data('latvar'), ...
-                    kwargs.gridded_data('lonvar'), ...
-                    kwargs.gridded_data('timevar'), ...
-                    kwargs.gridded_data('var_of_interest'), ...
+                    kwargs.gridded_data.filename, ...
+                    kwargs.gridded_data.latvar, ...
+                    kwargs.gridded_data.lonvar, ...
+                    kwargs.gridded_data.timevar, ...
+                    kwargs.gridded_data.var_of_interest, ...
                     start=current_nc_time, count=1);
     
     
             % Color map for gridded data
-            if kwargs.gridded_data('invert_cmap')
-                gridded_cmap = flipud(m_colmap(kwargs.gridded_data('cmap')));
+            if kwargs.gridded_data.invert_cmap
+                gridded_cmap = flipud(m_colmap(kwargs.gridded_data.cmap));
             else 
-                gridded_cmap = m_colmap(kwargs.gridded_data('cmap'));
+                gridded_cmap = m_colmap(kwargs.gridded_data.cmap);
             end
     
             A = nc_var(:, :, nc_time == nc_time_index(current_nc_time))';
@@ -65,7 +65,7 @@ function generate_frame(tracks, frame_time, kwargs)
 
         caxis([-0.1 1])
             cb = colorbar;
-            ylabel(cb,strrep(kwargs.gridded_data('var_of_interest'), '_', ' '),'FontSize',12);
+            ylabel(cb,strrep(kwargs.gridded_data.var_of_interest, '_', ' '),'FontSize',12);
         
         hold on
 
