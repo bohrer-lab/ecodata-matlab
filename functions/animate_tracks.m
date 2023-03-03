@@ -33,6 +33,7 @@ function animate_tracks(tracks, kwargs)
         lonlim = [kwargs.lonmin kwargs.lonmax];
     end
 
+
     %% Prepare track data
 
     % Select bbox

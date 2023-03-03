@@ -33,9 +33,12 @@ function generate_frame(tracks, frame_time, kwargs)
     %% Plot gridded env data
     if ~isempty(kwargs.gridded_data)
 
+        if isempty(kwargs.gridded_data.time_index)
+            kwargs.gridded_data.load_time_index;
+        end
+
         % Load new slice of gridded data
-        nc_time_index=read_nc_timestamps(kwargs.gridded_data.filename, kwargs.gridded_data.timevar);
-        times_before_frame = nc_time_index(nc_time_index <= frame_time);
+        times_before_frame = kwargs.gridded_data.time_index(kwargs.gridded_data.time_index <= frame_time);
 
         current_nc_time = find(min(abs(times_before_frame-frame_time))==abs(times_before_frame-frame_time));
 
@@ -57,7 +60,7 @@ function generate_frame(tracks, frame_time, kwargs)
                 gridded_cmap = m_colmap(kwargs.gridded_data.cmap);
             end
     
-            A = nc_var(:, :, nc_time == nc_time_index(current_nc_time))';
+            A = nc_var(:, :, nc_time == kwargs.gridded_data.time_index(current_nc_time))';
             grd = m_image(nc_long,nc_lat, A);
         end
 
