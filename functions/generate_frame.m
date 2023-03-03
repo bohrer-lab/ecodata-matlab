@@ -66,9 +66,13 @@ function generate_frame(tracks, frame_time, kwargs)
 
         colormap(gridded_cmap)
 
-        caxis([-0.1 1])
+        if ~isempty(kwargs.gridded_data.cbar_limits)
+            clim(kwargs.gridded_data.cbar_limits);
+        end
+        if kwargs.gridded_data.show_colorbar
             cb = colorbar;
             ylabel(cb,strrep(kwargs.gridded_data.var_of_interest, '_', ' '),'FontSize',12);
+        end
         
         hold on
 
