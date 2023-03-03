@@ -33,39 +33,46 @@ function generate_frame(tracks, frame_time, kwargs)
     %% Plot gridded env data
     if ~isempty(kwargs.gridded_data)
 
+        if isempty(kwargs.gridded_data.time_index)
+            kwargs.gridded_data.load_time_index;
+        end
+
         % Load new slice of gridded data
-        nc_time_index=read_nc_timestamps(kwargs.gridded_data('filename'), kwargs.gridded_data('timevar'));
-        times_before_frame = nc_time_index(nc_time_index <= frame_time);
+        times_before_frame = kwargs.gridded_data.time_index(kwargs.gridded_data.time_index <= frame_time);
 
         current_nc_time = find(min(abs(times_before_frame-frame_time))==abs(times_before_frame-frame_time));
 
         if ~isempty(current_nc_time)
 
             [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf( ...
-                    kwargs.gridded_data('filename'), ...
-                    kwargs.gridded_data('latvar'), ...
-                    kwargs.gridded_data('lonvar'), ...
-                    kwargs.gridded_data('timevar'), ...
-                    kwargs.gridded_data('var_of_interest'), ...
+                    kwargs.gridded_data.filename, ...
+                    kwargs.gridded_data.latvar, ...
+                    kwargs.gridded_data.lonvar, ...
+                    kwargs.gridded_data.timevar, ...
+                    kwargs.gridded_data.var_of_interest, ...
                     start=current_nc_time, count=1);
     
     
             % Color map for gridded data
-            if kwargs.gridded_data('invert_cmap')
-                gridded_cmap = flipud(m_colmap(kwargs.gridded_data('cmap')));
+            if kwargs.gridded_data.invert_cmap
+                gridded_cmap = flipud(m_colmap(kwargs.gridded_data.cmap));
             else 
-                gridded_cmap = m_colmap(kwargs.gridded_data('cmap'));
+                gridded_cmap = m_colmap(kwargs.gridded_data.cmap);
             end
     
-            A = nc_var(:, :, nc_time == nc_time_index(current_nc_time))';
+            A = nc_var(:, :, nc_time == kwargs.gridded_data.time_index(current_nc_time))';
             grd = m_image(nc_long,nc_lat, A);
         end
 
         colormap(gridded_cmap)
 
-        caxis([-0.1 1])
+        if ~isempty(kwargs.gridded_data.cbar_limits)
+            clim(kwargs.gridded_data.cbar_limits);
+        end
+        if kwargs.gridded_data.show_colorbar
             cb = colorbar;
-            ylabel(cb,strrep(kwargs.gridded_data('var_of_interest'), '_', ' '),'FontSize',12);
+            ylabel(cb,strrep(kwargs.gridded_data.var_of_interest, '_', ' '),'FontSize',12);
+        end
         
         hold on
 

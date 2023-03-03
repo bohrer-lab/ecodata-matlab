@@ -1,7 +1,7 @@
 function animate_tracks(tracks, kwargs)
     arguments
         tracks
-        kwargs.gridded_data = containers.Map() % Map of filename, and variable labels 
+        kwargs.gridded_data = {} 
         kwargs.contour_data = containers.Map()
         kwargs.elevation = containers.Map()
         kwargs.shapefile_stack = {}
@@ -33,6 +33,7 @@ function animate_tracks(tracks, kwargs)
         lonlim = [kwargs.lonmin kwargs.lonmax];
     end
 
+
     %% Prepare track data
 
     % Select bbox
@@ -43,7 +44,7 @@ function animate_tracks(tracks, kwargs)
     
     % Attribute groupings for track data
     tracks.group_and_resample();
-    
+
 
     % Elevation data 
     if ~isempty(kwargs.elevation)
