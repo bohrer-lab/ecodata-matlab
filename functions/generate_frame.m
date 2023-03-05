@@ -14,7 +14,7 @@ function generate_frame(tracks, frame_time, kwargs)
         kwargs.end_time 
         kwargs.frame_resolution = 600
         kwargs.latlim = NaN;
-        kwargs.lonlim = Nan;
+        kwargs.lonlim = NaN;
         kwargs.frame_number = 0;
         kwargs.show_legend=true;
     end
