@@ -41,7 +41,7 @@ You may have to click "Show details" next to where it says "All checks have pass
 - Copy the contents of this folder to ``m_map/data``
 
 ### Required toolboxes
-The mapping toolbox and the MATLAB Compiler need to be installed. 
+The mapping toolbox and the MATLAB Compiler need to be installed.
 ### Specifying Movebank login credentials:
 - Save ``movebank_credentials_template.txt`` as ``movebank_credentials.txt`` and update it with your username and password.
 - ``movebank_credentials.txt`` is in the .gitignore so it won't be tracked.
@@ -60,7 +60,7 @@ This process needs to be done on both Mac and Windows, to build installers for b
   - In the top menu, select ``Runtime downloaded from web``, then change the name in the textbox to ``ECODATA_Animate_Installer``
   - In the version box, edit the version (which was auto-filled with major.minor from the .mlapp file). This needs to be updated to major.minor.bugfix.release_candidate (making sure this corresponds to the release tag on GitHub)
   - Under ``Files required for your application to run``, make sure the ``functions`` and ``m_map`` folders are both added!
-  - Under ``Additional runtime settings``, select the ``create log file`` box, and change the name to ``ecodata_animate_log
+  - Under ``Additional runtime settings``, select the ``create log file`` box, and change the name to ``ecodata_animate_log``
   - Click the ``Package``button in the top menu.
   - Make a new folder called ``Mac_Installer`` or ``Windows_Installer``.
   - From the output folder created by the compiler, copy the files ``for_redistribution/ECODATA_Animate_Installer`` and ``for_redistribution_files_only/ECODATA_Animate`` to the new folder.
