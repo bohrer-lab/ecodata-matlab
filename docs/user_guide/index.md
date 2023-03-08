@@ -1,14 +1,16 @@
-# Welcome to ECODATA-Animate!
+# User guide
 
-## Overview
+ECODATA-Animate is a MATLAB® program for creating customized animated maps of animal movements. The program creates image frames that can be animated using the [ECODATA-Prepare Movie Maker App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/movie_maker.html).
 
-ECODATA-Animate is a MATLAB® program for creating customized animated maps of animal movements. The program creates image frames that can be animated using the [ECODATA-Prepare Movie Maker App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/movie_maker.html). Define track visualization options and include additional layers from raster files, shapefiles, an elevation model and label lists. See [ECODATA-Prepare](https://ecodata-apps.readthedocs.io/en/latest/index.html) for additional tools for preparing input data. Development is supported by MathWorks® and the NASA Earth Science Division, Ecological Forecasting Program, as part of the [Room to Roam: Y2Y Wildlife Movements](https://ceg.osu.edu/Y2Y_Room2Roam) project.
+```{Tip}
+This user guide can also be downloaded for offline use! Click the version flyout menu (at the bottom of the left sidebar). Under ``Downloads``, you can choose to download the documentation in PDF, Epub, or zipped HTML format.
+```
 
 ## Installation
 
-1. [Download the installers here](https://github.com/jemissik/movebank_vis/releases), available for Mac and Windows.
+1. [Download the installers for the latest release here](https://github.com/jemissik/movebank_vis/releases/latest), available for Mac and Windows. You can also see all releases (including pre-release versions) [here](https://github.com/jemissik/movebank_vis/releases).
 2. A zipped folder containing the installer and the ECODATA-Animate application will be downloaded to your computer. Extract the files (you may also move them to a different folder on your computer).
-3. Open the "MyAppInstaller_web" application to run the installer, and follow the on-screen prompts.
+3. If this is the first time you have installed the app, open the ``ECODATA_Animate_Installer`` application to run the installer, and follow the on-screen prompts. If you have installed a previous version of the app (and therefore have MATLAB runtime installed already), you should be able to simply run the ``ECODATA_Animate`` file without needing to run the installer again.
 4. Once the application has been successfully installed, you can open the ECODATA-Animate application. (There may be a short delay (10+ seconds) after launching the ECODATA-Animate application before the program opens. A log file will also be generated in the installer folder.)
 
 ## Getting started
@@ -23,7 +25,7 @@ Before using this program, prepare data to include in the animation. Inputs to E
 
 ## Using the app
 
-**Overview of steps**
+### Overview of steps
 1. Use the tabs at the top of the application to define the contents of the animation. You can work on the tabs in any order.
 - [Animal track data](animal-track-data): Include animal tracking data (required)
 - [Tracks visualization options](track-visualization-options): Define how to display track points and trajectories (required)
@@ -41,31 +43,27 @@ Before using this program, prepare data to include in the animation. Inputs to E
 8. The results consist of a set of .png image files representing each frame for the animation, based on the chosen configuration, which can be viewed or used individually.
 9. Use the [ECODATA-Prepare Movie Maker App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/movie_maker.html) to compile these images into an animation.
 
-**General notes**
+### General notes
 - Expect some trial and error as you define settings and see how they appear in the saved frames.
-- To review results with minimal processing time, you can start by limiting the "time range" under "Animal track data", so that fewer frames are created. Once the settings are as desired, extend the time range to that of the full dataset for final processing.
-- It is not yet possible to save settings within the app, so we recommend noting chosen settings or taking screenshots as you go, in case you need to restart the application.
+- To review results with minimal processing time, you can start by generating just the last frame of the animation (select ``Generate last frame only`` under ``Track visualization options``. Or, you can limit the "time range" under "Animal track data", so that fewer frames are created. Once the settings are as desired, extend the time range to that of the full dataset for final processing.
 - When clicking a button to select a filepath, the browser window might not automatically appear, and may be hidden behind other application windows or displayed on another monitor. Minimizing other windows or clicking on the application icon from the Dock may help to find it.
 ![ecodata-animate_dock_icon](./images/ecodata-animate_dock_icon.png)
 - After selecting a file or setting the output filepath, expect that it may take several seconds before the information loads or updates appear in the status window.
+- Note that if you select an output directory that already has output files in it, these will be overwritten when you create a new animation.
 - For help or to share suggestions, [submit a GitHub issue](https://github.com/jemissik/movebank_vis/issues) or contact support@movebank.org.
 
-**Saving and reloading settings**
+
+### Saving and reloading settings
 - When an animation is created, the animation settings are saved to the output directory in a file called
 ``settings.mat``.
 - Settings files can be reloaded into the app. To reload settings from a previous animation, click the
 ``Load settings`` button at the top of the app, and select a ``settings.mat`` file. You can then adjust the settings
 for a new animation.
 
-## Links
-
-- [GitHub repository](https://github.com/jemissik/movebank_vis)
-- Check out the [overview page on Movebank's website](https://www.movebank.org/cms/movebank-content/ecodata)
-
-## Contents
+## Animation instructions
 
 ```{toctree}
 ---
-maxdepth: 2
+maxdepth: 3
 ---
 user_guide

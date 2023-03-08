@@ -8,15 +8,15 @@ Welcome to ECODATA-Animate's documentation!
 .. include:: ../README.md
    :parser: myst_parser.sphinx_
 
-Contents
-========
+
+User guide
+==========
 
 .. toctree::
    :maxdepth: 3
 
    user_guide/index
    support
-   matlab_functions
    developer_guide
 
 Indices and tables
