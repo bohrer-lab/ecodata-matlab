@@ -16,8 +16,18 @@ for these pages are located in the [docs folder](https://github.com/jemissik/mov
 
 ### Building the docs
 After editing the pages, you can look at a build of the pages to see how things will actually look in the docs website. There are two options for this:
-- Option 1: [Open a pull request](https://github.com/jemissik/movebank_vis/pulls), and Read the Docs will build a preview of the docs pages. A link to the build can be found near the bottom of the page of the PR, in the merge checks section (once the build is finished, click on "Details" for the docs/readthedocs.org:ecodata-animate item.
-You may have to click "Show details" next to where it says "All checks have passed"). You can push additional commits to the open PR if you want to change anything after seeing the preview build.
+- Option 1: [Open a pull request](https://github.com/jemissik/movebank_vis/pulls), and Read the Docs will build a preview of the docs pages. A link to the build can be found near the bottom of the page of the PR, in the merge checks section. You may have to click "Show details" next to where it says "All checks have passed".  Once the build is finished, click on "Details" for the docs/readthedocs.org:ecodata-animate item:
+  ![rtd_status_check](images/github_status_checks.png)
+
+  This will take you to the build for the PR. Once the build is finished, click on the "View docs" link to the right of build info:
+
+  ![view_rtd_build](images/rtd_build.png)
+
+  Note that the large green "View docs" button at the top of the page takes you to the current docs page, not the PR build. When viewing the docs build for a PR, you should see a banner at the top of the docs pages that looks like this:
+  ![rtd_pr_banner](images/rtd_pr_version_warning.png)
+
+  You can push additional commits to the open PR if you want to change anything after seeing the preview build. Read the docs will build a new preview whenever a new commit is made to the PR.
+  
 - Option 2: Build the docs locally. You will need to have python and the docs requirements installed.
 
     - To install the doc requirements: ``pip install sphinx furo sphinxcontrib-matlabdomain myst-parser`` or install
