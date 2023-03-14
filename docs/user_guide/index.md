@@ -3,7 +3,7 @@
 ECODATA-Animate is a MATLAB® program for creating customized animated maps of animal movements. The program creates image frames that can be animated using the [ECODATA-Prepare Movie Maker App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/movie_maker.html).
 
 ```{Tip}
-This user guide can also be downloaded for offline use! Click the version flyout menu (at the bottom of the left sidebar). Under ``Downloads``, you can choose to download the documentation in PDF, Epub, or zipped HTML format.
+This user guide can also be downloaded for offline use! [Click here](https://readthedocs.org/projects/ecodata-animate/downloads/) to download the documentation in PDF, Epub, or zipped HTML format.
 ```
 
 ## Installation
