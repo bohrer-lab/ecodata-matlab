@@ -82,6 +82,3 @@ matlab_src_dir = Path(__file__).parent.parent
 # matlab_src_dir = os.path.abspath(os.path.join(this_dir, '..'))
 # primary_domain = 'mat'
 
-html_theme_options = {
-    "external_links": [("Github", "https://github.com/jemissik/movebank_vis")]
-}
