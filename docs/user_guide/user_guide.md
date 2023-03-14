@@ -60,17 +60,30 @@ You can choose from the default colors in the dropdown box, or enter a custom co
 
 Here you can optionally define arbitrary points and labels to display in the animation, for example to identify place names or times and locations of relevant events.
 
-1. Prepare a .csv file containing labels and their placement on the map. These can be provided in the following format:
+1. Prepare a .csv file containing labels and their placement on the map. This file can be prepared using a spreadsheet (e.g., Excel), **as long it is saved as a .csv file**.
+Information to include is as follows (all coordinates in decimal deg):
+    - ``longitude`` and ``latitude`` (required): coordinates for the location of interest, in decimal degrees, WGS84
+    - ``label`` (required): the text to display
+    - ``start_time`` and ``end_time`` (optional): can be used to restrict the display of the label to the specified range of dates, in format yyyy-mm-dd
+    - ``label_longitude`` and ``label_latitude`` (optional): coordinates where the label text should be placed on the map (left edge of label if the point is to the left of the label, right edge if the point is to the right of the label). This option is used if the label placement needs adjustment.
+    - ``horizontal_alignment`` (optional): "right" or "left", indicating the alignment of the point relative to the label (e.g., "left" means that the point will be aligned to the left of the label). Defaults to "left" if not otherwise specified.
 
-*longitude,latitude,label,start_time,end_time,label_longitude,label_latitude,label_loc
--108.5,45.8,Billings,2010-12-31,2011-01-01,-108.45,45.82,right*
+    An example will look something like this (this example is displayed in table format for easier reading, but **note that the file must be saved in .csv format**):
 
-Information to include is as follows (all coordinates in decimal deg:
-- *longitude* and *latitude* (required): coordinates for the location of interest, in decimal degrees, WGS84
-- *label* (required): the text to display
-- *start_time* and *end_time* (optional): can be used to restrict the display of the label to the specified range of dates, in format yyyy-mm-dd
-- *label_longitude* and *label_latitude* (to be included in next release): coordinates for the upper inside corner of the label text should be placed on the map (upper left corner for a label to the right of the point, upper right corner for a label placed to the left of the point)
-- *label_loc* (to be included in next release): "right" or "left", indicating the placement of the label relative to the point
+    | longitude 	| latitude 	| label        	| start_time 	| end_time   	| label_longitude 	| label_latitude 	| horizontal_alignment 	|
+    |-----------	|----------	|--------------	|------------	|------------	|-----------------	|----------------	|----------------------	|
+    | -123      	| 56       	| Test point 1 	| 2015-07-20 	| 2015-07-30 	| -123.1          	| 56.1           	|                      	|
+    | -121.5    	| 54.5     	| Test point 2 	|            	|            	|                 	|                	| right                	|
+
+    In .csv format:
+    ```
+    longitude,latitude,label,start_time,end_time,label_longitude,label_latitude,horizontal_alignment
+    -123,56,Test point 1,2015-07-20,2015-07-30,-123.1,56.1,
+    -121.5,54.5,Test point 2,,,,,right
+    ```
+
+    Note that only the ``longitude``, ``latutude``, and ``label`` columns are required, and rows can also be left empty in the optional columns.
+
 
 2. Click on ``Select file`` and browse to the .csv file with the label information.
 3. Adjust the marker color and size as desired.
