@@ -19,7 +19,7 @@ Before using this program, prepare data to include in the animation. Inputs to E
 
 - A file of movement track data in Movebank format (required) that can include additional columns.
 - 1 or 2 static and/or dynamic raster files (maps) in NetCDF-4 format (optional). These can be used as background layers for the animation, with the possibility to display one layer as a colormap and the other with contour lines.
-- Shapefiles with lines or polygons containing other vector data you want to display (optional). For example, you could use this to include water bodies, roads or property lines.
+- Shapefiles with points, lines, or polygons containing other vector data you want to display (optional). For example, you could use this to include water bodies, roads or property lines.
 - A list of points to label on the map in .csv format (optional), with the option to restrict the display of the label to a range of dates.
 - In addition, you can display elevation contours using a stored digital elevation model (DEM) that does not require a user file.
 

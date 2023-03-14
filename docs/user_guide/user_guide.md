@@ -48,8 +48,9 @@ Here you can optionally select shapefiles to display in your animation frames. T
 
 1. Click on an ``Select shapefile`` button and browse to a shapefile containing a vector data layer to display in the animation.
 2. Available display properties will depend on the type of vector layer:
-- polygons: Select a color for polygon outlines (``Edge color``) and fill (``Face color``), and define the fill transparency (``Face opacity``, 1 = fully opaque).
-- polylines: Select a line color and width.
+- Polygons: Select a color for polygon outlines (``Edge color``) and fill (``Face color``), and define the fill transparency (``Face opacity``, 1 = fully opaque).
+- Lines: Select a line color and width.
+- Points: Select a color, marker style, and marker size.
 You can choose from the default colors in the dropdown box, or enter a custom color using a hexadecimal color value (e.g., “#97d2f0”), which you can choose using a color picker like [this one](https://htmlcolorcodes.com/color-picker/) or by identifying the color value in other files using graphics or mapping software.
 3. Repeat steps 1 and 2 to add additional shapefile layers, if desired.
 4. If you want to remove shapefiles you have entered, you can click ``Clear all shapefiles`` to remove all of them, or ``Clear last shapefile`` to clear just the last one that was entered.
