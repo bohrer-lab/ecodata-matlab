@@ -157,8 +157,9 @@ function generate_frame(tracks, frame_time, kwargs)
             kwargs.labeled_points("marker_size"), kwargs.labeled_points("marker_color"), 'filled')
 
         for i=1:height(labels_filtered)
-            m_text(labels_filtered.longitude(i),labels_filtered.latitude(i), ...
-                labels_filtered.label{i}, 'horizontal', 'left', 'FontSize', 8)
+            m_text(labels_filtered.label_longitude(i),labels_filtered.label_latitude(i), ...
+                labels_filtered.label{i}, 'horizontal', labels_filtered.horizontal_alignment{i}, ...
+                'FontSize', 8)
         end
     end
 
