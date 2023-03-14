@@ -102,7 +102,10 @@ function generate_frame(tracks, frame_time, kwargs)
             end
             
             % Check geometry type and plot
-            if shp.is_line()
+            if shp.is_point()
+                mapshow(shp.data, 'color', shp.point_color, 'Marker', shp.marker_style, ...
+                    'MarkerSize', shp.marker_size);
+            elseif shp.is_line()
                 mapshow(shp.data, 'color', shp.line_color, 'LineWidth', shp.line_width); 
             elseif shp.is_poly()
                 mapshow(shp.data,'FaceColor', shp.face_color, ...

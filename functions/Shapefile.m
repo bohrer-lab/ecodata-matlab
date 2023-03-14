@@ -3,6 +3,9 @@ classdef Shapefile < handle
         filename
         geometry_type
         data
+        point_color % For point geometry
+        marker_style % For point geometry
+        marker_size % For point geometry
         line_color % For line geometry
         line_width % For line geometry
         edge_color % For polygon geometry
@@ -14,6 +17,9 @@ classdef Shapefile < handle
         function obj = Shapefile(filein, kwargs)
             arguments
                 filein
+                kwargs.point_color = NaN
+                kwargs.marker_style = NaN
+                kwargs.marker_size = NaN
                 kwargs.line_color = NaN
                 kwargs.line_width = NaN
                 kwargs.edge_color = NaN
@@ -24,8 +30,11 @@ classdef Shapefile < handle
             if nargin > 0
                 obj.filename = filein;
                 % Get geometry of shapefile 
-                obj.geometry_type = shaperead(filein, 'RecordNumbers', 1).Geometry;
+                obj.geometry_type = lower(shaperead(filein, 'RecordNumbers', 1).Geometry);
 
+                obj.point_color = kwargs.point_color;
+                obj.marker_style = kwargs.marker_style;
+                obj.marker_size = kwargs.marker_size;
                 obj.line_color = kwargs.line_color;
                 obj.line_width = kwargs.line_width;
                 obj.edge_color = kwargs.edge_color;
@@ -38,14 +47,17 @@ classdef Shapefile < handle
             obj.data = shaperead(obj.filename);
         end
 
+        function result = is_point(obj)
+            result = contains(obj.geometry_type, 'point');
+        end
+
         function result = is_line(obj)
-            result = strcmp(obj.geometry_type, 'Line');
+            result = strcmp(obj.geometry_type, 'line');
         end
 
         function result = is_poly(obj)
-            result = strcmp(obj.geometry_type, 'Polygon');
+            result = strcmp(obj.geometry_type, 'polygon');
         end
-
 
     end
 
