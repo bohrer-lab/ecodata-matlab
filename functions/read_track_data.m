@@ -7,4 +7,9 @@ function data = read_track_data(filename)
     % Returns:
     %     timetable: Matlab timetable of the Movebank data
 
-    data = readtimetable(filename, 'RowTimes', 'timestamp');
+    opts = detectImportOptions(filename);
+    opts = setvartype(opts, {'individual_local_identifier'}, {'char'});
+
+    data = readtimetable(filename, opts, 'RowTimes', 'timestamp');
+
+   
