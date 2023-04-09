@@ -3,25 +3,21 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Movebank Visualization's documentation!
+Welcome to ECODATA-Animate's documentation!
 ==================================================
 .. include:: ../README.md
    :parser: myst_parser.sphinx_
 
-.. include:: ../pymovebank/README.md
-   :parser: myst_parser.sphinx_
 
-Contents
-========
+User guide
+==========
 
 .. toctree::
    :maxdepth: 3
 
-   movebank_functions
-   examples
-   roads
-   pymovebank
-
+   user_guide/index
+   support
+   developer_guide
 
 Indices and tables
 ==================

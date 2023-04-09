@@ -14,14 +14,13 @@ import os
 import sys
 
 sys.path.insert(0, os.path.abspath(".."))
-sys.path.insert(0, os.path.abspath("../pymovebank/src/"))
 from pathlib import Path
 
 
 # -- Project information -----------------------------------------------------
 
-project = "Movebank Visualization"
-copyright = "2022, Justine Missik"
+project = "ECODATA-Animate"
+copyright = "2023, Justine Missik"
 author = "Justine Missik"
 
 
@@ -34,14 +33,8 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",  # Create neat summary tables for modules/classes/methods etc
     "sphinx.ext.napoleon",
-    "sphinx.ext.githubpages",
     "sphinx.ext.todo",
-    # 'myst_nb',
-    "nbsphinx",
-    "nbsphinx_link",
-    "matplotlib.sphinxext.plot_directive",
     "sphinxcontrib.matlab",
-    # 'm2r2'
     "myst_parser",
 ]
 
@@ -69,10 +62,12 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_book_theme"
-# html_theme = 'press'
+# html_theme = "sphinx_book_theme"
+# html_theme = "press"
+# html_theme = "sphinx_material"
 # html_theme = 'alabaster'
-# html_theme = 'pydata_sphinx_theme'
+html_theme = "furo"
+# html_theme = "sphinxawesome_theme"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -87,6 +82,3 @@ matlab_src_dir = Path(__file__).parent.parent
 # matlab_src_dir = os.path.abspath(os.path.join(this_dir, '..'))
 # primary_domain = 'mat'
 
-html_theme_options = {
-    "external_links": [("Github", "https://github.com/jemissik/movebank_vis")]
-}

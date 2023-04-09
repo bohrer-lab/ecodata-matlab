@@ -12,7 +12,7 @@ arguments
 end
 
     % Get dimension info 
-    dim_info = struct2table(ncinfo(filename).Dimensions);
+    dim_info = struct2table(ncinfo(filename, var_of_interest).Dimensions);
     ndims = height(dim_info);
     
     % Get index of time dimension

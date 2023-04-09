@@ -1,40 +1,9 @@
-# Overview
+# ECODATA-Animate
 
-See the [documentation pages](https://jemissik.github.io/movebank_vis/index.html)
+ECODATA-Animate is a MATLAB® program for creating customized animated maps of animal movements. The program creates image frames that can be animated using the [ECODATA-Prepare Movie Maker App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/movie_maker.html). Define track visualization options and include additional layers from raster files, shapefiles, an elevation model and label lists. See [ECODATA-Prepare](https://ecodata-apps.readthedocs.io/en/latest/index.html) for additional tools for preparing input data. Development is supported by MathWorks® and the NASA Earth Science Division, Ecological Forecasting Program, as part of the [Room to Roam: Y2Y Wildlife Movements](https://ceg.osu.edu/Y2Y_Room2Roam) project.
 
-# Setup instructions
+Check out the documentation!
+[App documentation](https://ecodata-animate.readthedocs.io/en/latest/)
+[Developer guide](https://ecodata-animate.readthedocs.io/en/latest/developer_guide.html)
 
-## Adding datasets
-- Most of the datasets are too large to be stored in the repository
-- Datasets used in the example scripts can be downloaded [here](https://drive.google.com/drive/folders/1pyK4E-z8XUjRlYKYFX5L198YOlvOoUHA?usp=sharing)
-- Copy any datasets you want to use to ``data/user_datasets``
-## Adding topo data for the m_map package
-- [Download the topo data](https://drive.google.com/drive/folders/1RmhHbSsm15i5xQVMWLaerv39fHja2fgr?usp=sharing)
-- Copy the contents of this folder to ``m_map/data``
-## Specifying Movebank login credentials:
-- Save ``movebank_credentials_template.txt`` as ``movebank_credentials.txt`` and update it with your username and password.
-- ``movebank_credentials.txt`` is in the .gitignore so it won't be tracked.
-
-# Contributing
-Check out this [simple guide for using git](https://rogerdudler.github.io/git-guide/).
-
-1. Create a new branch for your contributions.
-2. Commit your changes in this branch.
-3. [Open a pull request](https://github.com/jemissik/pymovebank/pulls) to merge changes from your branch into the
-repository's ``develop`` branch. 
-
-# Functions available:
-
-## Data access:
-- ``import_from_movebank.m``: Import data directly from Movebank using the api.
-- ``read_downloaded_data.m``: Reads in Movebank data that has already been saved locally.
-
-## Visualizations:
-- ``plot_annotated_track.m``: Static plot of track data, annotated with an environmental variable
-- ``animate_track.m``: Basic animation of track data
-- ``animate_track_annotated.m``: Animation of track data, annotated with an environmental variable
-
-# Roadmap
-## Next steps:
-
-## Planned:
+**Note**: ECODATA-Animate is in the early stages of development, and any feedback is welcome! If you have any suggestions or feature requests, enounter any bugs, or come across places where the documentation is unclear, please [submit a GitHub issue](https://github.com/jemissik/movebank_vis/issues).

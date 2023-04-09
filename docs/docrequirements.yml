@@ -1,20 +1,15 @@
-name: pmv-devreqs
+name: mat-docs
 channels:
   - conda-forge
-  - defaults
 dependencies:
-  - pandoc
   - pip
   - pip:
-    - conda-merge
-    - black
-    - isort
-    - pytest
-    - m2r2
-    - pydata_sphinx_theme
-    - sphinx_book_theme
+    # - pydata_sphinx_theme
+    # - sphinx_book_theme
+    # - sphinx-press-theme
+    # - sphinxawesome-theme
+    - sphinx
+    - furo
+    # - sphinx-material
     - sphinxcontrib-matlabdomain
     - myst-parser
-    - docutils>=0.17
-    - nbsphinx
-    - nbsphinx-link
