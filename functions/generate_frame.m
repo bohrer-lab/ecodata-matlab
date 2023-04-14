@@ -2,8 +2,9 @@ function generate_frame(tracks, frame_time, kwargs)
     arguments
         tracks
         frame_time
-        kwargs.gridded_data = containers.Map() % Map of filename, and variable labels
+        kwargs.gridded_data = {}
         kwargs.contour_data = containers.Map()
+        kwargs.quiver_data = {}
         kwargs.elevation = containers.Map()
         kwargs.shapefile_stack = {}
         kwargs.raster_image = NaN
@@ -142,6 +143,29 @@ function generate_frame(tracks, frame_time, kwargs)
         end
     end
 
+    %% Quivers
+    if ~isempty(kwargs.quiver_data)
+
+        if isempty(kwargs.quiver_data.time_index)
+            kwargs.quiver_data.load_time_index;
+        end
+
+        % Load new slice of data
+        times_before_frame = kwargs.quiver_data.time_index(kwargs.quiver_data.time_index <= frame_time);
+
+        current_nc_time = find(min(abs(times_before_frame-frame_time))==abs(times_before_frame-frame_time));
+    
+        if ~isempty(current_nc_time)
+    
+            [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf( ...
+                    kwargs.gridded_data.filename, ...
+                    kwargs.gridded_data.latvar, ...
+                    kwargs.gridded_data.lonvar, ...
+                    kwargs.gridded_data.timevar, ...
+                    kwargs.gridded_data.var_of_interest, ...
+                    start=current_nc_time, count=1);
+        end
+    end
     %% Elevation
     if ~isempty(kwargs.elevation)
         m_etopo2('contour', floor(linspace(min(kwargs.elevation("elev"), [], 'all'), ...
