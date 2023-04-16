@@ -19,7 +19,7 @@ end_date = datetime("20-May-2004");
 max_age = 4; % max timesteps before resetting a quiver
 
 quiver_respawn = 12;
-quiver_size = 1;
+quiver_size = .001;
 quiver_speed = 1;     % Speed of particles scaled with U & V.
 
 
@@ -28,7 +28,7 @@ quiver_speed = 1;     % Speed of particles scaled with U & V.
 netcdf_path = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/data/user_datasets/eagle_ds_2004_thinned2.nc';
 
 
-quiver_size = quiver_size/100;
+% quiver_size = quiver_size/100;
 quiver_speed = quiver_speed/100;
 
 %% Load and process files
@@ -138,8 +138,8 @@ for timeidx = 1:length(timestamp)
 
     if timeidx > 1
         for i=1:length(q_cells); delete(q_cells{i}); end
-        for i=1:length(h_cells); delete(h_cells{i}); end
-        for i=1:length(s_cells); delete(s_cells{i}); end
+        % for i=1:length(h_cells); delete(h_cells{i}); end
+        % for i=1:length(s_cells); delete(s_cells{i}); end
     end
     q_cells = cell(1,length(particle_h));
 
@@ -200,12 +200,16 @@ for timeidx = 1:length(timestamp)
              % Update quivers
             vecscl=1/quiver_size; % quiver vector scalar param (inverse of size, bigger = smaller)
 
+            [plot_lon, plot_lat] = m_ll2xy(particle_h{p}.lon, particle_h{p}.lat);
+
+
             quiverh = m_vec(vecscl, particle_h{p}.lon,particle_h{p}.lat,particle_h{p}.u,particle_h{p}.v,[.25, .25, 1],'edgeclip','on');
+%             quiverh = quiver(plot_lon, plot_lat, particle_h{p}.u, particle_h{p}.v, 'color', [1 0 0 0.1]);
 
             alpha_ = 1 - particle_h{p}.age(1) / max_age;
             quiverh.FaceVertexAlphaData = alpha_;
             quiverh.FaceAlpha = 'flat' ;
-%             quiverh.EdgeAlpha = alpha_;
+            quiverh.EdgeAlpha = alpha_;
             quiverh.LineStyle = 'none';
 
 
@@ -252,6 +256,3 @@ for timeidx = 1:length(timestamp)
         drawnow;
 
 end
-
-
-

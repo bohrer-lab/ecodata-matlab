@@ -59,8 +59,8 @@ classdef Quivers < handle
                 obj.varnames = {ncinfo(filein).Variables.Name};
                 obj.quiver_lifespan = kwargs.quiver_lifespan;
                 obj.quiver_respawn_interval = kwargs.quiver_respawn_interval;
-                obj.quiver_size = kwargs.quiver_size/100;
-                obj.quiver_speed = kwargs.quiver_speed/100;
+                obj.quiver_size = kwargs.quiver_size;
+                obj.quiver_speed = kwargs.quiver_speed;
                 obj.quiver_color = kwargs.quiver_color;
             end
         end
