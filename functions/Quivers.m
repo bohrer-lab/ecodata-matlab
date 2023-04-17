@@ -7,8 +7,6 @@ classdef Quivers < handle
         u_var  % u vector component
         v_var  % v vector component
 
-        quiver_lifespan % Lifespan (max number of timesteps) before resetting a quiver
-        quiver_respawn_interval  % interval (in number of timesteps) for which quivers will respawn
         quiver_size  % Size of quivers
         quiver_speed  % Speed of quivers, scaled with u&v
         quiver_color
@@ -17,6 +15,7 @@ classdef Quivers < handle
         time_index
         dt
 
+        max_age % Lifespan (max number of timesteps) before resetting a quiver
         lat
         lon
         d_lat
@@ -26,10 +25,7 @@ classdef Quivers < handle
         LAT
         LON
         particle
-        particle_h
-        q_cells
-        max_age
-        quiverh 
+        quiverh
         minlat
         maxlat
         minlon
@@ -48,8 +44,6 @@ classdef Quivers < handle
                 kwargs.timevar = ''
                 kwargs.u_var = ''
                 kwargs.v_var = ''
-                kwargs.quiver_lifespan = 4;
-                kwargs.quiver_respawn_interval = 4;
                 kwargs.quiver_size = .02;
                 kwargs.quiver_speed = 10;
                 kwargs.quiver_color = ''
@@ -63,8 +57,6 @@ classdef Quivers < handle
                 obj.u_var = kwargs.u_var;
                 obj.v_var = kwargs.v_var;
                 obj.varnames = {ncinfo(filein).Variables.Name};
-                obj.quiver_lifespan = kwargs.quiver_lifespan;
-                obj.quiver_respawn_interval = kwargs.quiver_respawn_interval;
                 obj.quiver_size = kwargs.quiver_size;
                 obj.quiver_speed = kwargs.quiver_speed;
                 obj.quiver_color = kwargs.quiver_color;
@@ -139,7 +131,7 @@ classdef Quivers < handle
             if obj.quiver_size == 0
                 uvmag = abs(U(:,:,1) + i*V(:,:,1));
                 [M,I] = max(uvmag, [], 'all');
-                
+
                 OrigAxUnits = get(gca,'Units');
                 if OrigAxUnits(1:3) == 'nor'
                    OrigPaUnits = get(gcf, 'paperunits');
@@ -154,15 +146,15 @@ classdef Quivers < handle
                    set(gca, 'units', OrigAxUnits);
                    axWidLenInches = axposInches(3:4);
                 end
-                
+
                 % Multiply inches by the following to get data units:
                 scX = diff(get(gca, 'XLim'))/axWidLenInches(1);
                 scY = diff(get(gca, 'YLim'))/axWidLenInches(2);
                 sc = max([scX;scY]);  %max selects the dimension limited by
                                       % the plot box.
-                
+
                 L = 1/20;
-                
+
                 vecscl = M*sc/L;
                 obj.quiver_size = 1/vecscl;
             end
@@ -174,14 +166,14 @@ classdef Quivers < handle
             if isempty(obj.particle)
                 obj.setup_particles(U, V);
             end
-            
+
             %% Plot particles and calculate new positions based on U & V
-            
+
             numquivers = prod(obj.gridsize);
             % q_cells = cell(1,length(particle_h));
-            
+
                 % Calculate velocity vector
-            
+
                 for i_lat = 1:size(obj.particle.lat, 1)
                     for j_lat = 1:size(obj.particle.lat, 2)
                         l = obj.particle.lat(i_lat, j_lat);
@@ -198,7 +190,7 @@ classdef Quivers < handle
                         end
                     end
                 end
-            
+
                 for i_lon = 1:size(obj.particle.lon, 1)
                     for j_lon = 1:size(obj.particle.lon, 2)
                         l = obj.particle.lon(i_lon, j_lon);
@@ -211,66 +203,32 @@ classdef Quivers < handle
                         end
                     end
                 end
-            %     disp(U(i_net_lon, i_net_lat))
-            %     disp(obj.particle.u(i_lon, j_lon))
+
                 obj.particle.v(i_lon, j_lon) = V(i_net_lon, i_net_lat);
                 obj.particle.u(i_lon, j_lon) = U(i_net_lon, i_net_lat);
-            %     disp(particle.u(i_lon, j_lon))
-            
-%             disp("ran loops")
-            
-            
-            
-                 % Update quivers
-            %             vecscl=1/obj.quiver_size; % quiver vector scalar param (inverse of size, bigger = smaller)
-            
-            %     [plot_lon, plot_lat] = m_ll2xy(particle.lon, particle.lat);
-            
-            
-            %     disp("calling m_vec")
-            
-            %     quiverh = m_vec(vecscl, particle.lon,particle.lat,particle.u,particle.v,[.25, .25, 1],'edgeclip','on');
-            % %             quiverh = quiver(plot_lon, plot_lat, particle.u, particle.v, 'color', [1 0 0 0.1]);
-            % 
-            % %     drawnow;
-            %     alpha_ = max(1 - particle.age(1) / obj.max_age, 0);
-            % %             disp(particle.age(1))
-            % %             disp(particle.age(1)/obj.max_age)
-            % %             disp(obj.max_age)
-            % %             disp(alpha_)
-            %     quiverh.FaceVertexAlphaData = alpha_;
-            %     quiverh.FaceAlpha = 'flat' ;
-            %     quiverh.EdgeAlpha = alpha_;
-            %     quiverh.LineStyle = 'none';
-            %     quiverh.AlphaDataMapping = 'none';
-            
-            
-            %     q_cells{p} = quiverh;
-            
-            
+
+
                 % Calculate Next Position
                 particle_lon_next = obj.particle.lon + obj.quiver_speed  * obj.particle.u;
                 particle_lat_next = obj.particle.lat + obj.quiver_speed  * obj.particle.v;
                 obj.particle.lon = particle_lon_next;
                 obj.particle.lat = particle_lat_next;
-            
-            
+
+
                 % Check of out of range and mark those as inactive
                 lonoutofrange = (obj.particle.lon < obj.minlon) | (obj.particle.lon > obj.maxlon);
                 latoutofrange = (obj.particle.lat < obj.minlat) | (obj.particle.lat > obj.maxlat);
                 too_old = (obj.particle.age >= obj.max_age);
                 obj.particle.active = ~(lonoutofrange | latoutofrange | too_old);
-            
+
                 % Reassign inactive particles
-            
                 for idx = 1:numquivers
-            
+
                     if ~obj.particle.active(idx)
                         obj.particle.lat(idx) = obj.LAT(idx);
                         obj.particle.lon(idx) = obj.LON(idx);
-            % %
                         obj.particle.age(idx) = 0;
-            
+
                     end
                 end
             obj.particle.age = obj.particle.age + 1;
@@ -280,9 +238,9 @@ classdef Quivers < handle
         function obj = plot(obj)
             vecscl = 1/obj.quiver_size;
             obj.quiverh = m_vec(vecscl, obj.particle.lon,obj.particle.lat,obj.particle.u,obj.particle.v,obj.quiver_color,'edgeclip','on');
-        
+
             alpha_ = max(1 - obj.particle.age(1) / obj.max_age, 0);
-        
+
             obj.quiverh.FaceVertexAlphaData = alpha_;
             obj.quiverh.FaceAlpha = alpha_;
             obj.quiverh.EdgeAlpha = alpha_;
