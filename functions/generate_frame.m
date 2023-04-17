@@ -183,7 +183,7 @@ function generate_frame(tracks, frame_time, kwargs)
 %             quiverh = m_vec(kwargs.quiver_data.quiver_size, LON, LAT, U, V,'edgeclip','on');
             [plot_lon, plot_lat] = m_ll2xy(LON, LAT);
 
-            quiverh = quiver(plot_lon, plot_lat, U, V, 'color', [1 0 0]);
+            quiverh = quiver(plot_lon, plot_lat, U, V, 'color', kwargs.quiver_data.quiver_color);
             
         end
     end
