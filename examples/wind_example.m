@@ -1,11 +1,11 @@
 % Wind animation - eagles 
 
 % Files 
-trackfile = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/data/user_datasets/HawkWatch International Golden Eagles.csv';
-windfile = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/data/user_datasets/eagle_ds_2004_thinned2.nc';
+trackfile = '/Users/madelinescyphers/Documents/projs_.nosync/movebank_vis/data/user_datasets/HawkWatch International Golden Eagles.csv';
+windfile = '/Users/madelinescyphers/Documents/projs_.nosync/movebank_vis/data/user_datasets/eagle_ds_2004_thinned2.nc';
 
 % Output location
-output_directory = '/Users/jmissik/Desktop/repos.nosync/movebank_vis/output/animator_output/test1';
+output_directory = '/Users/madelinescyphers/Documents/projs_.nosync/movebank_vis/output/animator_output/test2';
 
 
 % Track data
@@ -18,7 +18,7 @@ end_time = datetime('2004-05-20');
 
 wind_data = Quivers(windfile, latvar='latitude', lonvar='longitude', timevar='time', ...
     u_var='u10', v_var='v10', quiver_lifespan=4, quiver_respawn_interval=4, ...
-    quiver_size=.01, quiver_speed=1, quiver_color='k');
+    quiver_speed=1, quiver_color='k');
 
 animate_tracks(tracks, quiver_data=wind_data, start_time=start_time, end_time=end_time, output_directory=output_directory)
 
