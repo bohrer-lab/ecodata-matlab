@@ -44,7 +44,7 @@ classdef Quivers < handle
                 kwargs.timevar = ''
                 kwargs.u_var = ''
                 kwargs.v_var = ''
-                kwargs.quiver_size = .02;
+                kwargs.quiver_size = 0;
                 kwargs.quiver_speed = 10;
                 kwargs.quiver_color = ''
             end
@@ -66,7 +66,6 @@ classdef Quivers < handle
             obj.max_age = 10;
             obj.load_time_index();
             obj.calc_quiver_grid();
-            obj.set_quiver_size();
         end
 
         function obj = load_time_index(obj)
@@ -126,11 +125,11 @@ classdef Quivers < handle
             obj.particle.active = ones(obj.gridsize);
         end
 
-        function obj = set_quiver_size(obj)
+        function obj = set_quiver_size(obj, U, V)
 
             if obj.quiver_size == 0
                 uvmag = abs(U(:,:,1) + i*V(:,:,1));
-                [M,I] = max(uvmag, [], 'all');
+                M = max(uvmag, [], 'all');
 
                 OrigAxUnits = get(gca,'Units');
                 if OrigAxUnits(1:3) == 'nor'
@@ -165,6 +164,10 @@ classdef Quivers < handle
 
             if isempty(obj.particle)
                 obj.setup_particles(U, V);
+            end
+
+            if obj.quiver_size == 0
+                obj.set_quiver_size(U, V);
             end
 
             %% Plot particles and calculate new positions based on U & V
