@@ -179,7 +179,7 @@ for timeidx = 1:length(timestamp)
                     for i_net_lon = 1:length(lon_resampled)
                         within_range = abs(lon_resampled(i_net_lon) - l) <= d_lon / 2;
                         if within_range
-                            particle_h{p}.u(i_lon, j_lon) = V_(i_lon, j_lon);
+                            particle_h{p}.u(i_lon, j_lon) = U_(i_lon, j_lon);
                             break
                         end
 %                         if lon_rounded(i_lon, j_lon) == lon_resampled(i_net_lon)
