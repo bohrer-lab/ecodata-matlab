@@ -175,16 +175,19 @@ function generate_frame(tracks, frame_time, kwargs)
 
             U = quiver_u(:, :, quiver_time == kwargs.quiver_data.time_index(current_quiver_time));
             V = quiver_v(:, :, quiver_time == kwargs.quiver_data.time_index(current_quiver_time));
-            kwargs.quiver_data.move_particles(U, V);
-            kwargs.quiver_data.plot();
-            % make grid for lat/lon
-%             [LAT,LON] = meshgrid(quiver_lat, quiver_long);
-% 
-%             % plot quivers
-% %             quiverh = m_vec(kwargs.quiver_data.quiver_size, LON, LAT, U, V,'edgeclip','on');
-%             [plot_lon, plot_lat] = m_ll2xy(LON, LAT);
-% 
-%             quiverh = quiver(plot_lon, plot_lat, U, V, 'color', kwargs.quiver_data.quiver_color);
+
+            if ~kwargs.quiver_data.use_simple_plot
+                kwargs.quiver_data.move_particles(U, V);
+                kwargs.quiver_data.plot();
+            elseif kwargs.quiver_data.use_simple_plot
+                % make grid for lat/lon
+                [LAT,LON] = meshgrid(quiver_lat, quiver_long);
+    
+                % plot quivers
+                [plot_lon, plot_lat] = m_ll2xy(LON, LAT);
+                
+                quiverh = quiver(plot_lon, plot_lat, U, V, 'color', kwargs.quiver_data.quiver_color);
+            end
             
         end
     end
@@ -323,6 +326,7 @@ function generate_frame(tracks, frame_time, kwargs)
     if exist('h', 'var'); clear h; end
     if exist('s', 'var'); clear s; end
     if exist('r_img', 'var'); clear r_img; end
+    if exist('quiverh', 'var'); clear quiverh; end
     if ~isempty(kwargs.quiver_data.quiverh); clear quivers.quiverh; end
 
 

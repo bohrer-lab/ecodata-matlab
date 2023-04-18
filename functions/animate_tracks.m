@@ -72,8 +72,11 @@ function animate_tracks(tracks, kwargs)
         kwargs.labeled_points('data') = labeled_pts;
     end
     
+    % quivers
     if ~isempty(kwargs.quiver_data)
         kwargs.quiver_data.update_bbox(latlim, lonlim);
+        kwargs.quiver_data.load_time_index();
+        kwargs.quiver_data.calc_quiver_grid();
     end
     
     %% plotting

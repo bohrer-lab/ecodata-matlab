@@ -10,6 +10,7 @@ classdef Quivers < handle
         quiver_size  % Size of quivers
         quiver_speed  % Speed of quivers, scaled with u&v
         quiver_color
+        use_simple_plot
 
         varnames
         time_index
@@ -51,6 +52,7 @@ classdef Quivers < handle
                 kwargs.quiver_size = 0;
                 kwargs.quiver_speed = 1;
                 kwargs.quiver_color = ''
+                kwargs.use_simple_plot=true
             end
 
             if nargin > 0
@@ -64,6 +66,7 @@ classdef Quivers < handle
                 obj.quiver_size = kwargs.quiver_size;
                 obj.quiver_speed = kwargs.quiver_speed;
                 obj.quiver_color = kwargs.quiver_color;
+                obj.use_simple_plot=kwargs.use_simple_plot;
             end
             % quiver speed is rescaled
             obj.quiver_speed = obj.quiver_speed/100;
@@ -71,8 +74,8 @@ classdef Quivers < handle
             obj.quiver_size= obj.quiver_size/100;
             obj.max_age = 24;
             obj.quiver_respawn = 12;
-            obj.load_time_index();
-            obj.calc_quiver_grid();
+%             obj.load_time_index();
+%             obj.calc_quiver_grid();
             obj.frames = 0;
         end
 
