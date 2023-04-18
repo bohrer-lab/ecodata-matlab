@@ -45,7 +45,7 @@ Before using this program, prepare data to include in the animation. Inputs to E
 
 ### General notes
 - Expect some trial and error as you define settings and see how they appear in the saved frames.
-- To review results with minimal processing time, you can start by generating just the last frame of the animation (select ``Generate last frame only`` under ``Track visualization options``. Or, you can limit the "time range" under "Animal track data", so that fewer frames are created. Once the settings are as desired, extend the time range to that of the full dataset for final processing.
+- To review results with minimal processing time, you can start by generating just the last frame of the animation (select ``Generate last frame only`` under ``Output``. Or, you can limit the "time range" under "Animal track data", so that fewer frames are created. Once the settings are as desired, extend the time range to that of the full dataset for final processing.
 - When clicking a button to select a filepath, the browser window might not automatically appear, and may be hidden behind other application windows or displayed on another monitor. Minimizing other windows or clicking on the application icon from the Dock may help to find it.
 ![ecodata-animate_dock_icon](./images/ecodata-animate_dock_icon.png)
 - After selecting a file or setting the output filepath, expect that it may take several seconds before the information loads or updates appear in the status window.

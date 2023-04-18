@@ -2,8 +2,9 @@ function generate_frame(tracks, frame_time, kwargs)
     arguments
         tracks
         frame_time
-        kwargs.gridded_data = containers.Map() % Map of filename, and variable labels
+        kwargs.gridded_data = {}
         kwargs.contour_data = containers.Map()
+        kwargs.quiver_data = {}
         kwargs.elevation = containers.Map()
         kwargs.shapefile_stack = {}
         kwargs.raster_image = NaN
@@ -142,6 +143,54 @@ function generate_frame(tracks, frame_time, kwargs)
         end
     end
 
+    %% Quivers
+    if ~isempty(kwargs.quiver_data)
+
+        if isempty(kwargs.quiver_data.time_index)
+            kwargs.quiver_data.load_time_index;
+        end
+
+        % Load new slice of data
+        times_before_frame = kwargs.quiver_data.time_index(kwargs.quiver_data.time_index <= frame_time);
+
+        current_quiver_time = find(min(abs(times_before_frame-frame_time))==abs(times_before_frame-frame_time));
+    
+        if ~isempty(current_quiver_time)
+            % unpack u data
+            [quiver_lat, quiver_long, quiver_time, quiver_u] = unpack_netcdf( ...
+                    kwargs.quiver_data.filename, ...
+                    kwargs.quiver_data.latvar, ...
+                    kwargs.quiver_data.lonvar, ...
+                    kwargs.quiver_data.timevar, ...
+                    kwargs.quiver_data.u_var, ...
+                    start=current_quiver_time, count=1);
+            % unpack v data
+            [quiver_lat, quiver_long, quiver_time, quiver_v] = unpack_netcdf( ...
+                    kwargs.quiver_data.filename, ...
+                    kwargs.quiver_data.latvar, ...
+                    kwargs.quiver_data.lonvar, ...
+                    kwargs.quiver_data.timevar, ...
+                    kwargs.quiver_data.v_var, ...
+                    start=current_quiver_time, count=1);
+
+            U = quiver_u(:, :, quiver_time == kwargs.quiver_data.time_index(current_quiver_time));
+            V = quiver_v(:, :, quiver_time == kwargs.quiver_data.time_index(current_quiver_time));
+
+            if ~kwargs.quiver_data.use_simple_plot
+                kwargs.quiver_data.move_particles(U, V);
+                kwargs.quiver_data.plot();
+            elseif kwargs.quiver_data.use_simple_plot
+                % make grid for lat/lon
+                [LAT,LON] = meshgrid(quiver_lat, quiver_long);
+    
+                % plot quivers
+                [plot_lon, plot_lat] = m_ll2xy(LON, LAT);
+                
+                quiverh = quiver(plot_lon, plot_lat, U, V, 'color', kwargs.quiver_data.quiver_color);
+            end
+            
+        end
+    end
     %% Elevation
     if ~isempty(kwargs.elevation)
         m_etopo2('contour', floor(linspace(min(kwargs.elevation("elev"), [], 'all'), ...
@@ -277,6 +326,8 @@ function generate_frame(tracks, frame_time, kwargs)
     if exist('h', 'var'); clear h; end
     if exist('s', 'var'); clear s; end
     if exist('r_img', 'var'); clear r_img; end
+    if exist('quiverh', 'var'); clear quiverh; end
+    if ~isempty(kwargs.quiver_data.quiverh); clear quivers.quiverh; end
 
 
     % Make sure no figure objects stay in memory
