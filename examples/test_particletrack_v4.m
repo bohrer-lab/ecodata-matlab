@@ -51,7 +51,8 @@ d_elevation = 200;
 parent_path = fileparts(mfilename('fullpath'));
 % directory for wind data netcdf
 % netcdf_path = fullfile(parent_path, "..", "data", "user_datasets", "wind_data", "adaptor.mars.internal-1654960100.582873-11470-5-61b1b1cb-cfbe-49fd-a03f-3f06495e0ed9.nc");
-netcdf_path = fullfile(parent_path, "..", "data", "user_datasets", "wind_data", "eagle_ds_2004_thinned2.nc");
+% netcdf_path = fullfile(parent_path, "..", "data", "user_datasets", "user_datasets", "eagle_ds_2004_thinned2.nc");
+netcdf_path = '/Users/madelinescyphers/Documents/projs_.nosync/movebank_vis/data/user_datasets/eagle_ds_2004_thinned2.nc';
 % directory for u component data
 % u_d = dir(fullfile(parent_path, "..", "data", "user_datasets", "wind_data", "ECMWF_wind_BC_caribou_April2008-1678726286799667131", "ECMWF_wind_BC_caribou_April2008-1678726286799667131", "ECMWF ERA5 SL Wind (10 m above Ground U Component)"));
 % directory for v component data
@@ -61,7 +62,7 @@ file_ts_post_str = "-0-0.tif";
 ts_input_format = "yyyyMMddHHmmssSSS";
 
 % eagle data path
-e_d = fullfile(parent_path, "..", "data","user_datasets", "wind_data", "HawkWatch International Golden Eagles.csv");
+e_d = '/Users/madelinescyphers/Documents/projs_.nosync/movebank_vis/data/user_datasets/HawkWatch International Golden Eagles.csv';
 
 
 
@@ -101,11 +102,17 @@ end
 
 
 %% Load eagle data
-data_eagle = read_downloaded_data(e_d);
+% data_eagle = read_downloaded_data(e_d);
+% data_eagle = Tracks(e_d, frequency=hours(1));
+% track_memory = 20; /
+
+data_eagle = readtimetable(e_d, 'RowTimes', 'timestamp');
 
 ts_diff = timestamp(2) - timestamp(1);
 start_time = min(timestamp);
 end_time = max(timestamp);
+
+% data_e_filt = data_eagle;
 
 data_e_filt = sortrows(data_eagle( ...
     (data_eagle.timestamp >= start_time) ...

@@ -32,14 +32,33 @@ Here you define how the tracking data will be displayed in the animation, as wel
 (environmental-data)=
 ## Environmental data
 
-Here you can optionally select 1 or 2 static and/or dynamic raster files in NetCDF-4 format to use as background layers for the animation. One will be displayed as a colormap and the other with contour lines. You can request a variety of environmental raster data using NASA's [AppEEARS](https://ecodata-apps.readthedocs.io/en/latest/user_guide/tracks_explorer.html#requesting-environmental-data-from-nasa) service. While the program is designed to handle very large files, for more efficient processing and storage, use raster data only at the resolution needed for the animation. Files can be preprocessed to an appropriate resolution and masked using polygons with the ECODATA-Prepare [Gridded Data Explorer App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/gridded_data_explorer.html).
+Here you can optionally select dynamic up to three raster files in NetCDF-4 format to use as background layers for the animation. There are three environmental layers that can be (optionally):
+- Gridded colormap
+- Contours
+- Vector fields (e.g., for wind)
+
+There is a separate tab under the ``Environmental data`` tab for each of these layers.
+You can request a variety of environmental raster data using NASA's [AppEEARS](https://ecodata-apps.readthedocs.io/en/latest/user_guide/tracks_explorer.html#requesting-environmental-data-from-nasa) service. While the program is designed to handle very large files, for more efficient processing and storage, use raster data only at the resolution needed for the animation. Files can be preprocessed to an appropriate resolution and masked using polygons with the ECODATA-Prepare [Gridded Data Explorer App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/gridded_data_explorer.html).
+
+### Gridded colormap
 
 1. Click on ``Select gridded data`` and browse to a NetCDF (.nc) file containing raster environmental data to use as a color map in the background of the animation.
-2. The app will attempt to populate the variables that define the time, location coordinates, and the variable to display in the animation. Review the results and click the dropdown boxes to update if needed.
-3. Choose a color map. Current options are green, blue, diverging, and [jet](https://www.mathworks.com/help/matlab/ref/jet.html). By default, "green" will display lower values in darker colors. Check ``Invert color map`` to reverse this scale (for example, to show higher NDVI or EVI values in darker green).
-4. Click on ``Select contour data`` and browse to a .nc file containing raster environmental data to display data from a raster file as contour lines in the background of the animation.
-5. The app will attempt to populate the variables that define the time, location coordinates, and the variable to display in the animation. Review the results and click the dropdown boxes to update if needed.
-6. Choose a color and width for the contour lines, and check the box next to ``Show contour text`` to display labels.
+1. The app will attempt to populate the variables that define the time, location coordinates, and the variable to display in the animation. Review the results and click the dropdown boxes to update if needed.
+1. Choose a color map. Current options are green, blue, diverging, and [jet](https://www.mathworks.com/help/matlab/ref/jet.html). By default, "green" will display lower values in darker colors. Check ``Invert color map`` to reverse this scale (for example, to show higher NDVI or EVI values in darker green).
+
+### Contours
+
+1. Click on ``Select contour data`` and browse to a .nc file containing raster environmental data to display data from a raster file as contour lines in the background of the animation.
+1. The app will attempt to populate the variables that define the time, location coordinates, and the variable to display in the animation. Review the results and click the dropdown boxes to update if needed.
+1. Choose a color and width for the contour lines, and check the box next to ``Show contour text`` to display labels.
+
+### Vector fields
+
+1. Click on ``Select vector field data`` and browse to a NetCDF (.nc) file containing raster environmental data to use for vector fields in the animation.
+1. The app will attempt to populate the variables that define the time, location coordinates, and the variables to display in the animation. For vector fields, the dataset needs to include variables for the U and V components of the vectors. Review the results and click the dropdown boxes to update if needed.
+1. Edit additional quiver style options.
+
+Note that if your quiver dataset is too dense, it will need to be thinned using the ECODATA-Prepare [Gridded Data Explorer App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/gridded_data_explorer.html).
 
 (shapefiles)=
 ## Shapefiles

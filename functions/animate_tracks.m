@@ -3,6 +3,7 @@ function animate_tracks(tracks, kwargs)
         tracks
         kwargs.gridded_data = {} 
         kwargs.contour_data = containers.Map()
+        kwargs.quiver_data = {}
         kwargs.elevation = containers.Map()
         kwargs.shapefile_stack = {}
         kwargs.raster_image = NaN
@@ -71,6 +72,12 @@ function animate_tracks(tracks, kwargs)
         kwargs.labeled_points('data') = labeled_pts;
     end
     
+    % quivers
+    if ~isempty(kwargs.quiver_data)
+        kwargs.quiver_data.update_bbox(latlim, lonlim);
+        kwargs.quiver_data.load_time_index();
+        kwargs.quiver_data.calc_quiver_grid();
+    end
     
     %% plotting
 
@@ -81,7 +88,7 @@ function animate_tracks(tracks, kwargs)
             labeled_points=kwargs.labeled_points, raster_image=kwargs.raster_image, ...
             raster_cmap=kwargs.raster_cmap, shapefile_stack = kwargs.shapefile_stack, ...
             elevation=kwargs.elevation, gridded_data=kwargs.gridded_data, ...
-            contour_data=kwargs.contour_data, ...
+            contour_data=kwargs.contour_data, quiver_data=kwargs.quiver_data, ...
             show_legend=kwargs.show_legend)
     else
         frame_number = 0;
@@ -92,7 +99,7 @@ function animate_tracks(tracks, kwargs)
                 labeled_points=kwargs.labeled_points, raster_image=kwargs.raster_image, ...
                 raster_cmap=kwargs.raster_cmap, shapefile_stack = kwargs.shapefile_stack, ...
                 elevation=kwargs.elevation, gridded_data=kwargs.gridded_data, ...
-                contour_data=kwargs.contour_data, ...
+                contour_data=kwargs.contour_data, quiver_data=kwargs.quiver_data, ...
                 show_legend=kwargs.show_legend)
             frame_number = frame_number + 1;
         end
