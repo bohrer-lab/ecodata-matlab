@@ -56,7 +56,7 @@ You can request a variety of environmental raster data using NASA's [AppEEARS](h
 
 1. Click on ``Select vector field data`` and browse to a NetCDF (.nc) file containing raster environmental data to use for vector fields in the animation.
 1. The app will attempt to populate the variables that define the time, location coordinates, and the variables to display in the animation. For vector fields, the dataset needs to include variables for the U and V components of the vectors. Review the results and click the dropdown boxes to update if needed.
-1. Edit the quiver color and scaling parameters for adjusting the quiver size and speed.
+1. Edit additional quiver style options.
 
 Note that if your quiver dataset is too dense, it will need to be thinned using the ECODATA-Prepare [Gridded Data Explorer App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/gridded_data_explorer.html).
 
