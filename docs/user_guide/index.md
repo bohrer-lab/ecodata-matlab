@@ -83,7 +83,9 @@ Before using this program, prepare data to include in the animation. Inputs to E
 - Note that if you select an output directory that already has output files in it, these will be overwritten when you create a new animation.
 - For help or to share suggestions, [submit a GitHub issue](https://github.com/jemissik/movebank_vis/issues) or contact support@movebank.org.
 
-
+(custom-colors)=
+### Using custom colors
+It is possible to use custom colors for many of the animation layers. You can choose from the default colors in the dropdown boxes, or enter a custom color using a hexadecimal color value (e.g., ``#97d2f0``), which you can choose using a color picker like [this one](https://htmlcolorcodes.com/color-picker/) or by identifying the color value in other files using graphics or mapping software.
 ### Saving and reloading settings
 - When an animation is created, the animation settings are saved to the output directory in a file called
 ``settings.mat``.
