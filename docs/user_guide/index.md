@@ -9,9 +9,40 @@ This user guide can also be downloaded for offline use! [Click here](https://rea
 ## Installation
 
 1. [Download the installers for the latest release here](https://github.com/jemissik/movebank_vis/releases/latest), available for Mac and Windows. You can also see all releases (including pre-release versions) [here](https://github.com/jemissik/movebank_vis/releases).
-2. A zipped folder containing the installer and the ECODATA-Animate application will be downloaded to your computer. Extract the files (you may also move them to a different folder on your computer).
-3. If this is the first time you have installed the app, open the ``ECODATA_Animate_Installer`` application to run the installer, and follow the on-screen prompts. If you have installed a previous version of the app (and therefore have MATLAB runtime installed already), you should be able to simply run the ``ECODATA_Animate`` file without needing to run the installer again.
-4. Once the application has been successfully installed, you can open the ECODATA-Animate application. (There may be a short delay (10+ seconds) after launching the ECODATA-Animate application before the program opens. A log file will also be generated in the installer folder.)
+
+```{Tip}
+The installer files for download are under the **Assets** section for a release. If you are on the main releases page, you may need to expand this section in order to see the files available for download.
+
+![release_assets](images/release_assets.png)
+```
+
+1. A zipped folder will be downloaded to your computer. This folder contains:
+    - The application installer (``ECODATA_Animate_Installer``): which installs MATLAB Runtime
+    - The application (``ECODATA_Animate``)
+
+1. Extract the files from the zipped folder (you may also move them to a different folder on your computer).
+1. If this is the first time you have installed the app, open the ``ECODATA_Animate_Installer`` application to run the installer, and follow the on-screen prompts. If you have installed a previous version of the app (and therefore have MATLAB runtime installed already), you should be able to simply run the ``ECODATA_Animate`` file without needing to run the installer again.
+
+```{Important}
+You may need to grant an exception to your security settings in order to run the installer. See [How to open a Mac app from an unidentified developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac)
+
+Other potential issues:
+- If you receive the message "Your installation may require additional configuration steps" at the end of the installation process, this should be able to safely be ignored, see [this issue](https://github.com/jemissik/movebank_vis/issues/72) for more details.
+- If you receive the error message "Unable to write to the selected folder" when runing the installer, see [this issue](https://github.com/jemissik/movebank_vis/issues/73).
+```
+
+1. Once the application has been successfully installed, you can open the ``ECODATA_Animate`` application.
+```{Note}
+There will be a delay (10+ seconds) after launching the ``ECODATA-Animate`` application before the program opens.
+
+A log file will also be generated in the installer folder (useful in case you need to report any issues).
+```
+
+### Updating to a new version of the app
+
+- When updating to a new version of the app, you should be able to simply download the new version and run the new ``ECODATA_Animate`` application, without needing to run the installer again.
+- You should be able to have multiple versions of the app installed at once, which may be useful if you want to try out features of a new release without deleting your working version of the app. Note that you can move/rename the ``ECODATA_Animate`` file (e.g., to add a version number to the file name).
+
 
 ## Getting started
 
