@@ -327,7 +327,11 @@ function generate_frame(tracks, frame_time, kwargs)
     if exist('s', 'var'); clear s; end
     if exist('r_img', 'var'); clear r_img; end
     if exist('quiverh', 'var'); clear quiverh; end
-    if ~isempty(kwargs.quiver_data.quiverh); clear quivers.quiverh; end
+    if ~isempty(kwargs.quiver_data)
+        if ~isempty(kwargs.quiver_data.quiverh)
+            clear kwargs.quiver_data.quiverh;
+        end
+    end
 
 
     % Make sure no figure objects stay in memory
