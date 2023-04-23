@@ -4,6 +4,10 @@ After opening the program, you will see a main window with six tabs, each contai
 
 ![app_gui](images/app_screenshot.png)
 
+```{Tip}
+You can use [custom colors](custom-colors) in addition to the default values included in many of the dropdown menus.
+```
+
 (animal-track-data)=
 ## Animal track data
 
@@ -71,10 +75,14 @@ Here you can optionally select shapefiles to display in your animation frames. T
 - Lines: Select a line color and width.
 - Points: Select a color, marker style, and marker size.
 
-    You can choose from the default colors in the dropdown box, or enter a custom color using a hexadecimal color value (e.g., “#97d2f0”), which you can choose using a color picker like [this one](https://htmlcolorcodes.com/color-picker/) or by identifying the color value in other files using graphics or mapping software.
 3. Repeat steps 1 and 2 to add additional shapefile layers, if desired.
 4. If you want to remove shapefiles you have entered, you can click ``Clear all shapefiles`` to remove all of them, or ``Clear last shapefile`` to clear just the last one that was entered.
 
+```{Important}
+The app will not be able to render shapefiles that are too large and/or have too many features. Files should be clipped to the area of interest using [ECODATA-Prepare's Subsetter app](https://ecodata-apps.readthedocs.io/en/latest/user_guide/subsetter.html) before using them for animations. Note that some shapefiles may still be too large even after clipping them. In this case, try find a lower-resolution version of the dataset, if possible.
+
+A future version of the app will include an option to use rasterized shapfiles (created by ECODATA-Prepare), as a workaround for this limitation.
+```
 
 (labeled-points)=
 ## Labeled points
