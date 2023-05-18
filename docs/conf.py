@@ -36,7 +36,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinxcontrib.matlab",
     "myst_parser",
-    "sphinxcontrib-youtube",
+    "sphinxcontrib.youtube",
 ]
 
 pygments_style='default'
