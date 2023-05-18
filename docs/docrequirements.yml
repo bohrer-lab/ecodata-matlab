@@ -13,3 +13,4 @@ dependencies:
     # - sphinx-material
     - sphinxcontrib-matlabdomain
     - myst-parser
+    - sphinxcontrib-youtube
