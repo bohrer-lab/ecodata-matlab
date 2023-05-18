@@ -36,6 +36,7 @@ extensions = [
     "sphinx.ext.todo",
     "sphinxcontrib.matlab",
     "myst_parser",
+    "sphinxcontrib-youtube",
 ]
 
 pygments_style='default'
@@ -81,4 +82,3 @@ matlab_src_dir = Path(__file__).parent.parent
 # this_dir = os.path.dirname(os.path.abspath(__file__))
 # matlab_src_dir = os.path.abspath(os.path.join(this_dir, '..'))
 # primary_domain = 'mat'
-
