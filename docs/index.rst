@@ -8,7 +8,10 @@ Welcome to ECODATA-Animate's documentation!
 .. include:: ../README.md
    :parser: myst_parser.sphinx_
 
-In the example below, ECODATA was used to create a custom animation of moose movements in southwestern Canada, using
+
+.. youtube:: A7reIKCmxZQ
+
+In the example above, ECODATA was used to create a custom animation of moose movements in southwestern Canada, using
 
 - Tracking data from Movebank study `Peters Hebblewhite Alberta-BC Moose
   <https://www.movebank.org/cms/webapp?gwt_fragment=page=studies,path=study178994931>`_
@@ -16,7 +19,6 @@ In the example below, ECODATA was used to create a custom animation of moose mov
 - Elevation contours from the `ETOPO1 1 Arc-Minute Global Relief Model <https://doi.org/10.7289/V5C8276M>`_
 - Roads and rivers from `Natural Earth <https://www.naturalearthdata.com>`_
 
-.. youtube:: A7reIKCmxZQ
 
 User guide
 ==========
@@ -32,6 +34,5 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`mat-modindex`
 * :ref:`modindex`
 * :ref:`search`
