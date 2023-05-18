@@ -27,10 +27,10 @@ After editing the pages, you can look at a build of the pages to see how things 
   ![rtd_pr_banner](images/rtd_pr_version_warning.png)
 
   You can push additional commits to the open PR if you want to change anything after seeing the preview build. Read the docs will build a new preview whenever a new commit is made to the PR.
-  
+
 - Option 2: Build the docs locally. You will need to have python and the docs requirements installed.
 
-    - To install the doc requirements: ``pip install sphinx furo sphinxcontrib-matlabdomain myst-parser`` or install
+    - To install the doc requirements: ``pip install sphinx furo sphinxcontrib-matlabdomain myst-parser sphinxcontrib-youtube`` or install
     using the conda or pip requirements file (located in the ``docs`` directory)
     - Build the docs: ``sphinx-build -b html docs docs/_build``
     - To view the build, open the ``index.html`` in the docs/_build directory that was created.
