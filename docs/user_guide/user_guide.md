@@ -1,17 +1,46 @@
 # Inputs and settings
 
-After opening the program, you will see a main window with six tabs, each containing settings for different input data. Settings and instructions for each tab are provided below.
+After opening the program, you will see a main window with six tabs, each containing settings for different input data. Settings and instructions for each tab are provided below. Selections shown in the screenshots below can be used to reproduce the [example animation](https://www.movebank.org/cms/movebank-content/ecodata#example_ecodata_animation) illustrating moose movements from the study [Peters Hebblewhite Alberta-BC Moose](https://www.movebank.org/cms/webapp?gwt_fragment=page=studies,path=study178994931).  
 
 ![app_gui](images/app_screenshot.png)
 
 ```{Tip}
-You can use [custom colors](custom-colors) in addition to the default values included in many of the dropdown menus.
+You can use [custom colors](custom-colors) in addition to the default values included in many of the dropdown menus.  
+
+Read our [general notes](general-notes) for advice about using the interface, saving and reloading settings, and iteratively building your animation to optimize your layer and design choices with minimal processing time.
 ```
+
+You can flexibly prepare and test animations within the program. Here is an example of steps to creating an animation:  
+1. Use the tabs at the top of the application to define the contents of the animation. You can work on the tabs in any order.
+- [Animal track data](animal-track-data): Include animal tracking data (required)
+- [Tracks visualization options](track-visualization-options): Define how to display track points and trajectories (required)
+- [Environmental data](environmental-data): Include raster background layers (optional)
+- [Shapefiles](shapefiles): Include additional shapefile layers (optional)
+- [Labeled points](labeled-points): Include a labels layer (optional)
+- [Elevation](elevation): Include elevation contours (optional)
+
+2. Create a folder in which to save the results (a large number of .png files).
+3. Click "Set output file" to specify the folder location. 
+
+```{Tip}
+The file browser window is sometimes hidden behind other windows. Click on the ECODATA_Animate icon from the Dock (on Mac) or close other windows to find it.
+```
+
+4. After providing input data and configurations, click "Create animation". If you have many input files, you may want to add one input at a time, generate a single frame to ensure it displays as expected, and then proceed with the next input [read more](general-notes).
+5. Watch "Status" in the lower right to monitor progress. It may take a minute before a message appears. It should say *"Generating animation… Please be patient"*. Do not shut down your computer, move or rename the folder, or change settings, while this step is in progress. As frames are created, they will be saved in the specified folder, where you can review them to monitor the results and progress.
+6. After processing is complete, you will see the message "Animation saved to the output directory". If the processing fails, error messages will be posted here. You can search for and report errors or unexpected results [here](https://github.com/jemissik/movebank_vis/issues).
+
+![animation_saved](images/ecodata-animate_saved.png)
+
+7. The results consist of a set of .png image files representing each frame for the animation, based on the chosen configuration, which can be viewed and used individually.
+8. Use the [ECODATA-Prepare Movie Maker App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/movie_maker.html) to compile these images into an animation.
 
 (animal-track-data)=
 ## Animal track data
 
-Here you upload a file of animal tracking data to animate. This should follow the format used when [accessing data from Movebank](https://www.movebank.org/cms/movebank-content/access-data#download_data_in_movebank_format), following formats described in the [Movebank Attribute Dictionary](https://www.movebank.org/cms/movebank-content/movebank-attribute-dictionary). This file should contain at least the attributes [timestamp](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000200/), [location-long](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000146/) and [location-lat](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000145/). It can be composed of tracking data subsets or combinations from multiple Movebank studies, as well as additional columns such as environmental covariates from [Env-DATA](https://www.movebank.org/cms/movebank-content/env-data) or [MoveApps](https://www.moveapps.org/), or reference data attributes.
+![animalTrackData](images/ecodata-animate_animalTrackData_PetersHebblewhite_moose_annot.png)
+
+Here you upload a file of animal tracking data to animate. This should follow the format used when [accessing data from Movebank](https://www.movebank.org/cms/movebank-content/access-data#download_data_in_movebank_format), following formats described in the [Movebank Attribute Dictionary](https://www.movebank.org/cms/movebank-content/movebank-attribute-dictionary). This file should contain at least the attributes ``[timestamp](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000200/)``, ``[location-long](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000146/)``, ``[location-lat](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000145/)`` and ``[individual-local-identifier](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000016/)``. It can be composed of tracking data subsets or combinations from multiple Movebank studies, as well as additional columns of your choice, which can include environmental covariates from [Env-DATA](https://www.movebank.org/cms/movebank-content/env-data), results and annotations from [MoveApps](https://www.moveapps.org/), or [reference data](https://www.movebank.org/cms/movebank-content/mb-data-model#reference_data) attributes from the Movebank study.
 
 1. Click on ``Select track data``. Browse to the .csv file containing your tracking data.
 2. After the file is loaded, the filepath will be displayed, and the time range and geographic extent will be automatically populated based on the contents of the file.
@@ -20,7 +49,7 @@ Here you upload a file of animal tracking data to animate. This should follow th
 (track-visualization-options)=
 ## Track visualization options
 
-![track_visualization_options](images/ecodata-animate_track_vis_options.png)
+![tracksVisualizationOptions](images/ecodata-animate_tracksVisualizationOptions_PetersHebblewhite_moose_annot.png)
 
 Here you define how the tracking data will be displayed in the animation, as well as the time period represented by each frame (in ``Track frequency``).
 
@@ -31,10 +60,12 @@ Here you define how the tracking data will be displayed in the animation, as wel
 - If the ``Fade tracks`` button is checked, the ``Track opacity`` setting is ignored and instead the trail will fade out with a "comet" effect.
 - To choose your own track color/s, check the ``Use custom colors`` box and click on ``Add color``. You can select from a default palette or define colors using RGB, hexadecimal or HSV codes.
 
-![standard_color_picker](images/ecodata-animate_colorpicker_standard.png) ![custom_color_picker](images/ecodata-animate_colorpicker_custom.png)
+![standard_color_picker](images/ecodata-animate_colorpicker_standard.png)    ![custom_color_picker](images/ecodata-animate_colorpicker_custom.png)
 
 (environmental-data)=
 ## Environmental data
+
+![environmentalData_grid](images/ecodata-animate_environmentalData_grid_PetersHebblewhite_moose_annot.png)
 
 Here you can optionally select dynamic up to three raster files in NetCDF-4 format to use as background layers for the animation. There are three environmental layers that can be (optionally):
 - Gridded colormap
@@ -67,7 +98,9 @@ Note that if your quiver dataset is too dense, it will need to be thinned using 
 (shapefiles)=
 ## Shapefiles
 
-Here you can optionally select shapefiles to display in your animation frames. These layers will appear beneath the animal tracks and above the environmental (raster) data layers. Note that these layers will be drawn in the order that they are entered (i.e. the first layer in the list will be drawn first, so it will be on the bottom).
+![shapefiles](images/ecodata-animate_shapefiles_PetersHebblewhite_moose_annot.png)
+
+Here you can optionally select shapefiles to display in your animation frames. These layers will appear beneath the animal tracks and above the environmental (raster) data layers. Note that these layers will be drawn in the order that they are entered (i.e., the first layer in the list will be drawn first, so it will be on the bottom).
 
 1. Click on an ``Select shapefile`` button and browse to a shapefile containing a vector data layer to display in the animation.
 2. Available display properties will depend on the type of vector layer:
@@ -81,11 +114,13 @@ Here you can optionally select shapefiles to display in your animation frames. T
 ```{Important}
 The app will not be able to render shapefiles that are too large and/or have too many features. Files should be clipped to the area of interest using [ECODATA-Prepare's Subsetter app](https://ecodata-apps.readthedocs.io/en/latest/user_guide/subsetter.html) before using them for animations. Note that some shapefiles may still be too large even after clipping them. In this case, try find a lower-resolution version of the dataset, if possible.
 
-A future version of the app will include an option to use rasterized shapfiles (created by ECODATA-Prepare), as a workaround for this limitation.
+A future version of the app will include an option to use shapefiles that have been converted to raster images (created by ECODATA-Prepare), as a workaround for this limitation.
 ```
 
 (labeled-points)=
 ## Labeled points
+
+![labels](images/ecodata-animate_labels.png)
 
 Here you can optionally define arbitrary points and labels to display in the animation, for example to identify place names or times and locations of relevant events.
 
@@ -120,7 +155,7 @@ Information to include is as follows (all coordinates in decimal deg):
 (elevation)=
 ## Elevation
 
-![animate_elevation](images/ecodata-animate_elevation.png)
+![animate_elevation](images/ecodata-animate_elevation_PetersHebblewhite_moose_annot.png)
 
 Here you can optionally select to display elevation contours, based on the [ETOPO1 1-Arc-Minute Global Relief Model](https://doi.org/10.7289/V5C8276M).
 
