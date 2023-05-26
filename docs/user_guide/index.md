@@ -7,7 +7,7 @@ This user guide can also be downloaded for offline use! [Click here](https://rea
 ```
 
 ## Preparing input files
-Inputs to ECODATA-Animate include the following:  
+Inputs to ECODATA-Animate include the following:
 
 - A file of movement track data in [Movebank](https://www.movebank.org/cms/movebank-content/get-started) format (required) that can include additional columns.
 - Up to three dynamic raster files (maps) in NetCDF-4 format (optional). These can be used as background layers for the animation, with the possibility to display a colormap layer, a contour line layer, and a vector field layer. Use the [ECODATA-Prepare Tracks Explorer](https://ecodata-apps.readthedocs.io/en/latest/user_guide/tracks_explorer.html) and [read our suggestions](https://ecodata-apps.readthedocs.io/en/latest/environmental_data.html) to discover open remote sensing and weather data to use.
@@ -15,7 +15,8 @@ Inputs to ECODATA-Animate include the following:
 - A list of points to label on the map (optional) in a [structured .csv format](https://ecodata-animate.readthedocs.io/en/latest/user_guide/user_guide.html#labeled-points), with the option to restrict the display of the label to a range of dates.
 - In addition, you can display elevation contours using a stored digital elevation model (DEM). This does not require a user file.
 
-### General notes
+(general-notes)=
+## General notes
 - Expect some trial and error as you define settings and see how they appear in the saved frames.
 - To review results with minimal processing time, you can start by generating just the last frame of the animation (select ``Generate last frame only`` under ``Output``. Or, you can limit the "time range" under "Animal track data", so that fewer frames are created. Once the settings are as desired, extend the time range to that of the full dataset for final processing.
 - When clicking a button to select a filepath, the browser window might not automatically appear, and may be hidden behind other application windows or displayed on another monitor. Minimizing other windows or clicking on the application icon from the Dock may help to find it.
@@ -26,7 +27,7 @@ Inputs to ECODATA-Animate include the following:
 
 (custom-colors)=
 ### Using custom colors
-It is possible to use custom colors for many of the animation layers. You can choose from the default colors in the dropdown boxes, or enter a custom color using a hexadecimal color value (e.g., ``#97d2f0``), which you can choose using a color picker like [this one](https://htmlcolorcodes.com/color-picker/) or [this one](https://davidmathlogic.com/colorblind) for developing effective palletes, or by identifying the color value in other files using graphics or mapping software. Throughout the application, where available, color pickers look like this, and also let you enter RGB or HSV color codes:  
+It is possible to use custom colors for many of the animation layers. You can choose from the default colors in the dropdown boxes, or enter a custom color using a hexadecimal color value (e.g., ``#97d2f0``), which you can choose using a color picker like [this one](https://htmlcolorcodes.com/color-picker/) or [this one](https://davidmathlogic.com/colorblind) for developing effective palletes, or by identifying the color value in other files using graphics or mapping software. Throughout the application, where available, color pickers look like this, and also let you enter RGB or HSV color codes:
 ![standard_color_picker](images/ecodata-animate_colorpicker_standard.png)    ![custom_color_picker](images/ecodata-animate_colorpicker_custom.png)
 
 ### Saving and reloading settings

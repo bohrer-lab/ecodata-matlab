@@ -1,16 +1,16 @@
 # Inputs and settings
 
-After opening the program, you will see a main window with six tabs, each containing settings for different input data. Settings and instructions for each tab are provided below. Selections shown in the screenshots below can be used to reproduce the [example animation](https://www.movebank.org/cms/movebank-content/ecodata#example_ecodata_animation) illustrating moose movements from the study [Peters Hebblewhite Alberta-BC Moose](https://www.movebank.org/cms/webapp?gwt_fragment=page=studies,path=study178994931).  
+After opening the program, you will see a main window with six tabs, each containing settings for different input data. Settings and instructions for each tab are provided below. Selections shown in the screenshots below can be used to reproduce the [example animation](https://www.movebank.org/cms/movebank-content/ecodata#example_ecodata_animation) illustrating moose movements from the study [Peters Hebblewhite Alberta-BC Moose](https://www.movebank.org/cms/webapp?gwt_fragment=page=studies,path=study178994931).
 
 ![app_gui](images/app_screenshot.png)
 
 ```{Tip}
-You can use [custom colors](custom-colors) in addition to the default values included in many of the dropdown menus.  
+You can use [custom colors](custom-colors) in addition to the default values included in many of the dropdown menus.
 
 Read our [general notes](general-notes) for advice about using the interface, saving and reloading settings, and iteratively building your animation to optimize your layer and design choices with minimal processing time.
 ```
 
-You can flexibly prepare and test animations within the program. Here is an example of steps to creating an animation:  
+You can flexibly prepare and test animations within the program. Here is an example of steps to creating an animation:
 1. Use the tabs at the top of the application to define the contents of the animation. You can work on the tabs in any order.
 - [Animal track data](animal-track-data): Include animal tracking data (required)
 - [Tracks visualization options](track-visualization-options): Define how to display track points and trajectories (required)
@@ -20,7 +20,7 @@ You can flexibly prepare and test animations within the program. Here is an exam
 - [Elevation](elevation): Include elevation contours (optional)
 
 2. Create a folder in which to save the results (a large number of .png files).
-3. Click "Set output file" to specify the folder location. 
+3. Click "Set output file" to specify the folder location.
 
 ```{Tip}
 The file browser window is sometimes hidden behind other windows. Click on the ECODATA_Animate icon from the Dock (on Mac) or close other windows to find it.
@@ -40,7 +40,7 @@ The file browser window is sometimes hidden behind other windows. Click on the E
 
 ![animalTrackData](images/ecodata-animate_animalTrackData_PetersHebblewhite_moose_annot.png)
 
-Here you upload a file of animal tracking data to animate. This should follow the format used when [accessing data from Movebank](https://www.movebank.org/cms/movebank-content/access-data#download_data_in_movebank_format), following formats described in the [Movebank Attribute Dictionary](https://www.movebank.org/cms/movebank-content/movebank-attribute-dictionary). This file should contain at least the attributes ``[timestamp](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000200/)``, ``[location-long](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000146/)``, ``[location-lat](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000145/)`` and ``[individual-local-identifier](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000016/)``. It can be composed of tracking data subsets or combinations from multiple Movebank studies, as well as additional columns of your choice, which can include environmental covariates from [Env-DATA](https://www.movebank.org/cms/movebank-content/env-data), results and annotations from [MoveApps](https://www.moveapps.org/), or [reference data](https://www.movebank.org/cms/movebank-content/mb-data-model#reference_data) attributes from the Movebank study.
+Here you upload a file of animal tracking data to animate. This should follow the format used when [accessing data from Movebank](https://www.movebank.org/cms/movebank-content/access-data#download_data_in_movebank_format), following formats described in the [Movebank Attribute Dictionary](https://www.movebank.org/cms/movebank-content/movebank-attribute-dictionary). This file should contain at least the attributes [timestamp](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000200/), [location-long](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000146/), [location-lat](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000145/) and [individual-local-identifier](http://vocab.nerc.ac.uk/collection/MVB/current/MVB000016/). It can be composed of tracking data subsets or combinations from multiple Movebank studies, as well as additional columns of your choice, which can include environmental covariates from [Env-DATA](https://www.movebank.org/cms/movebank-content/env-data), results and annotations from [MoveApps](https://www.moveapps.org/), or [reference data](https://www.movebank.org/cms/movebank-content/mb-data-model#reference_data) attributes from the Movebank study.
 
 1. Click on ``Select track data``. Browse to the .csv file containing your tracking data.
 2. After the file is loaded, the filepath will be displayed, and the time range and geographic extent will be automatically populated based on the contents of the file.
