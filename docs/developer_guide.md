@@ -67,11 +67,11 @@ This process needs to be done on both Mac and Windows, to build installers for b
   - Update the description with the release tag
 - In the top menu, click ``Share``, then ``Standalone Desktop App``
 - In the compiler window:
-  - In the top menu, select ``Runtime downloaded from web``, then change the name in the textbox to ``ECODATA_Animate_Installer``
+  - In the top menu, select ``Runtime downloaded from web``, then change the name in the textbox to ``ECODATA_Animate``
   - In the version box, edit the version (which was auto-filled with major.minor from the .mlapp file). This needs to be updated to major.minor.bugfix.release_candidate (making sure this corresponds to the release tag on GitHub)
   - Under ``Files required for your application to run``, make sure the ``functions`` and ``m_map`` folders are both added!
   - Under ``Additional runtime settings``, select the ``create log file`` box, and change the name to ``ecodata_animate_log``
   - Click the ``Package``button in the top menu.
   - Make a new folder called ``Mac_Installer`` or ``Windows_Installer``.
-  - From the output folder created by the compiler, copy the files ``for_redistribution/ECODATA_Animate_Installer`` and ``for_redistribution_files_only/ECODATA_Animate`` to the new folder.
+  - From the output folder created by the compiler, copy the file ``for_redistribution/ECODATA_Animate`` to the new folder.
   - Compress the folder to a .zip. The two .zip folders (for Mac and Windows) are what need to be uploaded as release assets.
