@@ -1,6 +1,9 @@
 function labels = prepare_labels(labelfile, start_time, end_time)
 
-    labels = readtable(labelfile);
+    opts = detectImportOptions(labelfile);
+    opts = setvartype(opts, {'label'}, {'char'});
+
+    labels = readtable(labelfile, opts);
     
     vars = labels.Properties.VariableNames;
     
