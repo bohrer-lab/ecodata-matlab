@@ -65,11 +65,9 @@ function animate_tracks(tracks, kwargs)
 
     % Labeled points
     if ~isempty(kwargs.labeled_points)
-        labeled_pts = prepare_labels(kwargs.labeled_points('filename'), ...
-            kwargs.start_time, kwargs.end_time); 
-        labeled_pts = select_bbox(labeled_pts, 'latitude', 'longitude', ...
+        kwargs.labeled_points.update_start_end_times(kwargs.start_time, kwargs.end_time); 
+        kwargs.labeled_points.data = select_bbox(kwargs.labeled_points.data, 'latitude', 'longitude', ...
             latlim(1), latlim(2), lonlim(1), lonlim(2));
-        kwargs.labeled_points('data') = labeled_pts;
     end
     
     % quivers
