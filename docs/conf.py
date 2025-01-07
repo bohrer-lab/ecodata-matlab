@@ -34,8 +34,9 @@ extensions = [
     "sphinx.ext.autosummary",  # Create neat summary tables for modules/classes/methods etc
     "sphinx.ext.napoleon",
     "sphinx.ext.todo",
-    "sphinxcontrib.matlab",
+    # "sphinxcontrib.matlab",
     "myst_parser",
+    "sphinxcontrib.youtube",
 ]
 
 pygments_style='default'
@@ -75,10 +76,9 @@ html_theme = "furo"
 # html_static_path = ['_static']
 
 # MATLAB setup
-matlab_src_dir = Path(__file__).parent.parent
+# matlab_src_dir = Path(__file__).parent.parent
 # primary_domain = 'mat'
 
 # this_dir = os.path.dirname(os.path.abspath(__file__))
 # matlab_src_dir = os.path.abspath(os.path.join(this_dir, '..'))
 # primary_domain = 'mat'
-
