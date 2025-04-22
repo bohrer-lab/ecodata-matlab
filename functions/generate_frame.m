@@ -9,7 +9,7 @@ function generate_frame(tracks, frame_time, kwargs)
         kwargs.shapefile_stack = {}
         kwargs.raster_image = NaN
         kwargs.raster_cmap = NaN
-        kwargs.labeled_points = containers.Map()
+        kwargs.labeled_points = {}
         kwargs.output_directory
         kwargs.start_time
         kwargs.end_time
@@ -154,7 +154,7 @@ function generate_frame(tracks, frame_time, kwargs)
         times_before_frame = kwargs.quiver_data.time_index(kwargs.quiver_data.time_index <= frame_time);
 
         current_quiver_time = find(min(abs(times_before_frame-frame_time))==abs(times_before_frame-frame_time));
-    
+
         if ~isempty(current_quiver_time)
             % unpack u data
             [quiver_lat, quiver_long, quiver_time, quiver_u] = unpack_netcdf( ...
@@ -182,13 +182,13 @@ function generate_frame(tracks, frame_time, kwargs)
             elseif kwargs.quiver_data.use_simple_plot
                 % make grid for lat/lon
                 [LAT,LON] = meshgrid(quiver_lat, quiver_long);
-    
+
                 % plot quivers
                 [plot_lon, plot_lat] = m_ll2xy(LON, LAT);
-                
+
                 quiverh = quiver(plot_lon, plot_lat, U, V, 'color', kwargs.quiver_data.quiver_color);
             end
-            
+
         end
     end
     %% Elevation
@@ -202,17 +202,7 @@ function generate_frame(tracks, frame_time, kwargs)
 
     %% Labeled points
     if ~isempty(kwargs.labeled_points)
-        labeled_pts = kwargs.labeled_points("data");
-        labels_filtered = labeled_pts(frame_time>=labeled_pts.start_time & frame_time<=labeled_pts.end_time,:);
-
-        m_scatter(labels_filtered.longitude, labels_filtered.latitude, ...
-            kwargs.labeled_points("marker_size"), kwargs.labeled_points("marker_color"), 'filled')
-
-        for i=1:height(labels_filtered)
-            m_text(labels_filtered.label_longitude(i),labels_filtered.label_latitude(i), ...
-                labels_filtered.label{i}, 'horizontal', labels_filtered.horizontal_alignment{i}, ...
-                'FontSize', 8)
-        end
+        kwargs.labeled_points.plot(frame_time);
     end
 
 
