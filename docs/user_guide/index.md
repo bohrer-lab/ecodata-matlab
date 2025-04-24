@@ -1,18 +1,18 @@
 # User guide
 
-ECODATA-Animate is a MATLAB® program for creating customized animated maps of animal movements. The program creates image frames that can be animated using the [ECODATA-Prepare Movie Maker App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/movie_maker.html). [Read our overview](https://www.movebank.org/cms/movebank-content/ecodata#how_to_use_ecodata) of how to use Movebank, MoveApps, ECODATA-Animate and ECODATA-Prepare to discover and process tracking data, remote sensing data, shapefiles and other layers to create custom visualizations and input for ecological analysis. To try the software before working with your own data, see [our example](https://www.movebank.org/cms/movebank-content/ecodata#example_ecodata_animation) based on publicly-available data sources.
+ECODATA-Animate is a MATLAB® program for creating customized animated maps of animal movements. The program creates image frames that can be animated using the [ECODATA-Prepare Movie Maker App](). [Read our overview]() of how to use Movebank, MoveApps, ECODATA-Animate and ECODATA-Prepare to discover and process tracking data, remote sensing data, shapefiles and other layers to create custom visualizations and input for ecological analysis. To try the software before working with your own data, see [our example]() based on publicly-available data sources.
 
 ```{Tip}
-This user guide can also be downloaded for offline use! [Click here](https://readthedocs.org/projects/ecodata-animate/downloads/) to download the documentation in PDF, Epub, or zipped HTML format.
+This user guide can also be downloaded for offline use! [Click here]() to download the documentation in PDF, Epub, or zipped HTML format.
 ```
 
 ## Preparing input files
 Inputs to ECODATA-Animate include the following:
 
 - A file of movement track data in [Movebank](https://www.movebank.org/cms/movebank-content/get-started) format (required) that can include additional columns.
-- Up to three dynamic raster files (maps) in NetCDF-4 format (optional). These can be used as background layers for the animation, with the possibility to display a colormap layer, a contour line layer, and a vector field layer. Use the [ECODATA-Prepare Tracks Explorer](https://ecodata-apps.readthedocs.io/en/latest/user_guide/tracks_explorer.html) and [read our suggestions](https://ecodata-apps.readthedocs.io/en/latest/environmental_data.html) to discover open remote sensing and weather data to use.
-- Shapefiles with points, lines, or polygons containing other vector data you want to display (optional). For example, you could use this to include water bodies, roads or property lines. Use the [ECODATA-Prepare Subsetter App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/subsetter.html) to crop large shapefiles for faster processing.
-- A list of points to label on the map (optional) in a [structured .csv format](https://ecodata-animate.readthedocs.io/en/latest/user_guide/user_guide.html#labeled-points), with the option to restrict the display of the label to a range of dates.
+- Up to three dynamic raster files (maps) in NetCDF-4 format (optional). These can be used as background layers for the animation, with the possibility to display a colormap layer, a contour line layer, and a vector field layer. Use the [ECODATA-Prepare Tracks Explorer]() and [read our suggestions]() to discover open remote sensing and weather data to use.
+- Shapefiles with points, lines, or polygons containing other vector data you want to display (optional). For example, you could use this to include water bodies, roads or property lines. Use the [ECODATA-Prepare Subsetter App]() to crop large shapefiles for faster processing.
+- A list of points to label on the map (optional) in a [structured .csv format](), with the option to restrict the display of the label to a range of dates.
 - In addition, you can display elevation contours using a stored digital elevation model (DEM). This does not require a user file.
 
 (general-notes)=
@@ -23,7 +23,7 @@ Inputs to ECODATA-Animate include the following:
 ![ecodata-animate_dock_icon](./images/ecodata-animate_dock_icon.png)
 - After selecting a file or setting the output filepath, expect that it may take several seconds before the information loads or updates appear in the status window.
 - Note that if you select an output directory that already has output files in it, these will be overwritten when you create a new animation.
-- For help or to share suggestions, [submit a GitHub issue](https://github.com/jemissik/movebank_vis/issues) or contact support@movebank.org.
+- For help or to share suggestions, [submit a GitHub issue]() or contact support@movebank.org.
 
 (custom-colors)=
 ### Using custom colors
@@ -39,7 +39,7 @@ for a new animation.
 
 ## Installation
 
-1. [Download the installers for the latest release here](https://github.com/jemissik/movebank_vis/releases/latest), available for Mac and Windows. You can also see all releases (including pre-release versions) [here](https://github.com/jemissik/movebank_vis/releases).
+1. [Download the installers for the latest release here](), available for Mac and Windows. You can also see all releases (including pre-release versions) [here]().
 
     ```{Tip}
     The installer files for download are under the **Assets** section for a release. If you are on the main releases page, you may need to expand this section in order to see the files available for download.
@@ -58,8 +58,8 @@ for a new animation.
     You may need to grant an exception to your security settings in order to run the installer. See [How to open a Mac app from an unidentified developer](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unidentified-developer-mh40616/mac)
 
     Other potential issues:
-    - If you receive the message "Your installation may require additional configuration steps" at the end of the installation process, this should be able to safely be ignored, see [this issue](https://github.com/jemissik/movebank_vis/issues/72) for more details.
-    - If you receive the error message "Unable to write to the selected folder" when runing the installer, see [this issue](https://github.com/jemissik/movebank_vis/issues/73).
+    - If you receive the message "Your installation may require additional configuration steps" at the end of the installation process, this should be able to safely be ignored, see [this issue]() for more details.
+    - If you receive the error message "Unable to write to the selected folder" when runing the installer, see [this issue]().
     ```
 
 1. Once the application has been successfully installed, you can open the ``ECODATA_Animate`` application.

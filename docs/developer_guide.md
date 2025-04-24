@@ -5,18 +5,18 @@ Check out this [simple guide for using git](https://rogerdudler.github.io/git-gu
 
 1. Create a new branch for your contributions.
 2. Commit your changes in this branch.
-3. [Open a pull request](https://github.com/jemissik/movebank_vis/pulls) to merge changes from your branch into the
+3. [Open a pull request]() to merge changes from your branch into the
 repository's ``develop`` branch.
 
 
 ## Documentation
 
-Documentation for this project is created using Sphinx and is hosted at Read the Docs (https://ecodata-animate.readthedocs.io/). The source files
-for these pages are located in the [docs folder](https://github.com/jemissik/movebank_vis/tree/develop/docs) of the repository. To edit the documentation, edit the markdown files in this folder (or sub-folders). Note that the ``docs/index.md`` file specifies the contents for the docs site. If a sub-folder has a ``index.md`` file, that file specifies the contents for that section of the docs site (e.g. ``docs/user_guide/index.md``). If files are added or removed, the corresponsing index files will also need to be updated.
+Documentation for this project is created using Sphinx and is hosted at Read the Docs (XXXX). The source files
+for these pages are located in the [docs folder]() of the repository. To edit the documentation, edit the markdown files in this folder (or sub-folders). Note that the ``docs/index.md`` file specifies the contents for the docs site. If a sub-folder has a ``index.md`` file, that file specifies the contents for that section of the docs site (e.g. ``docs/user_guide/index.md``). If files are added or removed, the corresponsing index files will also need to be updated.
 
 ### Building the docs
 After editing the pages, you can look at a build of the pages to see how things will actually look in the docs website. There are two options for this:
-- Option 1: [Open a pull request](https://github.com/jemissik/movebank_vis/pulls), and Read the Docs will build a preview of the docs pages. A link to the build can be found near the bottom of the page of the PR, in the merge checks section. You may have to click "Show details" next to where it says "All checks have passed".  Once the build is finished, click on "Details" for the docs/readthedocs.org:ecodata-animate item:
+- Option 1: [Open a pull request](), and Read the Docs will build a preview of the docs pages. A link to the build can be found near the bottom of the page of the PR, in the merge checks section. You may have to click "Show details" next to where it says "All checks have passed".  Once the build is finished, click on "Details" for the docs/readthedocs.org:ecodata-animate item:
   ![rtd_status_check](images/github_status_checks.png)
 
   This will take you to the build for the PR. Once the build is finished, click on the "View docs" link to the right of build info:
@@ -44,10 +44,10 @@ After editing the pages, you can look at a build of the pages to see how things 
 
 ### Adding datasets
 - Most of the datasets are too large to be stored in the repository
-- Datasets used in the example scripts can be downloaded [here](https://drive.google.com/drive/folders/1pyK4E-z8XUjRlYKYFX5L198YOlvOoUHA?usp=sharing)
+- Datasets used in the example scripts can be downloaded [here](XXXX)
 - Copy any datasets you want to use to ``data/user_datasets``
 ### Adding topo data for the m_map package
-- [Download the topo data](https://drive.google.com/drive/folders/1RmhHbSsm15i5xQVMWLaerv39fHja2fgr?usp=sharing)
+- [Download the topo data](XXXX)
 - Copy the contents of this folder to ``m_map/data``
 
 ### Required toolboxes

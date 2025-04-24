@@ -20,8 +20,8 @@ from pathlib import Path
 # -- Project information -----------------------------------------------------
 
 project = "ECODATA-Animate"
-copyright = "2023, Justine Missik"
-author = "Justine Missik"
+copyright = "2023, XXXX XXXX"
+author = "XXXX XXXX"
 
 
 # -- General configuration ---------------------------------------------------

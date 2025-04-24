@@ -28,12 +28,12 @@ The file browser window is sometimes hidden behind other windows. Click on the E
 
 4. After providing input data and configurations, click "Create animation". If you have many input files, you may want to add one input at a time, generate a single frame to ensure it displays as expected, and then proceed with the next input [read more](general-notes).
 5. Watch "Status" in the lower right to monitor progress. It may take a minute before a message appears. It should say *"Generating animation… Please be patient"*. Do not shut down your computer, move or rename the folder, or change settings, while this step is in progress. As frames are created, they will be saved in the specified folder, where you can review them to monitor the results and progress.
-6. After processing is complete, you will see the message "Animation saved to the output directory". If the processing fails, error messages will be posted here. You can search for and report errors or unexpected results [here](https://github.com/jemissik/movebank_vis/issues).
+6. After processing is complete, you will see the message "Animation saved to the output directory". If the processing fails, error messages will be posted here. You can search for and report errors or unexpected results [here]().
 
 ![animation_saved](images/ecodata-animate_saved.png)
 
 7. The results consist of a set of .png image files representing each frame for the animation, based on the chosen configuration, which can be viewed and used individually.
-8. Use the [ECODATA-Prepare Movie Maker App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/movie_maker.html) to compile these images into an animation.
+8. Use the [ECODATA-Prepare Movie Maker App]() to compile these images into an animation.
 
 (animal-track-data)=
 ## Animal track data
@@ -73,7 +73,7 @@ Here you can optionally select dynamic up to three raster files in NetCDF-4 form
 - Vector fields (e.g., for wind)
 
 There is a separate tab under the ``Environmental data`` tab for each of these layers.
-You can request a variety of environmental raster data using NASA's [AppEEARS](https://ecodata-apps.readthedocs.io/en/latest/user_guide/tracks_explorer.html#requesting-environmental-data-from-nasa) service. While the program is designed to handle very large files, for more efficient processing and storage, use raster data only at the resolution needed for the animation. Files can be preprocessed to an appropriate resolution and masked using polygons with the ECODATA-Prepare [Gridded Data Explorer App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/gridded_data_explorer.html).
+You can request a variety of environmental raster data using NASA's [AppEEARS]() service. While the program is designed to handle very large files, for more efficient processing and storage, use raster data only at the resolution needed for the animation. Files can be preprocessed to an appropriate resolution and masked using polygons with the ECODATA-Prepare [Gridded Data Explorer App]().
 
 ### Gridded colormap
 
@@ -93,7 +93,7 @@ You can request a variety of environmental raster data using NASA's [AppEEARS](h
 1. The app will attempt to populate the variables that define the time, location coordinates, and the variables to display in the animation. For vector fields, the dataset needs to include variables for the U and V components of the vectors. Review the results and click the dropdown boxes to update if needed.
 1. Edit additional quiver style options.
 
-Note that if your quiver dataset is too dense, it will need to be thinned using the ECODATA-Prepare [Gridded Data Explorer App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/gridded_data_explorer.html).
+Note that if your quiver dataset is too dense, it will need to be thinned using the ECODATA-Prepare [Gridded Data Explorer App]().
 
 (shapefiles)=
 ## Shapefiles
@@ -112,7 +112,7 @@ Here you can optionally select shapefiles to display in your animation frames. T
 4. If you want to remove shapefiles you have entered, you can click ``Clear all shapefiles`` to remove all of them, or ``Clear last shapefile`` to clear just the last one that was entered.
 
 ```{Important}
-The app will not be able to render shapefiles that are too large and/or have too many features. Files should be clipped to the area of interest using [ECODATA-Prepare's Subsetter app](https://ecodata-apps.readthedocs.io/en/latest/user_guide/subsetter.html) before using them for animations. Note that some shapefiles may still be too large even after clipping them. In this case, try find a lower-resolution version of the dataset, if possible.
+The app will not be able to render shapefiles that are too large and/or have too many features. Files should be clipped to the area of interest using [ECODATA-Prepare's Subsetter app]() before using them for animations. Note that some shapefiles may still be too large even after clipping them. In this case, try find a lower-resolution version of the dataset, if possible.
 
 A future version of the app will include an option to use shapefiles that have been converted to raster images (created by ECODATA-Prepare), as a workaround for this limitation.
 ```

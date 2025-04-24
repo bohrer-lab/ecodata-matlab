@@ -4,7 +4,7 @@ about: Create a report to help us improve! Please take a look at the open issues
   submitting a bug report to see if the issue has already been reported.
 title: ''
 labels: bug
-assignees: jemissik
+assignees: XXXX
 
 ---
 
