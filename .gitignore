@@ -80,3 +80,6 @@ __pycache__/
 #app files
 apps/*
 !*.mlapp
+
+Pack/
+*.prj/Pack/

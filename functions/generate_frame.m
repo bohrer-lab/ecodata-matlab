@@ -9,7 +9,7 @@ function generate_frame(tracks, frame_time, kwargs)
         kwargs.shapefile_stack = {}
         kwargs.raster_image = NaN
         kwargs.raster_cmap = NaN
-        kwargs.labeled_points = {}
+        kwargs.labeled_points = containers.Map()
         kwargs.output_directory
         kwargs.start_time
         kwargs.end_time
@@ -25,71 +25,195 @@ function generate_frame(tracks, frame_time, kwargs)
     %% Set up for map
 
     figure(Visible='off');
-
+    
     % Map projection
     m_proj('Cylindrical Equal-Area','lat', kwargs.latlim,'long', kwargs.lonlim)
 
     hold on
-
+    last_env_cmap = [];
     %% Plot gridded env data
     if ~isempty(kwargs.gridded_data)
-
-        if isempty(kwargs.gridded_data.time_index)
-            kwargs.gridded_data.load_time_index;
-        end
-
-        % Load new slice of gridded data
-        times_before_frame = kwargs.gridded_data.time_index(kwargs.gridded_data.time_index <= frame_time);
-
-        current_nc_time = find(min(abs(times_before_frame-frame_time))==abs(times_before_frame-frame_time));
-
-        if ~isempty(current_nc_time)
-
-            [nc_lat, nc_long, nc_time, nc_var] = unpack_netcdf( ...
-                    kwargs.gridded_data.filename, ...
-                    kwargs.gridded_data.latvar, ...
-                    kwargs.gridded_data.lonvar, ...
-                    kwargs.gridded_data.timevar, ...
-                    kwargs.gridded_data.var_of_interest, ...
-                    start=current_nc_time, count=1);
-
-
-            % Color map for gridded data
-            if kwargs.gridded_data.invert_cmap
-                gridded_cmap = flipud(m_colmap(kwargs.gridded_data.cmap));
-            else
-                gridded_cmap = m_colmap(kwargs.gridded_data.cmap);
+        % Case A: static field (no time case) 
+        if isa(kwargs.gridded_data, 'StaticGriddedData')
+            gd = kwargs.gridded_data;
+            if ~gd.is_loaded
+                gd.load();
             end
+    
+            % Take field and enforce 2-D numeric
+            field = gd.field2d;
+    
+            if ~isnumeric(field)
+                error('StaticGriddedData:FieldNotNumeric', ...
+                    'gd.field2d must be numeric, got %s', class(field));
+            end
+    
+            if ndims(field) > 2
+                field = squeeze(field);
+            end
+    
+            if ~ismatrix(field)
+                error('StaticGriddedData:FieldNot2D', ...
+                    'gd.field2d must be 2-D after squeeze, got ndims=%d', ndims(field));
+            end
+    
+            lat = gd.lat;
+            lon = gd.lon;
+    
+            nlat = numel(lat);
+            nlon = numel(lon);
+    
+            if nlat ~= size(field,1) || nlon ~= size(field,2)
+                error('StaticGriddedData:SizeMismatch', ...
+                    'size(field)=[%d %d], numel(lat)=%d, numel(lon)=%d', ...
+                    size(field,1), size(field,2), nlat, nlon);
+            end
+    
+            [LonGrid,LatGrid] = meshgrid(lon, lat);
+            [X, Y] = m_ll2xy(LonGrid, LatGrid);
+    
+            h_env = pcolor(X, Y, field);
+            set(h_env, 'EdgeColor', 'none');
+    
+            % Colormap
+            cmap_here = s_resolve_cmap(gd.cmap, 256);
+            if gd.invert_cmap
+                cmap_here = flipud(cmap_here);
+            end
+            colormap(cmap_here);
+            last_env_cmap = cmap_here;
+    
+            % CLim & colorbar
+            if ~isempty(gd.cbar_limits)
+                caxis(gd.cbar_limits);
+            end
+    
+            if gd.show_colorbar
+                colorbar;
+            end
+    
+            freezeColors;
+            hold on;
 
-            A = nc_var(:, :, nc_time == kwargs.gridded_data.time_index(current_nc_time))';
-            grd = m_image(nc_long,nc_lat, A);
+    
+        % Case B: time-varying field (legacy GriddedData)
+        else
+            % The original logic (nearest timestamp to frame_time)
+            if isempty(kwargs.gridded_data.time_index)
+                kwargs.gridded_data.load_time_index;
+            end
+    
+            times_before_frame = kwargs.gridded_data.time_index( ...
+                kwargs.gridded_data.time_index <= frame_time);
+    
+            % If there is no time <= frame_time, fall back to the earliest
+            if isempty(times_before_frame)
+                current_idx = 1;
+            else
+                [~, current_idx] = min(abs(times_before_frame - frame_time));
+            end
+    
+            % Read one slice
+            [lat, lon, ~, slice] = unpack_netcdf( ...
+                kwargs.gridded_data.filename, ...
+                kwargs.gridded_data.latvar, ...
+                kwargs.gridded_data.lonvar, ...
+                kwargs.gridded_data.timevar, ...
+                kwargs.gridded_data.var_of_interest, ...
+                start = current_idx, count = 1);
+    
+            % Ensure ascending latitude for consistent plotting
+            if numel(lat) > 1 && lat(1) > lat(end)
+                lat   = flipud(lat);
+                slice = flipud(slice(:,:,1));
+            else
+                slice = slice(:,:,1);
+            end
+    
+            [LonGrid,LatGrid] = meshgrid(lon, lat);
+            geoshow(LatGrid, LonGrid, slice, 'DisplayType','texturemap');
+    
+            % Colormap / colorbar
+            % gd.cmap is already Nx3, or a row with a name – s_resolve_cmap
+            cmap_here = s_resolve_cmap(gd.cmap, 256);
+            if gd.invert_cmap
+                cmap_here = flipud(cmap_here);
+            end
+        
+            colormap(cmap_here);
+            last_env_cmap = cmap_here;
+        
+            if ~isempty(gd.cbar_limits)
+                caxis(gd.cbar_limits);
+            end
+        
+            if gd.show_colorbar
+                colorbar;
+            end
+        
+            freezeColors;
+            hold on;
         end
-
-        colormap(gridded_cmap)
-
-        if ~isempty(kwargs.gridded_data.cbar_limits)
-            clim(kwargs.gridded_data.cbar_limits);
-        end
-        if kwargs.gridded_data.show_colorbar
-            cb = colorbar;
-            ylabel(cb,strrep(kwargs.gridded_data.var_of_interest, '_', ' '),'FontSize',12);
-        end
-
-        hold on
-
-        freezeColors
     end
+
 
 
     %% raster image
-    if ~isnan(kwargs.raster_image)
+     %% Raster image (static GeoTIFF)
+    if ~isempty(kwargs.raster_image) && isa(kwargs.raster_image, 'containers.Map') ...
+            && isKey(kwargs.raster_image, 'raster_array_f') ...
+            && isKey(kwargs.raster_image, 'raster_ref')
 
-        % color map for the raster. Here using just a single color
-        colormap(kwargs.raster_cmap);
-        r_img = m_image(raster_ref.LongitudeLimits, raster_ref.LatitudeLimits, raster_array_f);
+        raster_array_f = kwargs.raster_image('raster_array_f');
+        raster_ref     = kwargs.raster_image('raster_ref');
+        
+        % m_image supports:
+        %  - uint8 NxMx3 (truecolor),
+        %  - double NxM (scalar field).
+        %
+        % If the raster is single-channel (2D), reduce it to double.
+        if ndims(raster_array_f) == 2
+            if ~isa(raster_array_f, 'double')
+                raster_array_f = double(raster_array_f);
+            end
+        % If it is not 2D and not uint8 RGB - restrict:
+        elseif ndims(raster_array_f) == 3 && ~isa(raster_array_f, 'uint8')
+            % take the first channel and make it a scalar double:
+            raster_array_f = double(raster_array_f(:,:,1));
+        end
+
+        % Colormap for raster (configurable in UI)
+        if ~isempty(kwargs.raster_cmap)
+            cmap_here = resolve_cmap(kwargs.raster_cmap, 256);
+
+            % Inversion if specified in Map
+            if isKey(kwargs.raster_image, 'invert_cmap') && kwargs.raster_image('invert_cmap')
+                cmap_here = flipud(cmap_here);
+            end
+
+            colormap(cmap_here);
+            last_env_cmap = cmap_here; %#ok<NASGU>
+        end
+
+        % Colorbar limits, if set
+        if isKey(kwargs.raster_image, 'cbar_limits') && ~isempty(kwargs.raster_image('cbar_limits'))
+            caxis(kwargs.raster_image('cbar_limits'));
+        end
+
+        % Show colorbar or not
+        if isKey(kwargs.raster_image, 'show_colorbar') && kwargs.raster_image('show_colorbar')
+            colorbar;
+        end
+
+        % Drawing GeoTIFF as a background
+        r_img = m_image(raster_ref.LongitudeLimits, ...
+                        raster_ref.LatitudeLimits, ...
+                        raster_array_f);
+        uistack(r_img, 'bottom');  %  under tracks and other layers
     end
-    freezeColors
-    hold on
+
+    freezeColors;
+    hold on;
 
     %% Shapefiles
     if ~isempty(kwargs.shapefile_stack)
@@ -154,7 +278,7 @@ function generate_frame(tracks, frame_time, kwargs)
         times_before_frame = kwargs.quiver_data.time_index(kwargs.quiver_data.time_index <= frame_time);
 
         current_quiver_time = find(min(abs(times_before_frame-frame_time))==abs(times_before_frame-frame_time));
-
+    
         if ~isempty(current_quiver_time)
             % unpack u data
             [quiver_lat, quiver_long, quiver_time, quiver_u] = unpack_netcdf( ...
@@ -182,13 +306,13 @@ function generate_frame(tracks, frame_time, kwargs)
             elseif kwargs.quiver_data.use_simple_plot
                 % make grid for lat/lon
                 [LAT,LON] = meshgrid(quiver_lat, quiver_long);
-
+    
                 % plot quivers
                 [plot_lon, plot_lat] = m_ll2xy(LON, LAT);
-
+                
                 quiverh = quiver(plot_lon, plot_lat, U, V, 'color', kwargs.quiver_data.quiver_color);
             end
-
+            
         end
     end
     %% Elevation
@@ -202,13 +326,23 @@ function generate_frame(tracks, frame_time, kwargs)
 
     %% Labeled points
     if ~isempty(kwargs.labeled_points)
-        kwargs.labeled_points.plot(frame_time);
+        labeled_pts = kwargs.labeled_points("data");
+        labels_filtered = labeled_pts(frame_time>=labeled_pts.start_time & frame_time<=labeled_pts.end_time,:);
+
+        m_scatter(labels_filtered.longitude, labels_filtered.latitude, ...
+            kwargs.labeled_points("marker_size"), kwargs.labeled_points("marker_color"), 'filled')
+
+        for i=1:height(labels_filtered)
+            m_text(labels_filtered.label_longitude(i),labels_filtered.label_latitude(i), ...
+                labels_filtered.label{i}, 'horizontal', labels_filtered.horizontal_alignment{i}, ...
+                'FontSize', 8)
+        end
     end
 
 
     % So the color bar will use the cmap for the env data
-    if ~isempty(kwargs.gridded_data)
-        colormap(gridded_cmap)
+    if ~isempty(kwargs.gridded_data) && ~isempty(last_env_cmap)
+        colormap(last_env_cmap);
     end
 
 

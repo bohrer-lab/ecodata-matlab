@@ -71,6 +71,8 @@ Here you can optionally select dynamic up to three raster files in NetCDF-4 form
 - Gridded colormap
 - Contours
 - Vector fields (e.g., for wind)
+- Static NetCDF
+- Static GeoTIFF
 
 There is a separate tab under the ``Environmental data`` tab for each of these layers.
 You can request a variety of environmental raster data using NASA's [AppEEARS](https://ecodata-apps.readthedocs.io/en/latest/user_guide/tracks_explorer.html#requesting-environmental-data-from-nasa) service. While the program is designed to handle very large files, for more efficient processing and storage, use raster data only at the resolution needed for the animation. Files can be preprocessed to an appropriate resolution and masked using polygons with the ECODATA-Prepare [Gridded Data Explorer App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/gridded_data_explorer.html).
@@ -94,6 +96,22 @@ You can request a variety of environmental raster data using NASA's [AppEEARS](h
 1. Edit additional quiver style options.
 
 Note that if your quiver dataset is too dense, it will need to be thinned using the ECODATA-Prepare [Gridded Data Explorer App](https://ecodata-apps.readthedocs.io/en/latest/user_guide/gridded_data_explorer.html).
+
+### Static NetCDF
+
+1. Click on ``Static NetCDF`` and choose a .nc file containing a gridded environmental variable.
+1. The app expects NetCDF files with latitude and longitude variables and is currently designed for 1-D coordinate vectors (lat, lon).
+1. Available variables are listed in the drop-down menu. The selected variable must be two-dimensional after applying squeeze(). If the variable contains a time dimension, the static layer uses a single time slice (at present, the first available time step). If no time variable is present in the file, the Time controls are disabled and the field is treated as a purely static layer.
+1. Select a colour map and optionally adjust the minimum and maximum values used for display. 
+
+### Static GeoTIFF
+
+1. Click on ``Static GeoTIFF`` and choose a `.tif` file containing valid geographic referencing.
+1. After loading the file, the application reads the raster metadata; the georeferencing information from the file is used when drawing the static background layer.
+1. For single-band rasters, you can select a colour map and optionally adjust the minimum and maximum values used for display. For 8-bit RGB GeoTIFFs (stored as a uint8 M×N×3 array), the image is displayed using the original band combination as a truecolor background. For other multi-band rasters, only the first band is used and displayed as a single-channel field.
+
+```{important}
+The file must contain valid georeferencing (GeoTIFF keys or world file metadata). Plain TIFF images without coordinate information cannot be used.
 
 (shapefiles)=
 ## Shapefiles

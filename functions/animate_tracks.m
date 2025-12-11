@@ -56,18 +56,31 @@ function animate_tracks(tracks, kwargs)
     end
 
     % Raster image 
-    if ~isnan(kwargs.raster_image)
-        [raster_array,raster_ref] = readgeoraster(kwargs.raster_image);
-        % correct the issue with readgeoraster turning the array upside-down
-        raster_array_f = flipud(raster_array);
-        kwargs.raster_image("raster_array_f") = raster_array_f;
+     if ~isempty(kwargs.raster_image) && isa(kwargs.raster_image, 'containers.Map')
+
+        % Expected: map to have a key 'filename'
+        if isKey(kwargs.raster_image, 'filename')
+            geoTiffFile = kwargs.raster_image('filename');
+
+            % read GeoTIFF 
+            [raster_array, raster_ref] = readgeoraster(geoTiffFile);
+
+            % Flip vertically
+            raster_array_f = flipud(raster_array);
+
+            % Save inside Map (so that generate_frame doesn't read the file again)
+            kwargs.raster_image('raster_array_f') = raster_array_f;
+            kwargs.raster_image('raster_ref')     = raster_ref;
+        end
     end
 
     % Labeled points
     if ~isempty(kwargs.labeled_points)
-        kwargs.labeled_points.update_start_end_times(kwargs.start_time, kwargs.end_time); 
-        kwargs.labeled_points.data = select_bbox(kwargs.labeled_points.data, 'latitude', 'longitude', ...
+        labeled_pts = prepare_labels(kwargs.labeled_points('filename'), ...
+            kwargs.start_time, kwargs.end_time); 
+        labeled_pts = select_bbox(labeled_pts, 'latitude', 'longitude', ...
             latlim(1), latlim(2), lonlim(1), lonlim(2));
+        kwargs.labeled_points('data') = labeled_pts;
     end
     
     % quivers
