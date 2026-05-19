@@ -62,6 +62,26 @@ Here you define how the tracking data will be displayed in the animation, as wel
 
 ![standard_color_picker](images/ecodata-animate_colorpicker_standard.png)    ![custom_color_picker](images/ecodata-animate_colorpicker_custom.png)
 
+### Presence visualization options
+
+The ``Presence visualization options`` panel is used for aggregated presence or observation data, including eBird-like datasets. This mode is useful when each row represents a point observation or an aggregated value for a location and time, rather than a continuous movement track of an individual animal.
+
+To use this mode, check ``Use presence visualization options``.
+
+When presence visualization is enabled, the app displays points for each animation time step instead of movement trails. Marker size and marker color can be controlled by selected columns in the input data.
+
+- Use ``Visualization frequency`` to define the time interval represented by each animation frame.
+- Use ``Location memory`` to define how long previous presence points remain visible in the animation.
+- Use ``Location opacity`` to control the transparency of the presence markers.
+- Use ``Marker style`` to choose the symbol used for presence points.
+- Use ``Size parameter`` to select the numeric data column used to scale marker size.
+- Use ``Color parameter`` to select the data column used to colour markers. This can be a numeric variable or a categorical/grouping variable.
+- Use ``Show legend`` to add size and colour legends to the animation frame.
+- Use ``Use black markers only`` if you want all presence points to be shown in black, ignoring the selected colour parameter.
+- Use ``Use custom colors`` and ``Add color`` to manually define colours for the selected colour parameter.
+
+For eBird-like aggregated data, useful size or colour parameters may include variables such as ``n_complete_checklists``, ``n_detected_checklists``, ``total_observation_count``, ``reporting_rate``, ``count_per_complete_checklist``, or ``count_per_party_hour_complete``. Normalized variables such as ``reporting_rate`` or ``count_per_party_hour_complete`` are often useful for marker size, while effort or grouping variables such as ``n_complete_checklists`` or region/grid identifiers can be useful for marker colour.
+
 (environmental-data)=
 ## Environmental data
 
