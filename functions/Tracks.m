@@ -16,6 +16,15 @@ classdef Tracks < handle
         data
         track_groups
 
+        % visualization mode
+        visualization_mode
+
+        % presence options
+        use_black_markers_only
+        size_parameter
+        color_parameter
+        presence_colors
+
     end
 
     methods
@@ -36,7 +45,11 @@ classdef Tracks < handle
                 kwargs.fade_tracks = false
                 kwargs.track_alpha= 0.6
                 kwargs.group_by = 'individual_local_identifier'
-
+                kwargs.visualization_mode = 'track'
+                kwargs.use_black_markers_only = false
+                kwargs.size_parameter = 'count'
+                kwargs.color_parameter = 'individual_local_identifier'
+                kwargs.presence_colors = []
 
             end
             if nargin > 0
@@ -57,6 +70,11 @@ classdef Tracks < handle
                 obj.fade_tracks = kwargs.fade_tracks;
                 obj.track_alpha = kwargs.track_alpha;
                 obj.group_by = kwargs.group_by;
+                obj.visualization_mode = kwargs.visualization_mode;
+                obj.use_black_markers_only = kwargs.use_black_markers_only;
+                obj.size_parameter = kwargs.size_parameter;
+                obj.color_parameter = kwargs.color_parameter;
+                obj.presence_colors = kwargs.presence_colors;
             end
         end
 

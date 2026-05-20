@@ -59,11 +59,11 @@ classdef StaticGriddedData < handle
             % Normalize cmap: allow either a name or an Nx3 array
             if ischar(kwargs.cmap) || isstring(kwargs.cmap)
                 name = lower(char(kwargs.cmap));
-                % 1) (supports 'blue','green','diverging','jet', тощо)
+                % 1) (supports 'blue','green','diverging','jet', etc.)
                 try
                     obj.cmap = s_colmap(name, 256);
                 catch
-                    % 2)try (parula, turbo, jet, hot, cool, gray, ...)
+                    % 2) colormaps
                     try
                         obj.cmap = feval(name, 256);
                     catch

@@ -198,8 +198,9 @@ for hh = cdatah'
     %apply new true-color color data
     
     %true-color is not supported in painters renderer, so switch out of that
-    if strcmp(get(gcf,'renderer'), 'painters')
-        set(gcf,'renderer','zbuffer');
+    parentFig = ancestor(parentAx, 'figure');
+    if strcmp(get(parentFig,'renderer'), 'painters')
+        set(parentFig,'renderer','zbuffer');
     end
     
     %replace original CData with true-color data

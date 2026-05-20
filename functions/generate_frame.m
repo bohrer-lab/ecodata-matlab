@@ -18,19 +18,50 @@ function generate_frame(tracks, frame_time, kwargs)
         kwargs.lonlim = NaN;
         kwargs.frame_number = 0;
         kwargs.show_legend=true;
+        kwargs.global_size_q = []
+        kwargs.global_color_breaks = []
+        kwargs.global_color_cmin = []
+        kwargs.global_color_cmax = []
     end
 
 
 
     %% Set up for map
+    % need to add space for custom legend
+     
+    oldDefaultFigureVisible = get(groot, 'DefaultFigureVisible');
+    set(groot, 'DefaultFigureVisible', 'off');
 
-    figure(Visible='off');
+    fig = figure( ...
+        'Visible', 'off', ...
+        'Color', 'w', ...
+        'Units', 'pixels', ...
+        'Position', [100 100 1600 900]);
+    
+    % Main map axes (reserve space on the right for colorbar + legend)
+    map_ax = axes( ...
+        'Parent', fig, ...
+        'Units', 'normalized', ...
+        'Position', [0.06 0.08 0.72 0.84]);
+    
+    % [2026a compatibility] axes(map_ax);
+    set(fig, 'CurrentAxes', map_ax); 
     
     % Map projection
-    m_proj('Cylindrical Equal-Area','lat', kwargs.latlim,'long', kwargs.lonlim)
-
+    m_proj('Cylindrical Equal-Area', 'lat', kwargs.latlim, 'long', kwargs.lonlim)
+    
     hold on
+
+
     last_env_cmap = [];
+    % Holders for custom presence legends
+    presence_size_title  = '';
+    presence_size_sizes  = [];
+    presence_size_labels = {};
+    
+    presence_color_title  = '';
+    presence_color_colors = [];
+    presence_color_labels = {};
     %% Plot gridded env data
     if ~isempty(kwargs.gridded_data)
         % Case A: static field (no time case) 
@@ -89,75 +120,132 @@ function generate_frame(tracks, frame_time, kwargs)
             end
     
             if gd.show_colorbar
-                colorbar;
+                env_cb = colorbar;
+                env_cb.Units = 'normalized';
+                env_cb.Position = [0.81 0.12 0.02 0.78];
             end
     
-            freezeColors;
+            freezeColors(map_ax);
             hold on;
 
     
         % Case B: time-varying field (legacy GriddedData)
         else
-            % The original logic (nearest timestamp to frame_time)
-            if isempty(kwargs.gridded_data.time_index)
-                kwargs.gridded_data.load_time_index;
+            gd = kwargs.gridded_data;
+
+            if isempty(gd.time_index)
+                gd.load_time_index;
             end
-    
-            times_before_frame = kwargs.gridded_data.time_index( ...
-                kwargs.gridded_data.time_index <= frame_time);
-    
-            % If there is no time <= frame_time, fall back to the earliest
+
+            % Find the nearest available environmental timestamp
+            if isempty(gd.time_index)
+                error('GriddedData:NoTimeIndex', ...
+                    'No time index available for gridded data.');
+            end
+
+            times_before_frame = gd.time_index(gd.time_index <= frame_time);
+
             if isempty(times_before_frame)
                 current_idx = 1;
             else
-                [~, current_idx] = min(abs(times_before_frame - frame_time));
+                [~, rel_idx] = min(abs(times_before_frame - frame_time));
+                current_idx = rel_idx;
             end
-    
+
             % Read one slice
-            [lat, lon, ~, slice] = unpack_netcdf( ...
-                kwargs.gridded_data.filename, ...
-                kwargs.gridded_data.latvar, ...
-                kwargs.gridded_data.lonvar, ...
-                kwargs.gridded_data.timevar, ...
-                kwargs.gridded_data.var_of_interest, ...
-                start = current_idx, count = 1);
-    
-            % Ensure ascending latitude for consistent plotting
-            if numel(lat) > 1 && lat(1) > lat(end)
-                lat   = flipud(lat);
-                slice = flipud(slice(:,:,1));
-            else
-                slice = slice(:,:,1);
+            [lat, lon, ~, raw_slice] = unpack_netcdf( ...
+                gd.filename, ...
+                gd.latvar, ...
+                gd.lonvar, ...
+                gd.timevar, ...
+                gd.var_of_interest, ...
+                start=current_idx, count=1);
+
+            % Reduce to 2-D
+            raw_slice = squeeze(raw_slice);
+
+            if ~isnumeric(raw_slice)
+                error('GriddedData:SliceNotNumeric', ...
+                    'Environmental slice must be numeric, got %s', class(raw_slice));
             end
-    
-            [LonGrid,LatGrid] = meshgrid(lon, lat);
-            geoshow(LatGrid, LonGrid, slice, 'DisplayType','texturemap');
-    
-            % Colormap / colorbar
-            % gd.cmap is already Nx3, or a row with a name – s_resolve_cmap
+
+            raw_slice = double(raw_slice);
+            raw_slice(~isfinite(raw_slice)) = NaN;
+
+            lat = double(lat(:));
+            lon = double(lon(:));
+
+            nlat = numel(lat);
+            nlon = numel(lon);
+
+            % Make slice match [nlat x nlon]
+            if isequal(size(raw_slice), [nlat, nlon])
+                slice2d = raw_slice;
+            elseif isequal(size(raw_slice), [nlon, nlat])
+                slice2d = raw_slice.';
+            else
+                error('GriddedData:SliceSizeMismatch', ...
+                    'Dynamic slice size [%d %d] does not match lat/lon lengths [%d %d].', ...
+                    size(raw_slice,1), size(raw_slice,2), nlat, nlon);
+            end
+
+            % Ensure latitude ascending
+            if nlat > 1 && lat(1) > lat(end)
+                lat = flipud(lat);
+                slice2d = flipud(slice2d);
+            end
+
+            % Ensure longitude ascending if needed
+            if nlon > 1 && lon(1) > lon(end)
+                lon = flipud(lon);
+                slice2d = fliplr(slice2d);
+            end
+
+            [LonGrid, LatGrid] = meshgrid(lon, lat);
+
+            % Robust plotting for dynamic NC:
+            % use m_pcolor instead of geoshow(texturemap)
+            h_env = m_pcolor(LonGrid, LatGrid, slice2d);
+            set(h_env, 'EdgeColor', 'none');
+            shading flat
+
+            % Colormap
             cmap_here = s_resolve_cmap(gd.cmap, 256);
             if gd.invert_cmap
                 cmap_here = flipud(cmap_here);
             end
-        
             colormap(cmap_here);
             last_env_cmap = cmap_here;
-        
-            if ~isempty(gd.cbar_limits)
-                caxis(gd.cbar_limits);
+
+            % Robust CLim handling
+            finite_vals = slice2d(isfinite(slice2d));
+            if isempty(finite_vals)
+                warning('GriddedData:AllNaN', ...
+                    'Environmental slice for %s at frame %s contains no finite values.', ...
+                    gd.var_of_interest, string(frame_time));
+            else
+                if ~isempty(gd.cbar_limits) && numel(gd.cbar_limits) == 2 && ...
+                        all(isfinite(gd.cbar_limits)) && gd.cbar_limits(2) > gd.cbar_limits(1)
+                    caxis(gd.cbar_limits);
+                else
+                    auto_clim = [min(finite_vals) max(finite_vals)];
+                    if auto_clim(1) == auto_clim(2)
+                        auto_clim = auto_clim + [-0.5 0.5];
+                    end
+                    caxis(auto_clim);
+                end
             end
-        
+
             if gd.show_colorbar
-                colorbar;
+                env_cb = colorbar;
+                env_cb.Units = 'normalized';
+                env_cb.Position = [0.81 0.12 0.02 0.78];
             end
-        
-            freezeColors;
+
+            freezeColors(map_ax);
             hold on;
         end
     end
-
-
-
     %% raster image
      %% Raster image (static GeoTIFF)
     if ~isempty(kwargs.raster_image) && isa(kwargs.raster_image, 'containers.Map') ...
@@ -202,7 +290,9 @@ function generate_frame(tracks, frame_time, kwargs)
 
         % Show colorbar or not
         if isKey(kwargs.raster_image, 'show_colorbar') && kwargs.raster_image('show_colorbar')
-            colorbar;
+            env_cb = colorbar;
+            env_cb.Units = 'normalized';
+            env_cb.Position = [0.81 0.12 0.02 0.78];
         end
 
         % Drawing GeoTIFF as a background
@@ -212,7 +302,7 @@ function generate_frame(tracks, frame_time, kwargs)
         uistack(r_img, 'bottom');  %  under tracks and other layers
     end
 
-    freezeColors;
+    freezeColors(map_ax);
     hold on;
 
     %% Shapefiles
@@ -346,77 +436,352 @@ function generate_frame(tracks, frame_time, kwargs)
     end
 
 
-    %% Track data
+    %% Track / Presence data
 
-    % Attribute grouping
-    group_labels = tracks.track_groups.keys;
-
-    track_colors = repmat(tracks.track_cmap, ceil(length(group_labels)/length(tracks.track_cmap)),1);
-
-
-    % Create legend items for each group
-    if kwargs.show_legend
-        legend_items = gobjects(length(group_labels),1);
-        for l=1:length(legend_items)
-            legend_items(l) = scatter(nan, nan, 150, track_colors(l, :), tracks.marker_style,'filled');
-        end
-    end
-
-    % Loop for attribute groups
-    for j=1:length(tracks.track_groups)
-
-        track_color = track_colors(j, :);
-        group = tracks.track_groups(group_labels{j});
-        inds = group.keys;
-
-        % Plot each individual in the group
-        for i=1:length(inds)
-            data_ind = group(inds{i});
-
-            if height(data_ind(timerange(kwargs.start_time, frame_time, 'closed'), :)) < tracks.track_memory
-                oldest_point = kwargs.start_time;
+    if strcmpi(tracks.visualization_mode, 'presence')
+    
+        
+        % Presence mode
+        
+        data_now = tracks.data;
+    
+        % Location memory is interpreted in hours
+        memory_duration = hours(tracks.track_memory);
+    
+        % Keep points that are still visible at current frame
+        visible_mask = (data_now.timestamp <= frame_time) & ...
+                       (data_now.timestamp > (frame_time - memory_duration));
+    
+        data_vis = data_now(visible_mask, :);
+    
+        legend_items = gobjects(0);
+        legend_labels = {};
+    
+        if ~isempty(data_vis)
+    
+            
+            % Mode 1: Use black markers only
+            
+            if tracks.use_black_markers_only
+    
+                if ismember(tracks.size_parameter, data_vis.Properties.VariableNames)
+                    size_vals = data_vis.(tracks.size_parameter);
+    
+                    if isnumeric(size_vals) || islogical(size_vals)
+                        data_vis = data_vis(size_vals ~= 0 & ~isnan(size_vals), :);
+                    end
+                end
+    
+                if ~isempty(data_vis)
+                    s = m_scatter(data_vis.location_long, data_vis.location_lat, ...
+                        100, 'k', tracks.marker_style, 'filled');
+    
+                    try
+                        s.MarkerFaceAlpha = tracks.track_alpha;
+                        s.MarkerEdgeAlpha = tracks.track_alpha;
+                    catch
+                    end
+    
+                    if kwargs.show_legend
+                        presence_size_title = char(tracks.size_parameter);
+                        presence_size_sizes = 100;
+                        presence_size_labels = {'Visible presence'};
+                    
+                        presence_color_title = char(tracks.color_parameter);
+                        presence_color_colors = [0 0 0];
+                        presence_color_labels = {'Black markers only'};
+                    end
+                end
+    
             else
-                oldest_point = data_ind.timestamp(find(data_ind.timestamp == frame_time) - tracks.track_memory + 1);
-            end
-
-            x = data_ind.location_long(oldest_point:tracks.frequency:frame_time);
-            y = data_ind.location_lat(oldest_point:tracks.frequency:frame_time);
-
-            if ~isempty(x)
-                xseg = [x(1:end-1),x(2:end)];
-                yseg = [y(1:end-1),y(2:end)];
-
-                trace_colors = repmat(track_color, size(xseg,1), 1);
-                segColors = trace_colors;
-
-                if isnan(tracks.marker_color)
-                    scatterColor = track_color;
+    
+                
+                % Marker size from numeric variable
+                
+                if ismember(tracks.size_parameter, data_vis.Properties.VariableNames)
+                    size_vals = data_vis.(tracks.size_parameter);
                 else
-                    scatterColor = tracks.marker_color;
+                    size_vals = ones(height(data_vis), 1);
+                end
+    
+                if ~(isnumeric(size_vals) || islogical(size_vals))
+                    size_vals = ones(height(data_vis), 1);
+                end
+    
+                size_vals = double(size_vals);
+                valid_size = ~isnan(size_vals);
+    
+                % Default marker sizes
+                marker_sizes = repmat(60, height(data_vis), 1);
+    
+                % Five quantile-based classes
+                size_levels = [40 70 100 130 160];
+    
+                if any(valid_size)
+                    if ~isempty(kwargs.global_size_q)
+                        q = kwargs.global_size_q;
+                    else
+                        q = quantile(size_vals(valid_size), [0.2 0.4 0.6 0.8]);
+                    end
+
+                    marker_sizes(valid_size & size_vals <= q(1)) = size_levels(1);
+                    marker_sizes(valid_size & size_vals >  q(1) & size_vals <= q(2)) = size_levels(2);
+                    marker_sizes(valid_size & size_vals >  q(2) & size_vals <= q(3)) = size_levels(3);
+                    marker_sizes(valid_size & size_vals >  q(3) & size_vals <= q(4)) = size_levels(4);
+                    marker_sizes(valid_size & size_vals >  q(4)) = size_levels(5);
                 end
 
-                if tracks.fade_tracks
-                    seg_amap = logspace(0,1,size(xseg,1));
-                    seg_amap = seg_amap/max(seg_amap);
+                % custom legend logic
+                if kwargs.show_legend
+                    presence_size_title = char(tracks.size_parameter);
+                
+                    if any(valid_size)
+                        presence_size_sizes = size_levels(:);
+                
+                        presence_size_labels = { ...
+                            sprintf('<= %.3g', q(1)), ...
+                            sprintf('%.3g - %.3g', q(1), q(2)), ...
+                            sprintf('%.3g - %.3g', q(2), q(3)), ...
+                            sprintf('%.3g - %.3g', q(3), q(4)), ...
+                            sprintf('> %.3g', q(4)) ...
+                        };
+                    else
+                        presence_size_sizes = 60;
+                        presence_size_labels = {'No valid size values'};
+                    end
+                end
+                
+                % Color parameter
+                
+                if ismember(tracks.color_parameter, data_vis.Properties.VariableNames)
+                    color_vals = data_vis.(tracks.color_parameter);
                 else
-                    seg_amap = repmat(tracks.track_alpha, size(xseg,1), 1);
+                    color_vals = repmat("Presence", height(data_vis), 1);
                 end
+    
+                
+                % Numeric color parameter
+                
+                if isnumeric(color_vals) || islogical(color_vals)
+                    color_vals = double(color_vals);
+                    valid_color = ~isnan(color_vals);
+    
+                    % Use user-defined colors as a scale if available
+                    if ~isempty(tracks.presence_colors)
+                        base_colors = tracks.presence_colors;
+                    else
+                        base_colors = lines(5);
+                    end
+    
+                    % Interpolate to smooth scale
+                    if size(base_colors, 1) == 1
+                        base_colors = [base_colors; base_colors];
+                    end
+                    n_base = size(base_colors, 1);
+                    xi = linspace(0, 1, n_base);
+                    xq = linspace(0, 1, 256);
+    
+                    cmap256 = [ ...
+                        interp1(xi, base_colors(:,1), xq)', ...
+                        interp1(xi, base_colors(:,2), xq)', ...
+                        interp1(xi, base_colors(:,3), xq)' ];
+    
+                    point_colors = repmat([0 0 0], height(data_vis), 1);
+    
+                    if any(valid_color)
+                        if ~isempty(kwargs.global_color_cmin) && ~isempty(kwargs.global_color_cmax)
+                            cmin = kwargs.global_color_cmin;
+                            cmax = kwargs.global_color_cmax;
+                        else
+                            cmin = min(color_vals(valid_color));
+                            cmax = max(color_vals(valid_color));
+                        end
 
-                segColors(:,4) = seg_amap;
+                        if cmax > cmin
+                            cidx = round(1 + (color_vals - cmin) .* 255 ./ (cmax - cmin));
+                        else
+                            cidx = repmat(256, size(color_vals));
+                        end
 
-                h = m_plot(xseg',yseg','LineWidth',tracks.track_width);
+                        cidx(~valid_color) = 1;
+                        cidx = max(1, min(256, cidx));
+                        point_colors = cmap256(cidx, :);
+                    end
 
-                x_point = data_ind.location_long(frame_time);
-                y_point = data_ind.location_lat(frame_time);
-
-                if ~isempty(data_ind(frame_time,:))
-                    s = m_scatter(x_point,y_point,tracks.marker_size, ...
-                        scatterColor,tracks.marker_style,'filled');
+                    %Custom legend logic
+                    if kwargs.show_legend
+                        presence_color_title = char(tracks.color_parameter);
+                    
+                        if any(valid_color)
+                            if ~isempty(kwargs.global_color_cmin) && ~isempty(kwargs.global_color_cmax)
+                                cmin_leg = kwargs.global_color_cmin;
+                                cmax_leg = kwargs.global_color_cmax;
+                            else
+                                cmin_leg = min(color_vals(valid_color));
+                                cmax_leg = max(color_vals(valid_color));
+                            end
+                    
+                            if cmax_leg > cmin_leg
+                                if ~isempty(kwargs.global_color_breaks)
+                                    color_breaks = kwargs.global_color_breaks;
+                                else
+                                    color_breaks = linspace(cmin_leg, cmax_leg, 6);
+                                end
+                                color_mids = (color_breaks(1:end-1) + color_breaks(2:end)) / 2;
+                    
+                                cidx_leg = round(1 + (color_mids - cmin) .* 255 ./ (cmax - cmin));
+                                cidx_leg = max(1, min(256, cidx_leg));
+                    
+                                presence_color_colors = cmap256(cidx_leg, :);
+                                presence_color_labels = { ...
+                                    sprintf('%.3g - %.3g', color_breaks(1), color_breaks(2)), ...
+                                    sprintf('%.3g - %.3g', color_breaks(2), color_breaks(3)), ...
+                                    sprintf('%.3g - %.3g', color_breaks(3), color_breaks(4)), ...
+                                    sprintf('%.3g - %.3g', color_breaks(4), color_breaks(5)), ...
+                                    sprintf('%.3g - %.3g', color_breaks(5), color_breaks(6)) ...
+                                };
+                            else
+                                presence_color_colors = cmap256(256, :);
+                                presence_color_labels = {sprintf('%.3g', cmin_leg)};
+                            end
+                        else
+                            presence_color_colors = [0 0 0];
+                            presence_color_labels = {'No valid color values'};
+                        end
+                    end
+    
+                    for ii = 1:height(data_vis)
+                        s = m_scatter(data_vis.location_long(ii), data_vis.location_lat(ii), ...
+                            marker_sizes(ii), point_colors(ii,:), tracks.marker_style, 'filled');
+    
+                        try
+                            s.MarkerFaceAlpha = tracks.track_alpha;
+                            s.MarkerEdgeAlpha = tracks.track_alpha;
+                        catch
+                        end
+                    end
+    
+                else
+    
+                    
+                    % Categorical color parameter
+                    
+                    cats = string(color_vals);
+                    [ucat, ~, ic] = unique(cats, 'stable');
+    
+                    if ~isempty(tracks.presence_colors)
+                        cat_colors = repmat(tracks.presence_colors, ...
+                            ceil(numel(ucat) / size(tracks.presence_colors, 1)), 1);
+                    else
+                        cat_colors = repmat(lines(max(numel(ucat), 1)), ...
+                            ceil(numel(ucat) / max(numel(ucat), 1)), 1);
+                    end
+    
+                    cat_colors = cat_colors(1:numel(ucat), :);
+    
+                    for kk = 1:numel(ucat)
+                        idx = (ic == kk);
+    
+                        s = m_scatter(data_vis.location_long(idx), data_vis.location_lat(idx), ...
+                            marker_sizes(idx), cat_colors(kk,:), tracks.marker_style, 'filled');
+    
+                        try
+                            s.MarkerFaceAlpha = tracks.track_alpha;
+                            s.MarkerEdgeAlpha = tracks.track_alpha;
+                        catch
+                        end
+                    end
+    
+                    if kwargs.show_legend
+                        presence_color_title = char(tracks.color_parameter);
+                    
+                        n_show = min(numel(ucat), 10);
+                        presence_color_colors = cat_colors(1:n_show, :);
+                        presence_color_labels = cellstr(ucat(1:n_show));
+                    
+                        if numel(ucat) > n_show
+                            presence_color_colors(end+1, :) = [0.5 0.5 0.5];
+                            presence_color_labels{end+1} = sprintf('... +%d more', numel(ucat) - n_show);
+                        end
+                    end
                 end
-
-                set(h, {'Color'}, mat2cell(segColors,ones(size(xseg,1),1),4))
             end
-
+        end
+    
+    else
+    
+       
+        % Original track logic
+        
+        group_labels = tracks.track_groups.keys;
+    
+        track_colors = repmat(tracks.track_cmap, ...
+            ceil(length(group_labels) / length(tracks.track_cmap)), 1);
+    
+        % Create legend items for each group
+        if kwargs.show_legend
+            legend_items = gobjects(length(group_labels),1);
+            for l = 1:length(legend_items)
+                legend_items(l) = scatter(map_ax, nan, nan, 150, ...
+                    track_colors(l, :), tracks.marker_style, 'filled');
+            end
+        end
+    
+        % Loop for attribute groups
+        for j = 1:length(tracks.track_groups)
+    
+            track_color = track_colors(j, :);
+            group = tracks.track_groups(group_labels{j});
+            inds = group.keys;
+    
+            % Plot each individual in the group
+            for i = 1:length(inds)
+                data_ind = group(inds{i});
+    
+                if height(data_ind(timerange(kwargs.start_time, frame_time, 'closed'), :)) < tracks.track_memory
+                    oldest_point = kwargs.start_time;
+                else
+                    oldest_point = data_ind.timestamp(find(data_ind.timestamp == frame_time) - tracks.track_memory + 1);
+                end
+    
+                x = data_ind.location_long(oldest_point:tracks.frequency:frame_time);
+                y = data_ind.location_lat(oldest_point:tracks.frequency:frame_time);
+    
+                if ~isempty(x)
+                    xseg = [x(1:end-1), x(2:end)];
+                    yseg = [y(1:end-1), y(2:end)];
+    
+                    trace_colors = repmat(track_color, size(xseg,1), 1);
+                    segColors = trace_colors;
+    
+                    if isnan(tracks.marker_color)
+                        scatterColor = track_color;
+                    else
+                        scatterColor = tracks.marker_color;
+                    end
+    
+                    if tracks.fade_tracks
+                        seg_amap = logspace(0,1,size(xseg,1));
+                        seg_amap = seg_amap / max(seg_amap);
+                    else
+                        seg_amap = repmat(tracks.track_alpha, size(xseg,1), 1);
+                    end
+    
+                    segColors(:,4) = seg_amap;
+    
+                    h = m_plot(xseg', yseg', 'LineWidth', tracks.track_width);
+    
+                    x_point = data_ind.location_long(frame_time);
+                    y_point = data_ind.location_lat(frame_time);
+    
+                    if ~isempty(data_ind(frame_time,:))
+                        s = m_scatter(x_point, y_point, tracks.marker_size, ...
+                            scatterColor, tracks.marker_style, 'filled');
+                    end
+    
+                    set(h, {'Color'}, mat2cell(segColors, ones(size(xseg,1),1), 4))
+                end
+            end
         end
     end
 
@@ -432,19 +797,31 @@ function generate_frame(tracks, frame_time, kwargs)
     end
     title(time_label)
 
-    % Add legend
+    % Add custom legend
     if kwargs.show_legend
-        legend(legend_items, group_labels, 'Location', 'northeastoutside')
+        if strcmpi(tracks.visualization_mode, 'presence')
+            add_presence_dual_legend( ...
+                fig, ...
+                tracks, ...
+                presence_size_title, presence_size_sizes, presence_size_labels, ...
+                presence_color_title, presence_color_colors, presence_color_labels);
+        else
+            if exist('legend_items', 'var') && ~isempty(legend_items)
+                lgd = legend(map_ax, legend_items, group_labels);
+                lgd.Units = 'normalized';
+                lgd.Position = [0.78 0.88 0.20 0.06];
+                lgd.AutoUpdate = 'off';
+            end
+        end
     end
+    
+    drawnow limitrate nocallbacks
 
-    drawnow
-
-    %save image of each frame
-    % Construct an output image file name.
+    % Save image of each frame
     outputBaseFileName = sprintf('Frame%s.png', num2str(kwargs.frame_number));
     outputFullFileName = fullfile(kwargs.output_directory, outputBaseFileName);
-    exportgraphics(gcf,outputFullFileName,'Resolution', kwargs.frame_resolution)
-
+    exportgraphics(fig, outputFullFileName, 'Resolution', kwargs.frame_resolution);
+    
     % Delete variables
     if exist('grd', 'var'); clear grd; end
     if exist('h', 'var'); clear h; end
@@ -456,9 +833,100 @@ function generate_frame(tracks, frame_time, kwargs)
             clear kwargs.quiver_data.quiverh;
         end
     end
+    
+    % Close only this off-screen figure
+    if isgraphics(fig)
+        close(fig);
+    end
+    
+    % Restore MATLAB default figure visibility
+    set(groot, 'DefaultFigureVisible', oldDefaultFigureVisible);
+end
 
+function add_presence_dual_legend( ...
+    fig, ...
+    tracks, ...
+    size_title, size_sizes, size_labels, ...
+    color_title, color_colors, color_labels)
 
-    % Make sure no figure objects stay in memory
-    clf
-    close all
+   % 2026a fig = gcf;
+
+    legend_ax = axes( ...
+        'Parent', fig, ...
+        'Units', 'normalized', ...
+        'Position', [0.85 0.14 0.13 0.72], ...
+        'Color', 'none', ...
+        'XColor', 'none', ...
+        'YColor', 'none', ...
+        'XTick', [], ...
+        'YTick', [], ...
+        'Box', 'off');
+
+    hold(legend_ax, 'on');
+    xlim(legend_ax, [0 1]);
+    ylim(legend_ax, [0 1]);
+
+    y = 0.96;
+
+    % ----------------------------
+    % Size legend
+    % ----------------------------
+    if ~isempty(size_sizes) && ~isempty(size_labels)
+        text(legend_ax, 0.02, y, sprintf('%s', size_title), ...
+            'FontWeight', 'bold', ...
+            'FontSize', 10, ...
+            'Interpreter', 'none', ...
+            'VerticalAlignment', 'top');
+
+        y = y - 0.08;
+
+        for k = 1:numel(size_sizes)
+            scatter(legend_ax, 0.16, y, size_sizes(k), ...
+                [0.25 0.25 0.25], tracks.marker_style, 'filled', ...
+                'MarkerEdgeColor', [0 0 0], ...
+                'LineWidth', 0.5);
+
+            text(legend_ax, 0.32, y, size_labels{k}, ...
+                'FontSize', 9, ...
+                'Interpreter', 'none', ...
+                'VerticalAlignment', 'middle');
+
+            y = y - 0.08;
+        end
+
+        y = y - 0.05;
+    end
+
+    % ----------------------------
+    % Color legend
+    % ----------------------------
+    if ~isempty(color_colors) && ~isempty(color_labels)
+        text(legend_ax, 0.02, y, sprintf('%s', color_title), ...
+            'FontWeight', 'bold', ...
+            'FontSize', 10, ...
+            'Interpreter', 'none', ...
+            'VerticalAlignment', 'top');
+
+        y = y - 0.08;
+
+        legend_marker_size = 90;
+
+        n_items = min(numel(color_labels), size(color_colors, 1));
+
+        for k = 1:n_items
+            scatter(legend_ax, 0.16, y, legend_marker_size, ...
+                color_colors(k,:), tracks.marker_style, 'filled', ...
+                'MarkerEdgeColor', [0 0 0], ...
+                'LineWidth', 0.5);
+
+            text(legend_ax, 0.32, y, color_labels{k}, ...
+                'FontSize', 9, ...
+                'Interpreter', 'none', ...
+                'VerticalAlignment', 'middle');
+
+            y = y - 0.08;
+        end
+    end
+
+    hold(legend_ax, 'off');
 end
