@@ -1,5 +1,6 @@
-# Movebank login credentials
-movebank_credentials.txt
+# MATLAB project files
+*.prj
+resources/
 
 #data
 data/user_datasets/*

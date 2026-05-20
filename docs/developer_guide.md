@@ -52,9 +52,6 @@ After editing the pages, you can look at a build of the pages to see how things 
 
 ### Required toolboxes
 The mapping toolbox and the MATLAB Compiler need to be installed.
-### Specifying Movebank login credentials:
-- Save ``movebank_credentials_template.txt`` as ``movebank_credentials.txt`` and update it with your username and password.
-- ``movebank_credentials.txt`` is in the .gitignore so it won't be tracked.
 
 ## Compiling the app
 
@@ -65,13 +62,17 @@ This process needs to be done on both Mac and Windows, to build installers for b
 - Edit "Sharing Details" (this can be found if "animator" is selected in the component browser):
   - Update the version (major.minor)
   - Update the description with the release tag
-- In the top menu, click ``Share``, then ``Standalone Desktop App``
-- In the compiler window:
-  - In the top menu, select ``Runtime downloaded from web``, then change the name in the textbox to ``ECODATA_Animate``
-  - In the version box, edit the version (which was auto-filled with major.minor from the .mlapp file). This needs to be updated to major.minor.bugfix.release_candidate (making sure this corresponds to the release tag on GitHub)
-  - Under ``Files required for your application to run``, make sure the ``functions`` and ``m_map`` folders are both added!
-  - Under ``Additional runtime settings``, select the ``create log file`` box, and change the name to ``ecodata_animate_log``
-  - Click the ``Package``button in the top menu.
+- In the main MATLAB window, go to the ``Apps`` tab, then ``Standalone Application Compiler``.
+- You will need to create a Project for the compiler. Create a project in the root directory folder called ecodata-animate.
+- In the Project window, there should be a Task for the Standalone Desktop App. In the task settings:
+  - Under ``Main File``, add ``animator.mlapp``
+  - Change ``Output Locations`` to a convenient build location (like somewhere not tracked by git. Just make sure you don't commit any of the build files)
+  - Under Application Info, check that the version is correct (this should have been auto-filled with major.minor from the .mlapp file). The version should be major.minor.bugfix, and the Description box should have the full version tag (e.g., v1.4.0rc1), making sure this corresponds to the release tag on GitHub.
+  - Under ``Executable Details``, change the Executable Name to ECODATA_Animate
+  - Under ``Files required for Standalone to run``, make sure the ``functions`` and ``m_map`` folders are both added!
+  - Under ``Installer Details``, select ``Fetch MATLAB Runtime from mathworks.com during application installation``.
+  - Change ``Installer Name`` to ECODATA_Animate_Installer
+  - Click the ``Build and Package``button.
   - Make a new folder called ``Mac_Installer`` or ``Windows_Installer``.
-  - From the output folder created by the compiler, copy the file ``for_redistribution/ECODATA_Animate`` to the new folder.
+  - From the output folder created by the compiler, copy the file ``package/ECODATA_Animate_Installer`` to the new folder.
   - Compress the folder to a .zip. The two .zip folders (for Mac and Windows) are what need to be uploaded as release assets.

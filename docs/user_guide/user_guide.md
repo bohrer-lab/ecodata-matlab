@@ -122,7 +122,7 @@ Note that if your quiver dataset is too dense, it will need to be thinned using 
 1. Click on ``Static NetCDF`` and choose a .nc file containing a gridded environmental variable.
 1. The app expects NetCDF files with latitude and longitude variables and is currently designed for 1-D coordinate vectors (lat, lon).
 1. Available variables are listed in the drop-down menu. The selected variable must be two-dimensional after applying squeeze(). If the variable contains a time dimension, the static layer uses a single time slice (at present, the first available time step). If no time variable is present in the file, the Time controls are disabled and the field is treated as a purely static layer.
-1. Select a colour map and optionally adjust the minimum and maximum values used for display. 
+1. Select a colour map and optionally adjust the minimum and maximum values used for display.
 
 ### Static GeoTIFF
 
@@ -132,6 +132,7 @@ Note that if your quiver dataset is too dense, it will need to be thinned using 
 
 ```{important}
 The file must contain valid georeferencing (GeoTIFF keys or world file metadata). Plain TIFF images without coordinate information cannot be used.
+```
 
 (shapefiles)=
 ## Shapefiles
