@@ -416,17 +416,7 @@ function generate_frame(tracks, frame_time, kwargs)
 
     %% Labeled points
     if ~isempty(kwargs.labeled_points)
-        labeled_pts = kwargs.labeled_points("data");
-        labels_filtered = labeled_pts(frame_time>=labeled_pts.start_time & frame_time<=labeled_pts.end_time,:);
-
-        m_scatter(labels_filtered.longitude, labels_filtered.latitude, ...
-            kwargs.labeled_points("marker_size"), kwargs.labeled_points("marker_color"), 'filled')
-
-        for i=1:height(labels_filtered)
-            m_text(labels_filtered.label_longitude(i),labels_filtered.label_latitude(i), ...
-                labels_filtered.label{i}, 'horizontal', labels_filtered.horizontal_alignment{i}, ...
-                'FontSize', 8)
-        end
+        kwargs.labeled_points.plot(frame_time);
     end
 
 
